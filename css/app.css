@@ -1,0 +1,631 @@
+/* Letter and number font "GG Letters": a Basic Latin subset (a Modified Version under the SIL Open
+   Font License 1.1; copyright and license in ../fonts/OFL.txt). It draws the school shapes: a
+   single-story "a" and a simple "g". */
+@font-face { font-family: "GG Letters"; src: url("../fonts/gg-letters.woff2") format("woff2"); font-weight: 400; font-display: block; }
+@font-face { font-family: "GG Letters"; src: url("../fonts/gg-letters-bold.woff2") format("woff2"); font-weight: 700; font-display: block; }
+
+/* Family Games. Look from design.md section 0: warm cream, sky blue, grass green, white cards
+   with a 3px dark-brown outline and 20px corners, flat cartoon shapes. */
+:root {
+  --bg: #FFF8EC;
+  --sky: #4AA3DF;
+  --grass: #5DBB63;
+  --ink: #4A3426;
+  --card: #FFFFFF;
+  --sun: #FFD54A;
+  --gray: #8C8C8C;
+  --gray-soft: #E9E4DA;
+  --danger: #B3261E;
+  --radius: 20px;
+  --line: 3px solid var(--ink);
+  --font: "GG Letters", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --letters: "GG Letters", sans-serif;
+  --kid-tap: 88px;
+  --dad-tap: 44px;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; height: 100%; overflow-x: clip; }
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  font-size: 18px;
+  line-height: 1.35;
+  color: var(--ink);
+  background: var(--bg);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  overflow-x: clip; /* nothing (like the parade walk-in) may ever widen the page sideways */
+}
+[hidden] { display: none !important; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; }
+:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: calc(10px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+/* Kid screens: nothing to select, no long-press menus. */
+.home, .kid {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Home (design.md 9.2): parade, a 2 x 2 picture grid with Stories full width, the Sticker book bar */
+.home { gap: 10px; }
+.home .topbar { min-height: 52px; }
+.dad-title { margin: 0; font-size: 14px; font-weight: 700; color: #7A6656; letter-spacing: .02em; }
+.big-buttons { display: flex; flex-direction: column; gap: 16px; }
+.big-btn {
+  min-height: 150px;
+  width: 100%;
+  background: var(--card);
+  border: 5px solid var(--sky);
+  border-radius: var(--radius);
+  box-shadow: 0 5px 0 rgba(74, 52, 38, .18);
+  display: flex; align-items: center; justify-content: center; gap: 18px;
+}
+.big-btn.counting { border-color: var(--grass); }
+.big-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(74, 52, 38, .18); }
+.big-glyph { font-size: 92px; font-weight: 700; line-height: 1; }
+.letter-font { font-family: var(--letters); }
+.big-pic { width: 76px; height: 76px; }
+.big-pic.apple-pic { width: 64px; height: 64px; }
+.apples { display: flex; gap: 2px; align-self: flex-end; margin-bottom: 26px; }
+.mini-pic { width: 40px; height: 40px; }
+.big-btn .drawing { width: 100%; height: 100%; }
+.big-buttons.grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(150px, 1fr) minmax(150px, 1fr) minmax(120px, auto); gap: 12px; flex: 1; }
+.grid .big-btn { min-height: 150px; border-width: 3px; border-color: var(--ink); border-bottom: 9px solid var(--sky); padding: 6px; gap: 6px; flex-wrap: wrap; align-content: center; }
+.grid .big-btn.counting { border-bottom-color: var(--grass); flex-direction: column; }
+.grid .big-btn.adding { border-bottom-color: #F28C28; flex-direction: column; }
+.grid .big-btn.patterns { border-bottom-color: #8E5CC7; }
+.grid .big-btn.stories { grid-column: 1 / -1; min-height: 120px; border-bottom-color: #F2C230; }
+.grid .big-glyph { font-size: 80px; }
+.grid .counting .big-glyph { font-size: 60px; }
+.grid .apples { align-self: center; margin-bottom: 0; }
+.add-row { display: flex; align-items: center; gap: 2px; }
+.add-gap { width: 14px; }
+.eq-pic { width: 54px; height: 54px; margin-top: -4px; }
+.train-pic { width: 140px; height: 70px; }
+.story-pic { width: 112px; height: 112px; }
+.book-bar {
+  height: 88px; width: 100%; flex: none;
+  background: var(--card); border: var(--line); border-bottom: 9px solid #8E5CC7; border-radius: var(--radius);
+  box-shadow: 0 5px 0 rgba(74, 52, 38, .18);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.book-bar:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(74, 52, 38, .18); }
+.book-cover { position: relative; width: 72px; height: 72px; margin-bottom: 2px; }
+.book-cover > .drawing { position: relative; z-index: 1; }
+.peek { position: absolute; left: 50%; top: -6px; width: 0; height: 0; z-index: 0; }
+.peek-sk { position: absolute; width: 38px; height: 38px; top: -12px; }
+.peek-sk.p0 { left: -42px; transform: rotate(-16deg); }
+.peek-sk.p1 { left: -18px; top: -20px; }
+.peek-sk.p2 { left: 6px; transform: rotate(14deg); }
+
+/* Top bar: home (64px) left, paw prints middle, Dad right */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 64px; }
+.topbar .spacer { width: 64px; }
+.topbar .spacer.grow { flex: 1; }
+.icon-btn {
+  width: 64px; height: 64px; border-radius: 18px; flex: none;
+  background: var(--card); border: var(--line);
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 0 rgba(74, 52, 38, .18);
+}
+.icon-btn:active { transform: translateY(2px); box-shadow: none; }
+.icon-btn .icon { width: 44px; height: 44px; }
+.drawing { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* Dad button: gray pill, hand icon, a ring fills over 1 second while held */
+.dad-btn {
+  position: relative; flex: none;
+  width: 92px; height: 48px; border-radius: 24px;
+  background: #D9D4CB; color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  font-size: 16px; font-weight: 800;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: none;
+}
+.dad-btn .hand { width: 22px; height: 22px; }
+.dad-btn .ring { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); pointer-events: none; overflow: visible; }
+.dad-btn .ring rect { fill: none; stroke-width: 5; vector-effect: non-scaling-stroke; }
+.dad-btn .ring-track { stroke: transparent; }
+.dad-btn .ring-fill { stroke: var(--sky); stroke-dasharray: 100; stroke-dashoffset: 100; stroke-linecap: butt; opacity: 0; transition: stroke-dashoffset .18s ease-out, opacity .18s; }
+.dad-btn.holding .ring-track { stroke: rgba(74, 52, 38, .15); }
+.dad-btn.holding .ring-fill { stroke-dashoffset: 0; opacity: 1; transition: stroke-dashoffset 1s linear; }
+
+/* Bottom sheet (Dad) */
+.sheet-wrap { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+.sheet-backdrop { position: absolute; inset: 0; background: rgba(40, 28, 20, .45); }
+.sheet {
+  position: relative; width: 100%; max-width: 480px; max-height: 92vh; overflow: auto;
+  background: #FFFFFF; border-radius: 22px 22px 0 0;
+  padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 10px;
+  animation: sheet-up .2s ease-out;
+}
+.sheet h2 { margin: 0 0 2px; font-size: 22px; }
+.sheet-sub { margin: 0 0 4px; color: #6B5646; font-size: 16px; }
+.sheet-btn {
+  min-height: 52px; width: 100%; border-radius: 14px;
+  border: 2px solid #CFC6B8; background: #FBF7F0;
+  font-size: 18px; font-weight: 700; text-align: left; padding: 0 16px;
+}
+.sheet-btn:disabled { opacity: .45; }
+.sheet-btn.danger { background: var(--danger); border-color: var(--danger); color: #FFFFFF; text-align: center; }
+.sheet-btn.danger-outline { color: var(--danger); border-color: #E3B4B0; background: #FFFFFF; }
+.sheet-btn.plain { background: none; border-color: transparent; text-align: center; color: #6B5646; }
+@keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Characters and poses: idle = gentle bob, happy = hop with ears up, hmm = head tilt */
+.pet { position: relative; }
+.pet .char, .pet .head, .pet .ear, .pet .tail, .pet .pair, .pet .wings { transform-box: fill-box; }
+.pet .head { transform-origin: 50% 90%; transition: transform .25s ease; }
+.pet .ear { transform-origin: 50% 12%; transition: transform .2s ease; }
+.pet .tail { transform-origin: 0% 100%; }
+.pet .char { transform-origin: 50% 100%; }
+.drawing .only-happy { display: none; }
+.pet.pose-idle .char { animation: bob 2.4s ease-in-out infinite; }
+.pet.pose-happy .char { animation: hop .45s ease-out 2; }
+.pet.pose-happy .only-happy { display: inline; }
+.pet.pose-happy .ear.l { transform: rotate(35deg); }
+.pet.pose-happy .ear.r { transform: rotate(-35deg); }
+.pet.pose-happy .ear.flip { transform: rotate(-10deg); }
+.pet.pose-happy .tail { animation: wag .3s ease-in-out 4; }
+.pet.pose-happy .wings { transform-origin: 50% 60%; animation: flutter .2s ease-in-out 4; }
+.pet.pose-hmm .head { transform: rotate(-12deg); }
+/* Berry's tiny polite bite (design.md 9.8): on happy the strawberry gets a little smaller; no crumbs */
+.pet .treat-hand { transform-box: fill-box; transform-origin: 50% 50%; transition: transform .3s ease; }
+.pet.pose-happy .treat-hand { transform: scale(.82); }
+.pet.still .char { animation: none !important; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes hop { 0%, 100% { transform: translateY(0) scale(1, 1); } 15% { transform: translateY(0) scale(1.05, .93); } 50% { transform: translateY(-14px) scale(.97, 1.04); } }
+@keyframes wag { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-16deg); } }
+@keyframes flutter { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(.88); } }
+.pet.twirl .char { animation: twirl .5s ease-in-out; }
+@keyframes twirl { 0% { transform: rotate(0); } 50% { transform: rotate(-10deg) translateY(-4px); } 100% { transform: rotate(0); } }
+
+/* Home parade */
+.parade { display: flex; justify-content: space-around; align-items: flex-end; gap: 4px; min-height: 120px; overflow-x: clip; overflow-clip-margin: 0; }
+/* The walk-in starts off-screen right; overflow-x: clip (not hidden) keeps the page from scrolling
+   sideways while hops above the row still show. */
+.parade .pet { width: 31%; max-width: 128px; aspect-ratio: 1; cursor: pointer; }
+.walk-in { animation: walk-in .9s ease-out both; }
+.walk-in.delay-1 { animation-delay: .25s; }
+.walk-in.delay-2 { animation-delay: .5s; }
+@keyframes walk-in { from { transform: translateX(120vw); } 70% { transform: translateX(-6px); } to { transform: none; } }
+
+/* Dad screens (text is fine here) */
+.dad-screen { display: flex; flex-direction: column; gap: 10px; padding-bottom: 24px; }
+.dad-head { display: flex; align-items: center; gap: 10px; }
+.dad-head h1 { margin: 0; font-size: 26px; }
+.dad-back { min-height: 44px; min-width: 44px; padding: 0 14px; border-radius: 12px; border: 2px solid #CFC6B8; background: #FFFFFF; font-weight: 800; font-size: 17px; }
+.dad-sub { margin: 0; font-size: 17px; font-weight: 700; }
+.dad-note { margin: 0; font-size: 15px; color: #6B5646; }
+.pet-cards { display: flex; flex-direction: column; gap: 10px; }
+.pet-card {
+  display: flex; gap: 12px; align-items: center;
+  background: var(--card); border: var(--line); border-radius: var(--radius); padding: 10px 12px;
+}
+.pet-card.off .pc-art { opacity: .35; filter: grayscale(.8); }
+.pc-art { width: 84px; height: 84px; flex: none; }
+.pc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.pc-title { font-size: 18px; overflow-wrap: anywhere; }
+.pc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 16px; }
+.pc-name { font-size: 14px; color: #6B5646; }
+.name-input { min-height: 44px; width: 100%; border: 2px solid #CFC6B8; border-radius: 10px; padding: 0 10px; font-size: 17px; background: #FFFDF9; }
+.switch { position: relative; width: 60px; height: 44px; flex: none; }
+.switch::before { content: ""; position: absolute; left: 4px; right: 4px; top: 8px; bottom: 8px; border-radius: 14px; background: #CFC6B8; transition: background .15s; }
+.switch::after { content: ""; position: absolute; left: 8px; top: 12px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; transition: transform .15s; }
+.switch[aria-checked="true"]::before { background: var(--grass); }
+.switch[aria-checked="true"]::after { transform: translateX(24px); }
+
+/* Kid question screens: top bar, stage (pet + sign + speaker), answer cards in the bottom half */
+.stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 0; }
+.host { display: flex; align-items: flex-end; justify-content: center; gap: 6px; width: 100%; }
+.host .pet { width: clamp(120px, 19vh, 168px); height: clamp(120px, 19vh, 168px); flex: none; }
+.sign {
+  width: clamp(116px, 17vh, 150px); height: clamp(116px, 17vh, 150px); flex: none; padding: 10px;
+  background: var(--card); border: var(--line); border-radius: var(--radius);
+  box-shadow: 0 4px 0 rgba(74, 52, 38, .15);
+  transform: rotate(3deg);
+}
+.sign.wiggle { animation: wiggle .5s ease-in-out 3; }
+@keyframes wiggle { 0%, 100% { transform: rotate(3deg); } 50% { transform: rotate(-4deg) scale(1.05); } }
+.speaker {
+  width: 80px; height: 80px; border-radius: 50%; flex: none;
+  background: var(--card); border: var(--line); box-shadow: 0 4px 0 rgba(74, 52, 38, .18);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.speaker .icon { width: 52px; height: 52px; }
+.speaker:active { transform: translateY(3px); box-shadow: none; }
+.speaker.talking { animation: pulse 1s ease-in-out infinite; }
+.speaker.talking .waves { animation: waves .6s ease-in-out infinite alternate; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 4px 0 rgba(74, 52, 38, .18), 0 0 0 0 rgba(74, 163, 223, .5); } 50% { box-shadow: 0 4px 0 rgba(74, 52, 38, .18), 0 0 0 10px rgba(74, 163, 223, 0); } }
+@keyframes waves { from { opacity: .3; } to { opacity: 1; } }
+
+.paws { flex: 1; display: flex; justify-content: center; gap: 4px; }
+.paw { width: 30px; height: 30px; opacity: .25; transition: opacity .3s, transform .3s; }
+.paw .icon { width: 100%; height: 100%; }
+.paw.on { opacity: 1; transform: scale(1.12); }
+.paw.on .icon ellipse { fill: var(--grass); }
+
+.cards { display: flex; justify-content: center; gap: 12px; padding-bottom: 6px; }
+.choice {
+  position: relative; flex: 1 1 0; max-width: 116px; min-width: 92px; min-height: clamp(120px, 16vh, 136px);
+  background: var(--card); border: var(--line); border-radius: var(--radius);
+  box-shadow: 0 5px 0 rgba(74, 52, 38, .18);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: transform .2s ease, opacity .3s ease, border-color .2s;
+}
+.choice:active { transform: translateY(3px); }
+.lc-lower { font-family: var(--letters); font-size: 76px; font-weight: 700; line-height: 1; margin-top: -6px; }
+.lc-upper { position: absolute; left: 9px; top: 6px; font-family: var(--letters); font-size: 22px; font-weight: 700; color: #8A7464; }
+.choice.right { border-color: var(--grass); border-width: 6px; transform: scale(1.1); z-index: 1; box-shadow: 0 0 0 6px rgba(93, 187, 99, .25), 0 5px 0 rgba(74, 52, 38, .18); }
+.choice.miss { opacity: .4; } /* a fade only: never a wobble or shake (design.md 9.3) */
+.choice.glow:not(.right) { animation: glow 1.6s ease-in-out infinite; border-color: #E0A800; }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 0 4px rgba(255, 213, 74, .55), 0 5px 0 rgba(74, 52, 38, .18); } 50% { box-shadow: 0 0 0 14px rgba(255, 213, 74, .9), 0 5px 0 rgba(74, 52, 38, .18); } }
+
+/* Counting: pet + speaker in a row, a picnic blanket with treats in rows of 5 (each >= 56px) */
+.host.small { align-items: center; gap: 18px; }
+.host.small .pet { width: clamp(96px, 13vh, 124px); height: clamp(96px, 13vh, 124px); }
+.blanket {
+  display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
+  padding: 10px; border-radius: var(--radius); border: var(--line);
+  background-color: #EAF5FC;
+  background-image: linear-gradient(90deg, rgba(74, 163, 223, .22) 50%, transparent 50%), linear-gradient(rgba(74, 163, 223, .22) 50%, transparent 50%);
+  background-size: 28px 28px;
+}
+.treat-row { display: flex; gap: 6px; }
+.treat { --t: clamp(56px, calc((100vw - 76px) / 5), 66px); position: relative; width: var(--t); height: var(--t); border-radius: 50%; padding: 3px; }
+.blanket.size-big .treat { --t: 70px; }
+.treat .drawing { pointer-events: none; }
+.treat.counted { background: rgba(255, 255, 255, .85); box-shadow: 0 0 0 4px var(--grass); }
+.treat.counted .drawing { animation: pop .25s ease-out; }
+.count-badge {
+  position: absolute; right: -4px; top: -6px; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px;
+  background: var(--grass); color: #FFFFFF; font-family: var(--letters); font-weight: 700; font-size: 16px; line-height: 24px;
+  display: none;
+}
+.treat.counted .count-badge { display: block; }
+@keyframes pop { 0% { transform: scale(.8); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.nc-num { font-family: var(--letters); font-size: 60px; font-weight: 700; line-height: 1; }
+.number-card .dots { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
+.dot-row { display: flex; gap: 3px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--sky); }
+
+/* Dancers (the level-up moment): every pet that is on hops in turn */
+.dancers { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 4px 2px; }
+.dancers .pet { width: 23%; max-width: 104px; aspect-ratio: 1; }
+.dancers.n1 .pet, .dancers.n2 .pet, .dancers.n3 .pet { width: 30%; max-width: 128px; }
+.pet.dance .char { animation: hop .6s ease-in-out infinite !important; }
+.pet.dance.d1 .char { animation-delay: .15s !important; }
+.pet.dance.d2 .char { animation-delay: .3s !important; }
+.pet.dance.d3 .char { animation-delay: .45s !important; }
+.pet.dance .tail { animation: wag .4s ease-in-out infinite; }
+.dancers.run-in .pet { animation: run-in .6s ease-out both; }
+.dancers.run-in .pet.d1 { animation-delay: .1s; }
+.dancers.run-in .pet.d2 { animation-delay: .2s; }
+.dancers.run-in .pet.d3 { animation-delay: .3s; }
+@keyframes run-in { from { transform: translateX(-70vw); } 80% { transform: translateX(6px); } to { transform: none; } }
+.icon-btn.big-icon { width: 104px; height: 104px; border-radius: 28px; }
+.icon-btn.big-icon .icon { width: 64px; height: 64px; }
+
+/* ---- The fun layer (design.md 9.3-9.4): reactions, surprises, confetti. The layer never takes taps. */
+.play, .round-end, .book { position: relative; }
+.fx-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+.fx-layer > * { pointer-events: none; }
+.pet.react-spin .char { animation: spin .8s ease-in-out !important; }
+@keyframes spin { 0% { transform: rotate(0); } 70% { transform: rotate(360deg) translateY(-6px); } 85% { transform: rotate(360deg) translateY(2px); } 100% { transform: rotate(360deg); } }
+.pet.react-zoomies .tail { animation: wag .1s linear 6 !important; }
+.photo-pet.react-zoomies .photo-move { animation: tail-zoom .1s linear 6 !important; }
+@keyframes tail-zoom { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+.photo-pet.react-spin .photo-move { animation: spin .8s ease-in-out !important; }
+.pet.react-earflop .ear { animation: ear-flop .8s ease-in-out; }
+@keyframes ear-flop { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-40deg); } 60% { transform: rotate(14deg); } }
+.react-glow { animation: soft-glow .9s ease-in-out !important; border-radius: var(--radius); }
+@keyframes soft-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 213, 74, 0); } 50% { box-shadow: 0 0 0 10px rgba(255, 213, 74, .8); } }
+.fx-friend { position: absolute; width: 110px; height: 110px; }
+.fx-friend.pop-up { left: 6%; bottom: -12px; animation: pop-up .9s ease-out both; }
+@keyframes pop-up { 0% { transform: translateY(120%); } 35% { transform: translateY(-14%); } 50% { transform: translateY(0); } 62% { transform: translateY(-8%); } 75% { transform: translateY(0); } 100% { transform: translateY(120%); } }
+.flutter-across { position: absolute; left: 0; right: 0; top: 64px; height: 120px; }
+.fx-friend.flutter { top: 0; left: -120px; width: 90px; height: 90px; animation: across .9s linear both; }
+@keyframes across { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 140px)); } }
+.sparkle { position: absolute; top: 60px; width: 20px; height: 20px; opacity: 0; animation: sparkle .5s ease-out both; }
+.sparkle.k0 { left: 12%; animation-delay: .15s; }
+.sparkle.k1 { left: 30%; animation-delay: .3s; top: 46px; }
+.sparkle.k2 { left: 48%; animation-delay: .45s; }
+.sparkle.k3 { left: 66%; animation-delay: .6s; top: 46px; }
+.sparkle.k4 { left: 84%; animation-delay: .72s; }
+@keyframes sparkle { 0% { opacity: 0; transform: scale(.3); } 40% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0; transform: scale(.8); } }
+.star-pop { position: absolute; inset: 0; pointer-events: none; }
+.sp { position: absolute; left: 50%; top: 40%; width: 26px; height: 26px; margin: -13px; animation: star-pop .7s ease-out both; }
+.sp.s0 { --dx: -40px; --dy: -70px; }
+.sp.s1 { --dx: 0px; --dy: -90px; animation-delay: .05s; }
+.sp.s2 { --dx: 40px; --dy: -70px; animation-delay: .1s; }
+@keyframes star-pop { 0% { transform: translate(0, 0) scale(.3); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(1); opacity: 0; } }
+/* surprises play in the top third only, never over the choice cards */
+.surprise { position: absolute; left: 0; right: 0; top: 64px; height: 30%; }
+.zoom-across .zoomer { position: absolute; top: 4px; left: -130px; width: 110px; height: 110px; animation: across 1.2s ease-in both; }
+.sneeze .sneezer { left: auto; right: 4px; top: 8px; animation: peek-in 1.5s ease-in-out both; }
+@keyframes peek-in { 0% { transform: translateX(130%); } 15%, 85% { transform: translateX(0); } 100% { transform: translateX(130%); } }
+.sneeze .sneezer .head { animation: sniff .2s ease-in-out 3 .2s; }
+@keyframes sniff { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-6deg) translateY(-2px); } }
+.puff { position: absolute; right: 96px; top: 40px; width: 0; height: 0; }
+.bit { position: absolute; width: 9px; height: 9px; border-radius: 50%; opacity: 0; animation: puff .7s ease-out both .75s; }
+.bit:nth-child(3n) { --dx: -80px; --dy: -30px; }
+.bit:nth-child(3n+1) { --dx: -60px; --dy: 20px; }
+.bit:nth-child(3n+2) { --dx: -100px; --dy: -4px; }
+.bit:nth-child(4n) { --dx: -40px; --dy: -46px; border-radius: 2px; }
+@keyframes puff { 0% { opacity: 1; transform: translate(0, 0) scale(.5); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2); } }
+.bit.c0, .cf.c0 { background: var(--sky); }
+.bit.c1, .cf.c1 { background: var(--grass); }
+.bit.c2, .cf.c2 { background: var(--sun); }
+.bit.c3, .cf.c3 { background: #F28C28; }
+.bit.c4, .cf.c4 { background: #8E5CC7; }
+.cf.c5 { background: #E5484D; }
+.butterfly-land .bfly { position: absolute; width: 48px; height: 48px; top: 18px; animation: land 1.6s ease-in-out both; }
+.butterfly-land.mid .bfly { left: calc(50% - 90px); }
+.butterfly-land.left .bfly { left: calc(50% - 110px); top: 0; }
+@keyframes land { 0% { transform: translate(60px, -80px) rotate(14deg); opacity: 0; } 15% { opacity: 1; } 45%, 80% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(-50px, -90px) rotate(-12deg); opacity: 0; } }
+.peekaboo .peeker { width: 84px; height: 84px; left: calc(50% - 168px); top: 40px; animation: peekaboo 1.5s ease-in-out both; }
+@keyframes peekaboo { 0%, 100% { transform: translateX(40px) scale(.6); opacity: 0; } 25%, 75% { transform: translateX(0) scale(1); opacity: 1; } 50% { transform: rotate(-8deg); } }
+/* confetti: 1.5 s or less, app colours, no flashing */
+.confetti { position: absolute; inset: 0; }
+.cf { position: absolute; top: -16px; width: 10px; height: 14px; border-radius: 3px; animation: confetti-fall 1.4s cubic-bezier(.25, .6, .5, 1) both; }
+.cf.r1 { width: 12px; height: 8px; } .cf.r2 { border-radius: 50%; width: 10px; height: 10px; } .cf.r3 { width: 7px; height: 16px; }
+.cf.x0 { left: 4%; } .cf.x1 { left: 12%; } .cf.x2 { left: 20%; } .cf.x3 { left: 28%; } .cf.x4 { left: 36%; } .cf.x5 { left: 44%; }
+.cf.x6 { left: 52%; } .cf.x7 { left: 60%; } .cf.x8 { left: 68%; } .cf.x9 { left: 76%; } .cf.x10 { left: 84%; } .cf.x11 { left: 92%; }
+.cf.d1 { animation-delay: .06s; } .cf.d2 { animation-delay: .12s; } .cf.d3 { animation-delay: .18s; } .cf.d4 { animation-delay: .24s; }
+.cf:nth-child(odd) { --dx: 26px; --rot: 300deg; } .cf:nth-child(even) { --dx: -22px; --rot: -260deg; }
+.cf:nth-child(3n) { --dx: 8px; }
+@keyframes confetti-fall { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(var(--dx), 92vh) rotate(var(--rot)); opacity: 0; } }
+
+/* ---- Round end: confetti, the level-up moment, the box (design.md 9.5-9.6) */
+.end-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; min-height: 0; }
+.end-foot { display: flex; align-items: center; justify-content: center; gap: 22px; min-height: 112px; position: relative; }
+.end-buttons { display: flex; gap: 22px; }
+.book-btn { width: 72px; height: 72px; border-radius: 20px; position: absolute; right: 0; bottom: 6px; }
+.book-btn .drawing { width: 52px; height: 52px; }
+.book-btn.bounce { animation: bounce .6s ease-out; }
+@keyframes bounce { 0%, 100% { transform: none; } 30% { transform: translateY(-12px) scale(1.08); } 60% { transform: translateY(2px) scale(.97); } }
+.level-up { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+.level-ring { position: relative; width: 220px; height: 220px; animation: ring-in .7s cubic-bezier(.3, 1.4, .5, 1) both; }
+.ring-art { position: absolute; inset: 0; animation: ring-turn 6s linear infinite; }
+.ring-tile { position: absolute; inset: 44px; border-radius: 50%; background: var(--card); border: var(--line); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; align-content: center; overflow: hidden; }
+.ring-tile .big-glyph { font-size: 52px; }
+.ring-tile .apple-pic { width: 40px; height: 40px; }
+.ring-tile .mini-pic { width: 26px; height: 26px; }
+.ring-tile .train-pic { width: 112px; height: 56px; }
+.ring-tile .story-pic { width: 96px; height: 96px; }
+@keyframes ring-in { from { transform: translateY(40vh) scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes ring-turn { to { transform: rotate(360deg); } }
+.gift { position: relative; width: 200px; height: 200px; }
+.gift > span { position: absolute; inset: 0; }
+.gift .gift-lid { transform-origin: 50% 40%; transition: transform .45s cubic-bezier(.3, 1.4, .5, 1), opacity .45s; }
+.gift.drop { animation: drop .9s cubic-bezier(.3, .8, .4, 1) both; }
+@keyframes drop { 0% { transform: translateY(-60vh); } 60% { transform: translateY(0) scale(1.05, .92); } 75% { transform: translateY(-18px); } 100% { transform: none; } }
+.gift.waiting { animation: gift-wiggle 3s ease-in-out infinite; }
+@keyframes gift-wiggle { 0%, 82%, 100% { transform: none; } 86% { transform: rotate(-5deg) scale(1.03); } 90% { transform: rotate(5deg) scale(1.03); } 94% { transform: rotate(-3deg); } }
+.gift.open .gift-lid { transform: translateY(-90px) rotate(-24deg); opacity: 0; }
+.gift.open .gift-base { animation: fade-down .6s ease-out .3s both; }
+@keyframes fade-down { to { transform: translateY(40px) scale(.8); opacity: 0; } }
+.reveal { position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; margin: -80px 0 0 -80px; animation: rise .6s cubic-bezier(.3, 1.4, .5, 1) both; z-index: 2; }
+.reveal-art { position: absolute; inset: 0; border-radius: 50%; background: #FFFFFF; border: var(--line); padding: 12px; box-shadow: 0 6px 14px rgba(0, 0, 0, .15); }
+.reveal.owned .reveal-art { box-shadow: 0 0 0 8px #F2C230, 0 6px 14px rgba(0, 0, 0, .15); }
+@keyframes rise { from { transform: translateY(80px) scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
+.twinkle { position: absolute; width: 28px; height: 28px; opacity: 0; animation: sparkle 1s ease-out infinite; }
+.twinkle.t0 { left: -18px; top: 10px; } .twinkle.t1 { right: -16px; top: 0; animation-delay: .2s; }
+.twinkle.t2 { left: 50%; top: -30px; animation-delay: .4s; } .twinkle.t3 { left: -10px; bottom: 6px; animation-delay: .6s; }
+.twinkle.t4 { right: -12px; bottom: 16px; animation-delay: .1s; } .twinkle.t5 { left: 30%; bottom: -26px; animation-delay: .5s; }
+.reveal.fly { animation: fly-to-book .65s ease-in both; }
+@keyframes fly-to-book { from { transform: none; opacity: 1; } to { transform: translate(min(36vw, 160px), 42vh) scale(.2); opacity: .6; } }
+
+/* ---- Sticker book (design.md 9.7): 3 x 3 slots, tilted die-cut stickers, dashed outlines, no counts */
+.book-spread { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; }
+.book-page {
+  display: grid; grid-template-columns: repeat(3, minmax(96px, 1fr)); gap: 10px; width: 100%; max-width: 420px;
+  padding: 12px; background: #FFFDF8; border: var(--line); border-radius: var(--radius); box-shadow: 0 5px 0 rgba(74, 52, 38, .15);
+  touch-action: pan-y;
+}
+.slot { aspect-ratio: 1; min-height: 96px; display: flex; align-items: center; justify-content: center; position: relative; }
+.slot-art { display: block; width: 84%; height: 84%; }
+.slot.missing .slot-art { opacity: .9; }
+.slot.missing .slot-art * { fill: #F6F3EE; stroke: #C9C1B4; stroke-dasharray: 4 3; }
+.slot.missing .slot-art g { fill: none; stroke: none; }
+.die-cut { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; background: #FFFFFF; border: 3px solid var(--ink); box-shadow: 0 4px 8px rgba(0, 0, 0, .14); }
+.slot.have.tilt0 .die-cut { transform: rotate(-5deg); } .slot.have.tilt1 .die-cut { transform: rotate(4deg); }
+.slot.have.tilt2 .die-cut { transform: rotate(-2deg); } .slot.have.tilt3 .die-cut { transform: rotate(6deg); }
+.slot.wiggle { animation: wiggle-sk .6s ease-in-out; }
+@keyframes wiggle-sk { 0%, 100% { transform: none; } 25% { transform: rotate(-8deg) scale(1.06); } 60% { transform: rotate(7deg) scale(1.06); } }
+.slot.shine .die-cut { animation: shine 1.6s ease-in-out .3s 1 both; }
+@keyframes shine { 0%, 100% { box-shadow: 0 4px 8px rgba(0, 0, 0, .14); } 50% { box-shadow: 0 0 0 8px rgba(255, 213, 74, .9), 0 0 24px 12px rgba(255, 213, 74, .6); } }
+.book-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 4px; }
+.page-arrow { width: 88px; height: 88px; border-radius: 24px; }
+.page-arrow .icon { width: 56px; height: 56px; }
+.page-arrow.dim { opacity: .35; }
+.page-dots { display: flex; gap: 10px; }
+.page-dot { width: 14px; height: 14px; border-radius: 50%; background: #D9D1C4; border: 2px solid var(--ink); }
+.page-dot.on { background: var(--sky); }
+
+/* ---- Story Time (design.md 9.10 and 11.2): shelf of covers; a page is art on top, one 22px line, arrows */
+.shelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
+.cover-tile { position: relative; aspect-ratio: 3 / 4; overflow: hidden; background: var(--card); border: var(--line); border-bottom: 9px solid #F2C230; border-radius: var(--radius); box-shadow: 0 5px 0 rgba(74, 52, 38, .18); }
+.cover-tile:active { transform: translateY(3px); }
+.cover-art, .page-art { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+.new-star { position: absolute; top: 6px; right: 6px; width: 34px; height: 34px; pointer-events: none; }
+.new-star .drawing { width: 100%; height: 100%; }
+.story-art { position: relative; flex: 1 1 auto; min-height: 0; display: flex; overflow: hidden; background: #CFEFFF; border: var(--line); border-radius: var(--radius); }
+.story-art.question { background: none; border: 0; align-items: center; justify-content: center; }
+.story-cards { flex: 1; align-items: center; }
+.story-cards .choice { min-height: 150px; }
+.story-line { margin: 0; min-height: 2.6em; font-size: 22px; line-height: 1.3; text-align: center; }
+
+/* ---- Dad: Levels (design.md 9.9) */
+.levels-sheet { gap: 8px; }
+.level-row { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 2px solid #E3DCD0; border-radius: 14px; background: #FFFDF9; }
+.level-head { display: flex; align-items: center; gap: 10px; }
+.level-pic { width: 64px; height: 54px; display: flex; align-items: center; justify-content: center; flex-wrap: nowrap; gap: 0; overflow: hidden; }
+.level-pic .big-glyph { font-size: 30px; }
+.level-pic .apple-pic { width: 24px; height: 24px; }
+.level-pic .mini-pic { width: 14px; height: 14px; }
+.level-pic .apples { display: flex; }
+.level-pic.tile-count, .level-pic.tile-add { flex-direction: column; }
+.level-pic.tile-count .big-glyph { font-size: 18px; line-height: 1.1; }
+.level-pic .eq-pic { width: 20px; height: 20px; margin: 0; }
+.level-pic .train-pic { width: 64px; height: 32px; }
+.level-name { font-size: 18px; font-weight: 800; }
+.level-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.level-btn { width: 44px; height: 44px; border-radius: 12px; font-size: 18px; font-weight: 800; border: 2px solid #E3DCD0; background: #FFFFFF; color: #A39787; }
+.level-btn.reached { border: 3px solid var(--sky); color: var(--ink); }
+.level-btn.current { background: var(--sky); border: 3px solid var(--sky); color: #FFFFFF; }
+.level-line { margin: 0; font-size: 15px; color: #6B5646; }
+.sheet-saved { margin: 0; min-height: 22px; font-weight: 800; color: #2E7D32; }
+
+/* Our pet photos (design.md 6c): a die-cut sticker in the same box as the drawing. A circle with a
+   white outline 7% of its width, a 3px dark-brown outer line like the cartoons, a soft shadow and a
+   fixed small tilt per pet. No filters, props or words. Motion replaces the drawn poses. */
+.photo-pet { display: flex; align-items: flex-end; justify-content: center; }
+.photo-tilt { display: block; width: 92%; aspect-ratio: 1; transform: rotate(var(--tilt, 0deg)); }
+.photo-move { display: block; width: 100%; height: 100%; transform-origin: 50% 85%; }
+.sticker-frame {
+  display: block; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+  background: #FFFFFF; padding: 7%; border: 3px solid var(--ink);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .18);
+}
+.sticker-frame .photo { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; -webkit-user-drag: none; pointer-events: none; }
+.pet-yellowDog .photo-tilt { --tilt: -2deg; }
+.pet-chocolateDog .photo-tilt { --tilt: 2.5deg; }
+.pet-gingerDog .photo-tilt { --tilt: -1deg; }
+.pet-blackDog .photo-tilt { --tilt: 3deg; }
+.pet-puppy .photo-tilt { --tilt: -3deg; }
+.pet-kitty .photo-tilt { --tilt: 1.5deg; }
+.pet-bunny .photo-tilt { --tilt: -2.5deg; }
+.pet-bunny2 .photo-tilt { --tilt: 2deg; }
+/* idle: a slow breathe (1 to 1.03 over 2.4s), starting at a different moment for each pet */
+.photo-pet.pose-idle .photo-move { animation: breathe 2.4s ease-in-out infinite; }
+.photo-pet.pet-chocolateDog .photo-move { animation-delay: -.4s; }
+.photo-pet.pet-gingerDog .photo-move { animation-delay: -.8s; }
+.photo-pet.pet-blackDog .photo-move { animation-delay: -1.2s; }
+.photo-pet.pet-puppy .photo-move { animation-delay: -1.6s; }
+.photo-pet.pet-kitty .photo-move { animation-delay: -2s; }
+.photo-pet.pet-bunny .photo-move { animation-delay: -.6s; }
+.photo-pet.pet-bunny2 .photo-move { animation-delay: -1.4s; }
+/* happy: two hops plus a wiggle (about 600ms); hmm: a head tilt held, then back (never a "no" shake) */
+.photo-pet.pose-happy .photo-move { animation: photo-happy .6s ease-out 1; animation-delay: 0s; }
+.photo-pet.pose-hmm .photo-move { animation: photo-hmm .7s ease-in-out 1; animation-delay: 0s; }
+/* cheer dance: alternating hops with a tilt, staggered across pets */
+.photo-pet.dance .photo-move { animation: photo-dance .8s ease-in-out infinite; animation-delay: 0s; }
+.photo-pet.dance.d1 .photo-move { animation-delay: .2s; }
+.photo-pet.dance.d2 .photo-move { animation-delay: .4s; }
+.photo-pet.dance.d3 .photo-move { animation-delay: .6s; }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+@keyframes photo-happy {
+  0%, 100% { transform: none; }
+  15% { transform: translateY(-12px) rotate(-6deg); }
+  32% { transform: translateY(0) rotate(6deg); }
+  50% { transform: translateY(-12px) rotate(-6deg); }
+  68% { transform: translateY(0) rotate(6deg); }
+  84% { transform: rotate(-3deg); }
+}
+@keyframes photo-hmm { 0%, 100% { transform: none; } 20%, 77% { transform: rotate(8deg); } }
+@keyframes photo-dance { 0%, 100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-12px) rotate(8deg); } }
+@keyframes photo-glow {
+  0%, 100% { box-shadow: 0 4px 10px rgba(0, 0, 0, .18), 0 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 4px 10px rgba(0, 0, 0, .18), 0 0 0 8px rgba(255, 255, 255, .95), 0 0 22px 10px rgba(255, 255, 255, .8); }
+}
+
+/* Family pets: photo buttons, the 64px sticker preview, the Line up the face sheet */
+.pc-art.has-photo { display: flex; align-items: center; justify-content: center; }
+.pc-sticker { width: 64px; height: 64px; }
+.pc-sticker .photo-tilt { width: 100%; }
+.pet-card.off .pc-art.has-photo { filter: none; }
+.pc-photo { display: flex; flex-wrap: wrap; gap: 8px; }
+.photo-btn { min-height: 44px; padding: 0 14px; border-radius: 12px; border: 2px solid #CFC6B8; background: #FBF7F0; font-weight: 800; font-size: 16px; }
+.photo-btn.remove { color: var(--danger); border-color: #E3B4B0; background: #FFFFFF; }
+.pc-status { margin: 0; font-size: 15px; font-weight: 700; color: var(--danger); }
+.pc-status:empty { display: none; }
+.sheet.lineup {
+  height: 100%; max-height: none; border-radius: 0;
+  padding-top: calc(16px + env(safe-area-inset-top));
+}
+.lineup-stage { display: flex; justify-content: center; }
+.lineup-canvas { display: block; width: min(100%, 52vh, 420px); aspect-ratio: 1; border-radius: 16px; background: #2B2420; touch-action: none; cursor: grab; }
+.lineup-zoom-row { display: flex; align-items: center; gap: 12px; font-weight: 800; }
+.lineup-zoom { flex: 1; min-height: 44px; accent-color: var(--sky); }
+.lineup-status { margin: 0; font-weight: 700; }
+.lineup-status:empty { display: none; }
+.lineup-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+.sheet-btn.primary { background: var(--sky); border-color: var(--sky); color: #FFFFFF; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  /* reactions become a soft glow (not motion, so it keeps running); the box still glows to be tapped */
+  .react-glow { animation: soft-glow .9s ease-in-out !important; }
+  .gift.waiting { animation: soft-glow 3s ease-in-out infinite !important; border-radius: 24px; }
+  /* Photo pets: no hops or tilts, only a soft white glow pulse (not motion, so it keeps running). */
+  .photo-pet .photo-move { animation: none !important; transform: none !important; }
+  .photo-pet.pose-happy .sticker-frame, .photo-pet.pose-hmm .sticker-frame, .photo-pet.dance .sticker-frame {
+    animation: photo-glow 1.2s ease-in-out infinite !important;
+  }
+}
+
+/* Adding (design.md 9.10): one long blanket, two groups of the same fruit or veg and a soft dashed
+   divider between them (no "+"). L1: side by side in one row; L2: each group in rows of 5, stacked.
+   On a right tap the divider melts away and the groups slide together. */
+.add-blanket { flex-direction: row; align-items: center; gap: 12px; transition: gap .45s ease; }
+.add-blanket.stacked { flex-direction: column; align-items: flex-start; }
+.add-group { display: flex; flex-direction: column; gap: 6px; }
+.add-blanket .treat { --t: clamp(52px, calc((100vw - 90px) / 5), 66px); }
+.add-divider { align-self: stretch; flex: 0 0 auto; border-left: 4px dashed #8C7B6B; opacity: .7; transition: opacity .4s ease, border-width .45s ease; }
+.add-blanket.stacked .add-divider { border-left: 0; border-top: 4px dashed #8C7B6B; }
+.add-blanket.joined { gap: 6px; }
+.add-blanket.joined .add-divider { opacity: 0; border-width: 0; }
+
+/* Patterns (design.md 9.10, Design fix): a little train running left to right. The engine leads on
+   the left, the cars trail to the right and the last car (far right) is empty: a dashed outline that
+   pulses gently, no "?". A right tap: the tile flies into the empty car, the train rolls off to the
+   left, and the next train rolls in from the right. The track's side margins are the stage's 12 px;
+   --car is sized to the train's length (engine 1.15 cars, 4 px gaps), so a 5-car train has bigger cars. */
+.track { width: 100%; overflow: hidden; padding: 10px 0 8px; display: flex; justify-content: center; }
+.train {
+  --car: min(72px, calc((100vw - 48px) / 7.2));
+  display: flex; flex-direction: row; align-items: flex-end; gap: 4px;
+  padding-bottom: 4px; border-bottom: 4px solid #B8A89A;
+}
+.train[data-cars="5"] { --car: min(80px, calc((100vw - 44px) / 6.2)); }
+.train.roll-in { animation: train-in .7s ease-out both; }
+.train.roll-off { transform: translateX(-110vw); transition: transform .85s ease-in; animation: none; }
+@keyframes train-in { from { transform: translateX(110vw); } to { transform: none; } }
+.engine { width: calc(var(--car) * 1.15); height: calc(var(--car) * 1.15); flex: none; }
+.car {
+  position: relative; flex: none; width: var(--car); height: calc(var(--car) * 1.05); margin-bottom: 9px;
+  background: #FFF8EC; border: 3px solid var(--ink); border-radius: 8px;
+}
+.car::before, .car::after {
+  content: ''; position: absolute; bottom: -11px; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--ink); left: 14%;
+}
+.car::after { left: auto; right: 14%; }
+.car-load { position: absolute; inset: 0; display: block; }
+.car.empty { border: 3px dashed #8C7B6B; background: rgba(255, 255, 255, .7); animation: car-pulse 1.8s ease-in-out infinite; }
+.car.empty.filled { border-style: solid; border-color: var(--grass); animation: none; }
+.car.empty.filled .drawing { animation: pop .3s ease-out; }
+@keyframes car-pulse { 0%, 100% { transform: scale(1); border-color: #8C7B6B; } 50% { transform: scale(1.07); border-color: #4AA3DF; } }
+.pic-card .drawing { width: 78%; height: auto; aspect-ratio: 1; max-height: 92px; pointer-events: none; }
+.fly-item { position: absolute; left: 0; top: 0; transform-origin: 0 0; display: block; }
+.fly-item .drawing { width: 100%; height: 100%; padding: 12%; }

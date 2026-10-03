@@ -1,0 +1,1242 @@
+{
+ "snd-m": {
+  "kind": "phon",
+  "input": "ˈʌm",
+  "phonemes": "ˈʌm -> nasal 150-290ms held to 500ms",
+  "seconds": 0.5,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "snd-s": {
+  "kind": "phon",
+  "input": "sˈʌn",
+  "phonemes": "sˈʌn -> fric 0-130ms held to 500ms",
+  "seconds": 0.5,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "snd-a": {
+  "kind": "phon",
+  "input": "ˈæpᵊl",
+  "phonemes": "ˈæpᵊl -> vowel 20-110ms held to 260ms",
+  "seconds": 0.26,
+  "bytes": 1872,
+  "checked": "machine"
+ },
+ "snd-t": {
+  "kind": "phon",
+  "input": "tˈʌb",
+  "phonemes": "tˈʌb -> puff 0-95ms (burst+aspiration, cut at voicing)",
+  "seconds": 0.095,
+  "bytes": 864,
+  "checked": "machine"
+ },
+ "snd-p": {
+  "kind": "phon",
+  "input": "pˈʌp",
+  "phonemes": "pˈʌp -> puff 0-95ms (burst+aspiration, cut at voicing)",
+  "seconds": 0.095,
+  "bytes": 864,
+  "checked": "machine"
+ },
+ "snd-b": {
+  "kind": "phon",
+  "input": "bʌ",
+  "phonemes": "bʌ -> cv 0-100ms (burst + 45ms voicing)",
+  "seconds": 0.1,
+  "bytes": 1008,
+  "checked": "machine"
+ },
+ "w-moon": {
+  "kind": "text",
+  "input": "moon",
+  "phonemes": "mˈun",
+  "seconds": 0.468,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "w-sun": {
+  "kind": "text",
+  "input": "sun",
+  "phonemes": "sˈʌn",
+  "seconds": 0.466,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "w-apple": {
+  "kind": "text",
+  "input": "apple",
+  "phonemes": "ˈæpᵊl",
+  "seconds": 0.492,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "w-turtle": {
+  "kind": "text",
+  "input": "turtle",
+  "phonemes": "tˈɜɹTᵊl",
+  "seconds": 0.539,
+  "bytes": 3600,
+  "checked": "machine"
+ },
+ "w-ball": {
+  "kind": "text",
+  "input": "ball",
+  "phonemes": "bˈɔl",
+  "seconds": 0.437,
+  "bytes": 3024,
+  "checked": "machine"
+ },
+ "p-find": {
+  "kind": "text",
+  "input": "Find the letter that says",
+  "phonemes": "fˈInd ðə lˈɛTəɹ ðæt sˈɛz",
+  "seconds": 1.252,
+  "bytes": 7920,
+  "checked": "machine"
+ },
+ "p-like": {
+  "kind": "text",
+  "input": "like",
+  "phonemes": "lˈIk",
+  "seconds": 0.462,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "p-count": {
+  "kind": "text",
+  "input": "How many? Let's count!",
+  "phonemes": "hˌW mˈɛni? lˈɛts kˈWnt!",
+  "seconds": 1.265,
+  "bytes": 7920,
+  "checked": "machine"
+ },
+ "c-yay1": {
+  "kind": "text",
+  "input": "Yay!",
+  "phonemes": "jˈA!",
+  "seconds": 0.435,
+  "bytes": 3024,
+  "checked": "machine"
+ },
+ "c-yay2": {
+  "kind": "text",
+  "input": "You got it!",
+  "phonemes": "jˌu ɡɑt ɪt!",
+  "seconds": 0.675,
+  "bytes": 4464,
+  "checked": "machine"
+ },
+ "c-great": {
+  "kind": "text",
+  "input": "Great job!",
+  "phonemes": "ɡɹˈAt ʤˈɑb!",
+  "seconds": 0.752,
+  "bytes": 4896,
+  "checked": "machine"
+ },
+ "c-done": {
+  "kind": "text",
+  "input": "You did it! Here's a sticker!",
+  "phonemes": "jˌu dˈɪd ɪt! hˈɪɹz ɐ stˈɪkəɹ!",
+  "seconds": 1.452,
+  "bytes": 9072,
+  "checked": "machine"
+ },
+ "t-again1": {
+  "kind": "text",
+  "input": "Try again!",
+  "phonemes": "tɹˈI əɡˈɛn!",
+  "seconds": 0.711,
+  "bytes": 4608,
+  "checked": "machine"
+ },
+ "n-1": {
+  "kind": "text",
+  "input": "one",
+  "phonemes": "wˈʌn",
+  "seconds": 0.447,
+  "bytes": 3024,
+  "checked": "machine"
+ },
+ "n-2": {
+  "kind": "text",
+  "input": "two",
+  "phonemes": "tˈu",
+  "seconds": 0.432,
+  "bytes": 2880,
+  "checked": "machine"
+ },
+ "n-3": {
+  "kind": "text",
+  "input": "three",
+  "phonemes": "θɹˈi",
+  "seconds": 0.488,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "n-4": {
+  "kind": "text",
+  "input": "four",
+  "phonemes": "fˈɔɹ",
+  "seconds": 0.473,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "n-5": {
+  "kind": "text",
+  "input": "five",
+  "phonemes": "fˈIv",
+  "seconds": 0.51,
+  "bytes": 3456,
+  "checked": "machine"
+ },
+ "t-again2": {
+  "kind": "text",
+  "input": "Listen again!",
+  "phonemes": "lˈɪsᵊn əɡˈɛn!",
+  "seconds": 0.82,
+  "bytes": 5328,
+  "checked": "machine"
+ },
+ "n-6": {
+  "kind": "ipa",
+  "input": "sˈɪks",
+  "text": "six",
+  "phonemes": "sˈɪks",
+  "seconds": 0.533,
+  "bytes": 3600,
+  "checked": "machine"
+ },
+ "n-7": {
+  "kind": "text",
+  "input": "seven",
+  "phonemes": "sˈɛvən",
+  "seconds": 0.539,
+  "bytes": 3600,
+  "checked": "machine"
+ },
+ "n-8": {
+  "kind": "text",
+  "input": "eight",
+  "phonemes": "ˈAt",
+  "seconds": 0.422,
+  "bytes": 2880,
+  "checked": "machine"
+ },
+ "n-9": {
+  "kind": "text",
+  "input": "Nine!",
+  "phonemes": "nˈIn!",
+  "seconds": 0.489,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "n-10": {
+  "kind": "text",
+  "input": "ten",
+  "phonemes": "tˈɛn",
+  "seconds": 0.473,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "n-11": {
+  "kind": "text",
+  "input": "Eleven!",
+  "phonemes": "əlˈɛvᵊn!",
+  "seconds": 0.569,
+  "bytes": 3744,
+  "checked": "machine"
+ },
+ "n-12": {
+  "kind": "text",
+  "input": "twelve",
+  "phonemes": "twˈɛlv",
+  "seconds": 0.499,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "n-13": {
+  "kind": "text",
+  "input": "thirteen",
+  "phonemes": "θˌɜɹtˈin",
+  "seconds": 0.696,
+  "bytes": 4464,
+  "checked": "machine"
+ },
+ "n-14": {
+  "kind": "text",
+  "input": "fourteen",
+  "phonemes": "fˌɔɹtˈin",
+  "seconds": 0.678,
+  "bytes": 4464,
+  "checked": "machine"
+ },
+ "n-15": {
+  "kind": "text",
+  "input": "fifteen",
+  "phonemes": "fˌɪftˈin",
+  "seconds": 0.683,
+  "bytes": 4464,
+  "checked": "machine"
+ },
+ "n-16": {
+  "kind": "text",
+  "input": "sixteen",
+  "phonemes": "sˌɪkstˈin",
+  "seconds": 0.722,
+  "bytes": 4752,
+  "checked": "machine"
+ },
+ "n-17": {
+  "kind": "text",
+  "input": "seventeen",
+  "phonemes": "sˌɛvəntˈin",
+  "seconds": 0.762,
+  "bytes": 4896,
+  "checked": "machine"
+ },
+ "n-18": {
+  "kind": "text",
+  "input": "eighteen",
+  "phonemes": "ˌAtˈin",
+  "seconds": 0.604,
+  "bytes": 4032,
+  "checked": "machine"
+ },
+ "n-19": {
+  "kind": "text",
+  "input": "nineteen",
+  "phonemes": "nˌIntˈin",
+  "seconds": 0.646,
+  "bytes": 4176,
+  "checked": "machine"
+ },
+ "n-20": {
+  "kind": "text",
+  "input": "twenty",
+  "phonemes": "twˈɛnti",
+  "seconds": 0.631,
+  "bytes": 4176,
+  "checked": "machine"
+ },
+ "h-letters": {
+  "kind": "text",
+  "input": "Letter sounds!",
+  "phonemes": "lˈɛTəɹ sˈWndz!",
+  "seconds": 0.884,
+  "bytes": 5616,
+  "checked": "machine"
+ },
+ "h-count": {
+  "kind": "text",
+  "input": "Counting!",
+  "phonemes": "kˈWntɪŋ!",
+  "seconds": 0.612,
+  "bytes": 4032,
+  "checked": "machine"
+ },
+ "fx-woof": {
+  "kind": "ipa",
+  "input": "wˈʊf wˈʊf!",
+  "text": "Woof woof!",
+  "phonemes": "wˈʊf wˈʊf!",
+  "seconds": 0.775,
+  "bytes": 5040,
+  "checked": "machine"
+ },
+ "fx-yip": {
+  "kind": "text",
+  "input": "Arf arf!",
+  "phonemes": "ˈɑɹf ˈɑɹf!",
+  "seconds": 0.695,
+  "bytes": 4464,
+  "checked": "machine"
+ },
+ "fx-meow": {
+  "kind": "text",
+  "input": "Meow!",
+  "phonemes": "miˈW!",
+  "seconds": 0.488,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "fx-sniff": {
+  "kind": "text",
+  "input": "Sniff sniff.",
+  "phonemes": "snˈɪf snˈɪf.",
+  "seconds": 0.804,
+  "bytes": 5184,
+  "checked": "machine"
+ },
+ "fx-boing": {
+  "kind": "seq",
+  "input": "(boing) Hee hee hee!",
+  "phonemes": "synth boing 0.46s 210->330 Hz, 13 Hz wobble | ~120 | hˈi hˈi hˈi!",
+  "seconds": 1.278,
+  "bytes": 8064,
+  "checked": "machine"
+ },
+ "fx-mmm": {
+  "kind": "seq",
+  "input": "Mmm, yum!",
+  "phonemes": "ˈʌm -> nasal 150-290ms held to 380ms | ~90 | jˈʌm!",
+  "seconds": 0.947,
+  "bytes": 6048,
+  "checked": "machine"
+ },
+ "fx-chime": {
+  "kind": "text",
+  "input": "Ding!",
+  "phonemes": "dˈɪŋ!",
+  "seconds": 0.484,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "w-penguin": {
+  "kind": "text",
+  "input": "penguin",
+  "phonemes": "pˈɛŋɡwᵊn",
+  "seconds": 0.54,
+  "bytes": 3600,
+  "checked": "machine"
+ },
+ "p-box": {
+  "kind": "text",
+  "input": "Tap the box!",
+  "phonemes": "tˈæp ðə bˈɑks!",
+  "seconds": 0.863,
+  "bytes": 5472,
+  "checked": "machine"
+ },
+ "c-new": {
+  "kind": "text",
+  "input": "A new sticker!",
+  "phonemes": "ɐ nˈu stˈɪkəɹ!",
+  "seconds": 0.774,
+  "bytes": 5040,
+  "checked": "machine"
+ },
+ "c-level": {
+  "kind": "text",
+  "input": "Wow! You're ready for something new!",
+  "phonemes": "wˈW! jˌʊɹ ɹˈɛdi fɔɹ sˈʌmθˌɪŋ nˈu!",
+  "seconds": 1.619,
+  "bytes": 10080,
+  "checked": "machine"
+ },
+ "fx-sneeze": {
+  "kind": "text",
+  "input": "Ah... ah... choo!",
+  "phonemes": "ˈɑ... ˈɑ... ʧˈu!",
+  "seconds": 1.189,
+  "bytes": 7488,
+  "checked": "machine"
+ },
+ "fx-giggle": {
+  "kind": "text",
+  "input": "Hee hee hee!",
+  "phonemes": "hˈi hˈi hˈi!",
+  "seconds": 0.697,
+  "bytes": 4608,
+  "checked": "machine"
+ },
+ "h-add": {
+  "kind": "text",
+  "input": "Adding!",
+  "phonemes": "ˈædɪŋ!",
+  "seconds": 0.516,
+  "bytes": 3456,
+  "checked": "machine"
+ },
+ "h-pattern": {
+  "kind": "text",
+  "input": "Patterns!",
+  "phonemes": "pˈæTəɹnz!",
+  "seconds": 0.632,
+  "bytes": 4176,
+  "checked": "machine"
+ },
+ "h-stories": {
+  "kind": "text",
+  "input": "Stories!",
+  "phonemes": "stˈɔɹiz!",
+  "seconds": 0.642,
+  "bytes": 4176,
+  "checked": "machine"
+ },
+ "h-book": {
+  "kind": "text",
+  "input": "Stickers!",
+  "phonemes": "stˈɪkəɹz!",
+  "seconds": 0.639,
+  "bytes": 4176,
+  "checked": "machine"
+ },
+ "fx-pop": {
+  "kind": "synth",
+  "input": "(pop)",
+  "phonemes": "synth pop 900->260 Hz, 0.12 s",
+  "seconds": 0.12,
+  "bytes": 1008,
+  "checked": "machine"
+ },
+ "fx-confetti": {
+  "kind": "synth",
+  "input": "(sparkle chimes)",
+  "phonemes": "synth 5 chime pings C6 E6 G6 C7 E7, 0.9 s",
+  "seconds": 0.9,
+  "bytes": 5760,
+  "checked": "machine"
+ },
+ "fx-zoom": {
+  "kind": "synth",
+  "input": "(zoom)",
+  "phonemes": "synth glide 260->1100->500 Hz, 0.55 s",
+  "seconds": 0.55,
+  "bytes": 3600,
+  "checked": "machine"
+ },
+ "snd-n": {
+  "kind": "onset",
+  "input": "nˈʌt",
+  "phonemes": "nˈʌt [keep n]",
+  "seconds": 0.53,
+  "bytes": 3600,
+  "checked": "machine"
+ },
+ "snd-d": {
+  "kind": "phon",
+  "input": "dˈɑɡ",
+  "phonemes": "dˈɑɡ -> cv 0-85ms (burst + 30ms voicing)",
+  "seconds": 0.085,
+  "bytes": 864,
+  "checked": "machine"
+ },
+ "snd-f": {
+  "kind": "phon",
+  "input": "fˈæn",
+  "phonemes": "fˈæn -> fric 0-100ms held to 500ms",
+  "seconds": 0.5,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "snd-o": {
+  "kind": "phon",
+  "input": "ˈɑktəpəs",
+  "phonemes": "ˈɑktəpəs -> vowel 30-140ms held to 260ms",
+  "seconds": 0.26,
+  "bytes": 1872,
+  "checked": "machine"
+ },
+ "snd-i": {
+  "kind": "phon",
+  "input": "ˈɪ",
+  "phonemes": "ˈɪ -> vowel 10-120ms held to 260ms",
+  "seconds": 0.26,
+  "bytes": 1872,
+  "checked": "machine"
+ },
+ "snd-h": {
+  "kind": "phon",
+  "input": "hˈʌt",
+  "phonemes": "hˈʌt -> puff 0-220ms (burst+aspiration, cut at voicing)",
+  "seconds": 0.22,
+  "bytes": 1728,
+  "checked": "machine"
+ },
+ "snd-l": {
+  "kind": "onset",
+  "input": "lˈi",
+  "phonemes": "lˈi [keep l]",
+  "seconds": 0.43,
+  "bytes": 2880,
+  "checked": "machine"
+ },
+ "snd-r": {
+  "kind": "onset",
+  "input": "ɹˈɛd",
+  "phonemes": "ɹˈɛd [keep ɹ]",
+  "seconds": 0.43,
+  "bytes": 2880,
+  "checked": "machine"
+ },
+ "snd-g": {
+  "kind": "phon",
+  "input": "ɡˈOt",
+  "phonemes": "ɡˈOt -> cv 0-95ms (burst + 30ms voicing)",
+  "seconds": 0.095,
+  "bytes": 864,
+  "checked": "machine"
+ },
+ "snd-c": {
+  "kind": "phon",
+  "input": "kˈʌt",
+  "phonemes": "kˈʌt -> puff 0-95ms (burst+aspiration, cut at voicing) (the same take as snd-k: c as in cat)",
+  "seconds": 0.095,
+  "bytes": 864,
+  "checked": "machine"
+ },
+ "snd-e": {
+  "kind": "phon",
+  "input": "ˈɛɡ",
+  "phonemes": "ˈɛɡ -> vowel 0-180ms held to 260ms",
+  "seconds": 0.26,
+  "bytes": 1872,
+  "checked": "machine"
+ },
+ "snd-u": {
+  "kind": "phon",
+  "input": "ˈʌp",
+  "phonemes": "ˈʌp -> vowel 50-100ms held to 260ms",
+  "seconds": 0.26,
+  "bytes": 1872,
+  "checked": "machine"
+ },
+ "snd-w": {
+  "kind": "phon",
+  "input": "wʌ",
+  "phonemes": "wʌ -> cv 0-115ms (burst + 90ms voicing)",
+  "seconds": 0.115,
+  "bytes": 1008,
+  "checked": "machine"
+ },
+ "snd-j": {
+  "kind": "phon",
+  "input": "ʤʌ",
+  "phonemes": "ʤʌ -> cv 0-100ms (burst + 35ms voicing)",
+  "seconds": 0.1,
+  "bytes": 1008,
+  "checked": "machine"
+ },
+ "snd-k": {
+  "kind": "phon",
+  "input": "kˈʌt",
+  "phonemes": "kˈʌt -> puff 0-95ms (burst+aspiration, cut at voicing)",
+  "seconds": 0.095,
+  "bytes": 864,
+  "checked": "machine"
+ },
+ "snd-v": {
+  "kind": "phon",
+  "input": "snd-v held fricative + glottal buzz",
+  "phonemes": "voiced fricative: current held noise, pulsed at 130 Hz, plus a low buzz (noise at 0.55, buzz 0 dB)",
+  "seconds": 0.48,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "snd-y": {
+  "kind": "phon",
+  "input": "jʌ",
+  "phonemes": "jʌ -> cv 0-405ms (burst + 90ms voicing)",
+  "seconds": 0.332,
+  "bytes": 2304,
+  "checked": "machine"
+ },
+ "snd-z": {
+  "kind": "phon",
+  "input": "snd-z held fricative + glottal buzz",
+  "phonemes": "voiced fricative: current held noise, pulsed at 130 Hz, plus a low buzz (noise at 0.55, buzz 0 dB)",
+  "seconds": 0.6,
+  "bytes": 3888,
+  "checked": "machine"
+ },
+ "snd-q": {
+  "kind": "phon",
+  "input": "kwʌ",
+  "phonemes": "kwʌ -> cv 0-145ms (burst + 80ms voicing)",
+  "seconds": 0.145,
+  "bytes": 1296,
+  "checked": "machine"
+ },
+ "snd-x": {
+  "kind": "seq",
+  "input": "@x-k, ~15, @x-s",
+  "phonemes": "kˈʌp -> puff 0-85ms (burst+aspiration, cut at voicing) | ~15 | sˈʌn -> fric 0-130ms held to 220ms",
+  "seconds": 0.32,
+  "bytes": 2304,
+  "checked": "machine"
+ },
+ "w-nest": {
+  "kind": "text",
+  "input": "nest",
+  "phonemes": "nˈɛst",
+  "seconds": 0.51,
+  "bytes": 3456,
+  "checked": "machine"
+ },
+ "w-dog": {
+  "kind": "text",
+  "input": "dog",
+  "phonemes": "dˈɔɡ",
+  "seconds": 0.466,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "w-fish": {
+  "kind": "ipa",
+  "input": "ə fˈɪʃ",
+  "phonemes": "ə fˈɪʃ [from fricative]",
+  "seconds": 0.459,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "w-octopus": {
+  "kind": "text",
+  "input": "octopus",
+  "phonemes": "ˈɑktəpəs",
+  "seconds": 0.67,
+  "bytes": 4320,
+  "checked": "machine"
+ },
+ "w-igloo": {
+  "kind": "text",
+  "input": "igloo",
+  "phonemes": "ˈɪɡlu",
+  "seconds": 0.492,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "w-hat": {
+  "kind": "text",
+  "input": "hat",
+  "phonemes": "hˈæt",
+  "seconds": 0.42,
+  "bytes": 2880,
+  "checked": "machine"
+ },
+ "w-lamb": {
+  "kind": "text",
+  "input": "lamb",
+  "phonemes": "lˈæm",
+  "seconds": 0.489,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "w-rainbow": {
+  "kind": "text",
+  "input": "rainbow",
+  "phonemes": "ɹˈAnbˌO",
+  "seconds": 0.594,
+  "bytes": 3888,
+  "checked": "machine"
+ },
+ "w-goat": {
+  "kind": "text",
+  "input": "goat",
+  "phonemes": "ɡˈOt",
+  "seconds": 0.475,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "w-cat": {
+  "kind": "text",
+  "input": "cat",
+  "phonemes": "kˈæt",
+  "seconds": 0.444,
+  "bytes": 3024,
+  "checked": "machine"
+ },
+ "w-elephant": {
+  "kind": "text",
+  "input": "elephant",
+  "phonemes": "ˈɛləfənt",
+  "seconds": 0.607,
+  "bytes": 4032,
+  "checked": "machine"
+ },
+ "w-umbrella": {
+  "kind": "text",
+  "input": "umbrella",
+  "phonemes": "ˌʌmbɹˈɛlə",
+  "seconds": 0.619,
+  "bytes": 4032,
+  "checked": "machine"
+ },
+ "w-whale": {
+  "kind": "text",
+  "input": "whale",
+  "phonemes": "wˈAl",
+  "seconds": 0.474,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "w-jet": {
+  "kind": "text",
+  "input": "jet",
+  "phonemes": "ʤˈɛt",
+  "seconds": 0.416,
+  "bytes": 2880,
+  "checked": "machine"
+ },
+ "w-kite": {
+  "kind": "text",
+  "input": "kite",
+  "phonemes": "kˈIt",
+  "seconds": 0.452,
+  "bytes": 3024,
+  "checked": "machine"
+ },
+ "w-van": {
+  "kind": "text",
+  "input": "van",
+  "phonemes": "vˈæn",
+  "seconds": 0.46,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "w-yo-yo": {
+  "kind": "text",
+  "input": "Yo-yo!",
+  "phonemes": "jˈOjˌO!",
+  "seconds": 0.543,
+  "bytes": 3600,
+  "checked": "machine"
+ },
+ "w-zebra": {
+  "kind": "text",
+  "input": "zebra",
+  "phonemes": "zˈibɹə",
+  "seconds": 0.566,
+  "bytes": 3744,
+  "checked": "machine"
+ },
+ "w-queen": {
+  "kind": "text",
+  "input": "queen",
+  "phonemes": "kwˈin",
+  "seconds": 0.491,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "w-fox": {
+  "kind": "ipa",
+  "input": "ə fˈɑks",
+  "phonemes": "ə fˈɑks [from fricative]",
+  "seconds": 0.494,
+  "bytes": 3312,
+  "checked": "machine",
+  "text": "fox"
+ },
+ "w-and": {
+  "kind": "ipa",
+  "input": "ˈænd",
+  "phonemes": "ˈænd",
+  "seconds": 0.455,
+  "bytes": 3024,
+  "checked": "machine"
+ },
+ "p-all": {
+  "kind": "text",
+  "input": "How many in all?",
+  "phonemes": "hˌW mˈɛni ɪn ˈɔl?",
+  "seconds": 0.866,
+  "bytes": 5616,
+  "checked": "machine"
+ },
+ "p-next": {
+  "kind": "text",
+  "input": "What comes next?",
+  "phonemes": "wˌʌt kˈʌmz nˈɛkst?",
+  "seconds": 0.943,
+  "bytes": 6048,
+  "checked": "machine"
+ },
+ "fx-toot": {
+  "kind": "synth",
+  "input": "(toot toot)",
+  "phonemes": "synth toy-train whistle, 2 blasts, A4 C#5 E5 chord, 0.75 s",
+  "seconds": 0.75,
+  "bytes": 4896,
+  "checked": "machine"
+ },
+ "s-ark-1": {
+  "kind": "text",
+  "input": "God asked Noah to build a great big boat.",
+  "phonemes": "ɡˈɑd ˈæskt nˈOə tə bˈɪld ɐ ɡɹˈAt bˈɪɡ bˈOt.",
+  "seconds": 2.199,
+  "bytes": 11280,
+  "checked": "machine"
+ },
+ "s-ark-2": {
+  "kind": "text",
+  "input": "Noah worked hard. Tap, tap, tap went his hammer!",
+  "phonemes": "nˈOə wˈɜɹkt hˈɑɹd. tˈæp, tˈæp, tˈæp wˈɛnt hɪz hˈæməɹ!",
+  "seconds": 3.217,
+  "bytes": 16440,
+  "checked": "machine"
+ },
+ "s-ark-3": {
+  "kind": "text",
+  "input": "The animals came two by two. Moo! Baa! Roar!",
+  "phonemes": "ði ˈænəmᵊlz kˈAm tˈu bI tˈu. mˈu! bˈɑ! ɹˈɔɹ!",
+  "seconds": 3.093,
+  "bytes": 15720,
+  "checked": "machine"
+ },
+ "s-ark-4": {
+  "kind": "ipa",
+  "input": "ðˈɛn ðə ɹˈAn kˈAm dˌWn. pˈɪtəɹ, pˈætəɹ, pˈɪtəɹ, pˈætəɹ.",
+  "phonemes": "ðˈɛn ðə ɹˈAn kˈAm dˌWn. pˈɪtəɹ, pˈætəɹ, pˈɪtəɹ, pˈætəɹ.",
+  "seconds": 3.304,
+  "bytes": 16800,
+  "checked": "machine",
+  "text": "Then the rain came down. Pitter, patter, pitter, patter."
+ },
+ "s-ark-5": {
+  "kind": "ipa",
+  "input": "ɪnsˈId ðə bˈOt, nˈOə ˈænd ði ˈænəmᵊlz stˈAd sˈAf ænd kˈOzi.",
+  "phonemes": "ɪnsˈId ðə bˈOt, nˈOə ˈænd ði ˈænəmᵊlz stˈAd sˈAf ænd kˈOzi.",
+  "seconds": 3.479,
+  "bytes": 17640,
+  "checked": "machine",
+  "text": "Inside the boat, Noah and the animals stayed safe and cozy."
+ },
+ "s-ark-6": {
+  "kind": "text",
+  "input": "The sun came out, and God put a rainbow in the sky!",
+  "phonemes": "ðə sˈʌn kˈAm ˈWt, ænd ɡˈɑd pˌʊt ɐ ɹˈAnbˌO ɪn ðə skˈI!",
+  "seconds": 2.837,
+  "bytes": 14520,
+  "checked": "machine"
+ },
+ "s-ark-q": {
+  "kind": "text",
+  "input": "Who came on the boat?",
+  "phonemes": "hˌu kˈAm ˌɔn ðə bˈOt?",
+  "seconds": 1.012,
+  "bytes": 5400,
+  "checked": "machine"
+ },
+ "s-ark-yes": {
+  "kind": "text",
+  "input": "Yes! They came on the boat!",
+  "phonemes": "jˈɛs! ðˌA kˈAm ˌɔn ðə bˈOt!",
+  "seconds": 1.441,
+  "bytes": 7560,
+  "checked": "machine"
+ },
+ "s-creation-1": {
+  "kind": "text",
+  "input": "In the very beginning, God made the light. Hello, light!",
+  "phonemes": "ɪn ðə vˈɛɹi bəɡˈɪnɪŋ, ɡˈɑd mˌAd ðə lˈIt. həlˈO, lˈIt!",
+  "seconds": 3.15,
+  "bytes": 16080,
+  "checked": "machine"
+ },
+ "s-creation-2": {
+  "kind": "text",
+  "input": "God made the big blue sky and the deep sea.",
+  "phonemes": "ɡˈɑd mˌAd ðə bˈɪɡ blˈu skˈI ænd ðə dˈip sˈi.",
+  "seconds": 2.293,
+  "bytes": 11760,
+  "checked": "machine"
+ },
+ "s-creation-3": {
+  "kind": "text",
+  "input": "God made trees and flowers, and yummy fruit to eat.",
+  "phonemes": "ɡˈɑd mˌAd tɹˈiz ænd flˈWəɹz, ænd jˈʌmi fɹˈut tʊ ˈit.",
+  "seconds": 2.907,
+  "bytes": 14880,
+  "checked": "machine"
+ },
+ "s-creation-4": {
+  "kind": "text",
+  "input": "God made the sun, the moon, and lots of twinkly stars.",
+  "phonemes": "ɡˈɑd mˌAd ðə sˈʌn, ðə mˈun, ænd lˈɑts ʌv twˈɪŋkᵊli stˈɑɹz.",
+  "seconds": 3.215,
+  "bytes": 16320,
+  "checked": "machine"
+ },
+ "s-creation-5": {
+  "kind": "ipa",
+  "input": "ɡˈɑd mˌAd fˈɪʃ, bˈɜɹdz, ˈænd ˈɛvəɹi ˈænəmᵊl. hˈɑp, swˈɪm, flˈI!",
+  "phonemes": "ɡˈɑd mˌAd fˈɪʃ, bˈɜɹdz, ˈænd ˈɛvəɹi ˈænəmᵊl. hˈɑp, swˈɪm, flˈI!",
+  "seconds": 3.756,
+  "bytes": 19080,
+  "checked": "machine",
+  "text": "God made fish, birds, and every animal. Hop, swim, fly!"
+ },
+ "s-creation-6": {
+  "kind": "text",
+  "input": "God made people too. God made it all, and it's good!",
+  "phonemes": "ɡˈɑd mˌAd pˈipᵊl tˈu. ɡˈɑd mˌAd ɪt ˈɔl, ænd ɪts ɡˈʊd!",
+  "seconds": 2.791,
+  "bytes": 14280,
+  "checked": "machine"
+ },
+ "s-creation-q": {
+  "kind": "text",
+  "input": "What did God make?",
+  "phonemes": "wˌʌt dˈɪd ɡˈɑd mˌAk?",
+  "seconds": 1.035,
+  "bytes": 5520,
+  "checked": "machine"
+ },
+ "s-creation-yes": {
+  "kind": "text",
+  "input": "Yes! God made that!",
+  "phonemes": "jˈɛs! ɡˈɑd mˌAd ðˈæt!",
+  "seconds": 1.256,
+  "bytes": 6600,
+  "checked": "machine"
+ },
+ "s-nativity-1": {
+  "kind": "text",
+  "input": "An angel told Mary, \"You will have a very special baby.\"",
+  "phonemes": "ɐn ˈAnʤəl tˈOld mˈɛɹi, “jˌu wɪl hæv ɐ vˈɛɹi spˈɛʃᵊl bˈAbi.”",
+  "seconds": 3.097,
+  "bytes": 15840,
+  "checked": "machine"
+ },
+ "s-nativity-2": {
+  "kind": "text",
+  "input": "Mary and Joseph went on a long trip with their donkey.",
+  "phonemes": "mˈɛɹi ænd ʤˈOzəf wˈɛnt ˌɔn ɐ lˈɔŋ tɹˈɪp wɪð ðɛɹ dˈɔŋki.",
+  "seconds": 2.995,
+  "bytes": 15240,
+  "checked": "machine"
+ },
+ "s-nativity-3": {
+  "kind": "text",
+  "input": "Every room was full, so they rested in a cozy stable.",
+  "phonemes": "ˈɛvəɹi ɹˈum wʌz fˈʊl, sˌO ðA ɹˈɛstᵻd ɪn ɐ kˈOzi stˈAbᵊl.",
+  "seconds": 3.132,
+  "bytes": 15960,
+  "checked": "machine"
+ },
+ "s-nativity-4": {
+  "kind": "text",
+  "input": "Baby Jesus was born! Mary wrapped him up warm and snug.",
+  "phonemes": "bˈAbi ʤˈizəs wʌz bˈɔɹn! mˈɛɹi ɹˈæpt hˌɪm ˌʌp wˈɔɹm ænd snˈʌɡ.",
+  "seconds": 3.429,
+  "bytes": 17400,
+  "checked": "machine"
+ },
+ "s-nativity-5": {
+  "kind": "text",
+  "input": "Angels sang to the shepherds in the fields. \"Good news!\"",
+  "phonemes": "ˈAnʤəlz sˈæŋ tə ðə ʃˈɛpəɹdz ɪn ðə fˈildz. “ɡˈʊd nˈuz!”",
+  "seconds": 3.106,
+  "bytes": 15840,
+  "checked": "machine"
+ },
+ "s-nativity-6": {
+  "kind": "text",
+  "input": "The shepherds came to see baby Jesus, God's Son.",
+  "phonemes": "ðə ʃˈɛpəɹdz kˈAm tə sˈi bˈAbi ʤˈizəs, ɡˈɑdz sˈʌn.",
+  "seconds": 2.707,
+  "bytes": 13800,
+  "checked": "machine"
+ },
+ "s-nativity-q": {
+  "kind": "text",
+  "input": "Who came to see baby Jesus?",
+  "phonemes": "hˌu kˈAm tə sˈi bˈAbi ʤˈizəs?",
+  "seconds": 1.501,
+  "bytes": 7800,
+  "checked": "machine"
+ },
+ "s-nativity-yes": {
+  "kind": "text",
+  "input": "Yes! They came to see Jesus!",
+  "phonemes": "jˈɛs! ðˌA kˈAm tə sˈi ʤˈizəs!",
+  "seconds": 1.578,
+  "bytes": 8160,
+  "checked": "machine"
+ },
+ "s-storm-1": {
+  "kind": "text",
+  "input": "Jesus and his friends got in a boat to cross the lake.",
+  "phonemes": "ʤˈizəs ænd hɪz fɹˈɛndz ɡɑt ɪn ɐ bˈOt tə kɹˈɔs ðə lˈAk.",
+  "seconds": 2.919,
+  "bytes": 14880,
+  "checked": "machine"
+ },
+ "s-storm-2": {
+  "kind": "text",
+  "input": "Jesus was tired, so he took a nap.",
+  "phonemes": "ʤˈizəs wʌz tˈIəɹd, sˌO hi tˈʊk ɐ nˈæp.",
+  "seconds": 2.2,
+  "bytes": 11280,
+  "checked": "machine"
+ },
+ "s-storm-3": {
+  "kind": "text",
+  "input": "Whoosh! The wind blew, and the waves went up and down.",
+  "phonemes": "wˈuʃ! ðə wˈɪnd blˈu, ænd ðə wˈAvz wˈɛnt ˌʌp ænd dˌWn.",
+  "seconds": 2.925,
+  "bytes": 14880,
+  "checked": "machine"
+ },
+ "s-storm-4": {
+  "kind": "text",
+  "input": "His friends were worried. \"Jesus, wake up! Please help!\"",
+  "phonemes": "hˌɪz fɹˈɛndz wɜɹ wˈɜɹid. “ʤˈizəs, wˈAk ˌʌp! plˈiz hˈɛlp!”",
+  "seconds": 3.074,
+  "bytes": 15720,
+  "checked": "machine"
+ },
+ "s-storm-5": {
+  "kind": "ipa",
+  "input": "ʤˈizəs sˈɛd, “wˈɪnd, hˈʌʃ. wˈAvz, bˈi kˈɑlm.” ˌænd ðA wɜɹ!",
+  "phonemes": "ʤˈizəs sˈɛd, “wˈɪnd, hˈʌʃ. wˈAvz, bˈi kˈɑlm.” ˌænd ðA wɜɹ!",
+  "seconds": 3.744,
+  "bytes": 18960,
+  "checked": "machine",
+  "text": "Jesus said, \"Wind, hush. Waves, be calm.\" And they were!"
+ },
+ "s-storm-6": {
+  "kind": "text",
+  "input": "The sun came out. Jesus always takes care of us.",
+  "phonemes": "ðə sˈʌn kˈAm ˈWt. ʤˈizəs ˈɔlwˌAz tˈAks kˈɛɹ ʌv ˌʌs.",
+  "seconds": 2.851,
+  "bytes": 14520,
+  "checked": "machine"
+ },
+ "s-storm-q": {
+  "kind": "text",
+  "input": "Who helped his friends?",
+  "phonemes": "hˌu hˈɛlpt hɪz fɹˈɛndz?",
+  "seconds": 1.164,
+  "bytes": 6120,
+  "checked": "machine"
+ },
+ "s-storm-yes": {
+  "kind": "text",
+  "input": "Yes! Jesus helped them!",
+  "phonemes": "jˈɛs! ʤˈizəs hˈɛlpt ðˌɛm!",
+  "seconds": 1.536,
+  "bytes": 8040,
+  "checked": "machine"
+ },
+ "s-sheep-1": {
+  "kind": "text",
+  "input": "A kind shepherd had lots and lots of sheep.",
+  "phonemes": "ɐ kˈInd ʃˈɛpəɹd hæd lˈɑts ænd lˈɑts ʌv ʃˈip.",
+  "seconds": 2.223,
+  "bytes": 11400,
+  "checked": "machine"
+ },
+ "s-sheep-2": {
+  "kind": "text",
+  "input": "One little sheep wandered away. Where did it go?",
+  "phonemes": "wˈʌn lˈɪTᵊl ʃˈip wˈɑndəɹd əwˈA. wˌɛɹ dˈɪd ɪt ɡˌO?",
+  "seconds": 2.535,
+  "bytes": 12960,
+  "checked": "machine"
+ },
+ "s-sheep-3": {
+  "kind": "text",
+  "input": "The shepherd looked high and low, over hills and rocks.",
+  "phonemes": "ðə ʃˈɛpəɹd lˈʊkt hˈI ænd lˈO, ˈOvəɹ hˈɪlz ænd ɹˈɑks.",
+  "seconds": 3.098,
+  "bytes": 15840,
+  "checked": "machine"
+ },
+ "s-sheep-4": {
+  "kind": "text",
+  "input": "Baa! There it is! The shepherd found the little sheep.",
+  "phonemes": "bˈɑ! ðˌɛɹ ɪt ɪz! ðə ʃˈɛpəɹd fˈWnd ðə lˈɪTᵊl ʃˈip.",
+  "seconds": 2.744,
+  "bytes": 14040,
+  "checked": "machine"
+ },
+ "s-sheep-5": {
+  "kind": "text",
+  "input": "He carried it home on his shoulders. Hooray!",
+  "phonemes": "hˌi kˈɛɹid ɪt hˈOm ˌɔn hɪz ʃˈOldəɹz. həɹˈA!",
+  "seconds": 2.385,
+  "bytes": 12240,
+  "checked": "machine"
+ },
+ "s-sheep-6": {
+  "kind": "text",
+  "input": "Jesus is like that shepherd. He always comes to find us.",
+  "phonemes": "ʤˈizəs ɪz lˈIk ðˈæt ʃˈɛpəɹd. hˌi ˈɔlwˌAz kˈʌmz tə fˈInd ˌʌs.",
+  "seconds": 3.443,
+  "bytes": 17520,
+  "checked": "machine"
+ },
+ "s-sheep-q": {
+  "kind": "text",
+  "input": "Who found the little sheep?",
+  "phonemes": "hˌu fˈWnd ðə lˈɪTᵊl ʃˈip?",
+  "seconds": 1.189,
+  "bytes": 6240,
+  "checked": "machine"
+ },
+ "s-sheep-yes": {
+  "kind": "text",
+  "input": "Yes! The shepherd found it!",
+  "phonemes": "jˈɛs! ðə ʃˈɛpəɹd fˈWnd ɪt!",
+  "seconds": 1.462,
+  "bytes": 7560,
+  "checked": "machine"
+ },
+ "s-children-1": {
+  "kind": "text",
+  "input": "Lots of children wanted to see Jesus.",
+  "phonemes": "lˈɑts ʌv ʧˈɪldɹᵊn wˈɑntᵻd tə sˈi ʤˈizəs.",
+  "seconds": 2.046,
+  "bytes": 10560,
+  "checked": "machine"
+ },
+ "s-children-2": {
+  "kind": "text",
+  "input": "Some grown-ups said, \"Shh, Jesus is too busy.\"",
+  "phonemes": "sˌʌm ɡɹˈOnˌʌps sˈɛd, “ˌɛsˌAʧˈAʧ, ʤˈizəs ɪz tˈu bˈɪzi.”",
+  "seconds": 3.376,
+  "bytes": 17160,
+  "checked": "machine"
+ },
+ "s-children-3": {
+  "kind": "text",
+  "input": "But Jesus smiled and said, \"Come here, children! Come close!\"",
+  "phonemes": "bˌʌt ʤˈizəs smˈIld ænd sˈɛd, “kˈʌm hˈɪɹ, ʧˈɪldɹᵊn! kˈʌm klˈOs!”",
+  "seconds": 3.463,
+  "bytes": 17640,
+  "checked": "machine"
+ },
+ "s-children-4": {
+  "kind": "text",
+  "input": "The children ran to Jesus, and he gave them big hugs.",
+  "phonemes": "ðə ʧˈɪldɹᵊn ɹˈæn tə ʤˈizəs, ænd hi ɡˈAv ðˌɛm bˈɪɡ hˈʌɡz.",
+  "seconds": 3.136,
+  "bytes": 15960,
+  "checked": "machine"
+ },
+ "s-children-5": {
+  "kind": "ipa",
+  "input": "ʤˈizəs pˌʊt hɪz hˈændz ˌɔn ðˌɛm ænd blˈɛst ðˈɛm.",
+  "phonemes": "ʤˈizəs pˌʊt hɪz hˈændz ˌɔn ðˌɛm ænd blˈɛst ðˈɛm.",
+  "seconds": 2.362,
+  "bytes": 12120,
+  "checked": "machine",
+  "text": "Jesus put his hands on them and blessed them."
+ },
+ "s-children-6": {
+  "kind": "text",
+  "input": "Jesus loves every child. Jesus loves you!",
+  "phonemes": "ʤˈizəs lˈʌvz ˈɛvəɹi ʧˈIld. ʤˈizəs lˈʌvz ju!",
+  "seconds": 2.769,
+  "bytes": 14160,
+  "checked": "machine"
+ },
+ "s-children-q": {
+  "kind": "text",
+  "input": "Who does Jesus love?",
+  "phonemes": "hˌu dˈʌz ʤˈizəs lˈʌv?",
+  "seconds": 1.194,
+  "bytes": 6240,
+  "checked": "machine"
+ },
+ "s-children-yes": {
+  "kind": "text",
+  "input": "Yes! Jesus loves them, and Jesus loves you!",
+  "phonemes": "jˈɛs! ʤˈizəs lˈʌvz ðˌɛm, ænd ʤˈizəs lˈʌvz ju!",
+  "seconds": 2.598,
+  "bytes": 13320,
+  "checked": "machine"
+ }
+}

@@ -1,0 +1,137 @@
+{
+  "letters": [
+    {"id": "m", "lower": "m", "upper": "M", "sound": "snd-m", "word": "moon", "wordClip": "w-moon", "pic": "moon", "level": 1},
+    {"id": "s", "lower": "s", "upper": "S", "sound": "snd-s", "word": "sun", "wordClip": "w-sun", "pic": "sun", "level": 1},
+    {"id": "a", "lower": "a", "upper": "A", "sound": "snd-a", "word": "apple", "wordClip": "w-apple", "pic": "apple", "level": 1},
+    {"id": "t", "lower": "t", "upper": "T", "sound": "snd-t", "word": "turtle", "wordClip": "w-turtle", "pic": "turtle", "level": 1},
+    {"id": "p", "lower": "p", "upper": "P", "sound": "snd-p", "word": "penguin", "wordClip": "w-penguin", "pic": "penguin", "level": 1},
+    {"id": "b", "lower": "b", "upper": "B", "sound": "snd-b", "word": "ball", "wordClip": "w-ball", "pic": "ball", "level": 1},
+    {"id": "n", "lower": "n", "upper": "N", "sound": "snd-n", "word": "nest", "wordClip": "w-nest", "pic": "nest", "level": 2},
+    {"id": "d", "lower": "d", "upper": "D", "sound": "snd-d", "word": "dog", "wordClip": "w-dog", "pic": "dog", "level": 2},
+    {"id": "f", "lower": "f", "upper": "F", "sound": "snd-f", "word": "fish", "wordClip": "w-fish", "pic": "fish", "level": 2},
+    {"id": "o", "lower": "o", "upper": "O", "sound": "snd-o", "word": "octopus", "wordClip": "w-octopus", "pic": "octopus", "level": 2},
+    {"id": "i", "lower": "i", "upper": "I", "sound": "snd-i", "word": "igloo", "wordClip": "w-igloo", "pic": "igloo", "level": 2},
+    {"id": "h", "lower": "h", "upper": "H", "sound": "snd-h", "word": "hat", "wordClip": "w-hat", "pic": "hat", "level": 3},
+    {"id": "l", "lower": "l", "upper": "L", "sound": "snd-l", "word": "lamb", "wordClip": "w-lamb", "pic": "lamb", "level": 3},
+    {"id": "r", "lower": "r", "upper": "R", "sound": "snd-r", "word": "rainbow", "wordClip": "w-rainbow", "pic": "rainbow", "level": 3},
+    {"id": "g", "lower": "g", "upper": "G", "sound": "snd-g", "word": "goat", "wordClip": "w-goat", "pic": "goat", "level": 3},
+    {"id": "c", "lower": "c", "upper": "C", "sound": "snd-c", "word": "cat", "wordClip": "w-cat", "pic": "cat", "level": 3},
+    {"id": "e", "lower": "e", "upper": "E", "sound": "snd-e", "word": "elephant", "wordClip": "w-elephant", "pic": "elephant", "level": 4},
+    {"id": "u", "lower": "u", "upper": "U", "sound": "snd-u", "word": "umbrella", "wordClip": "w-umbrella", "pic": "umbrella", "level": 4},
+    {"id": "w", "lower": "w", "upper": "W", "sound": "snd-w", "word": "whale", "wordClip": "w-whale", "pic": "whale", "level": 4},
+    {"id": "j", "lower": "j", "upper": "J", "sound": "snd-j", "word": "jet", "wordClip": "w-jet", "pic": "jet", "level": 4},
+    {"id": "k", "lower": "k", "upper": "K", "sound": "snd-k", "word": "kite", "wordClip": "w-kite", "pic": "kite", "level": 4},
+    {"id": "v", "lower": "v", "upper": "V", "sound": "snd-v", "word": "van", "wordClip": "w-van", "pic": "van", "level": 5},
+    {"id": "y", "lower": "y", "upper": "Y", "sound": "snd-y", "word": "yo-yo", "wordClip": "w-yo-yo", "pic": "yo-yo", "level": 5},
+    {"id": "z", "lower": "z", "upper": "Z", "sound": "snd-z", "word": "zebra", "wordClip": "w-zebra", "pic": "zebra", "level": 5},
+    {"id": "q", "lower": "q", "upper": "Q", "sound": "snd-q", "word": "queen", "wordClip": "w-queen", "pic": "queen", "level": 5},
+    {"id": "x", "lower": "x", "upper": "X", "sound": "snd-x", "word": "fox", "wordClip": "w-fox", "pic": "fox", "level": 5}
+  ],
+  "neverTogether": [["b", "d"], ["b", "p"], ["b", "q"], ["d", "p"], ["d", "q"], ["p", "q"], ["m", "n"], ["m", "w"], ["n", "u"], ["n", "h"], ["u", "v"], ["v", "w"], ["v", "y"], ["i", "l"], ["i", "j"], ["c", "k"], ["c", "q"], ["k", "q"], ["e", "i"], ["o", "u"], ["f", "v"], ["s", "z"], ["t", "d"], ["k", "g"], ["c", "g"], ["f", "x"]],
+  "counting": {
+    "levels": [
+      {"id": 1, "min": 1, "max": 5},
+      {"id": 2, "min": 3, "max": 10},
+      {"id": 3, "min": 8, "max": 20}
+    ]
+  },
+  "adding": {
+    "levels": [{"id": 1, "min": 2, "max": 5}, {"id": 2, "min": 6, "max": 10}],
+    "items": [
+      {"id": "apple", "one": "apple", "many": "apples"},
+      {"id": "pear", "one": "pear", "many": "pears"},
+      {"id": "banana", "one": "banana", "many": "bananas"},
+      {"id": "grapes", "one": "bunch of grapes", "many": "bunches of grapes"},
+      {"id": "orange", "one": "orange", "many": "oranges"},
+      {"id": "strawberry", "one": "strawberry", "many": "strawberries"},
+      {"id": "carrot", "one": "carrot", "many": "carrots"},
+      {"id": "peapod", "one": "pea pod", "many": "pea pods"},
+      {"id": "tomato", "one": "tomato", "many": "tomatoes"}
+    ]
+  },
+  "treats": [
+    {"id": "ball"},
+    {"id": "frisbee"},
+    {"id": "bone"},
+    {"id": "star"},
+    {"id": "apple"},
+    {"id": "strawberry"},
+    {"id": "carrot", "bunnyOnly": true}
+  ],
+  "pets": [
+    {"id": "yellowDog", "kind": "dog", "label": "Yellow Dog", "weight": 3, "sound": "fx-woof"},
+    {"id": "chocolateDog", "kind": "dog", "label": "Chocolate Dog", "weight": 3, "sound": "fx-woof"},
+    {"id": "gingerDog", "kind": "dog", "label": "Ginger Dog", "weight": 3, "sound": "fx-woof"},
+    {"id": "blackDog", "kind": "dog", "label": "Black Dog", "weight": 3, "sound": "fx-woof"},
+    {"id": "puppy", "kind": "dog", "label": "Puppy", "weight": 3, "sound": "fx-yip"},
+    {"id": "kitty", "kind": "cat", "label": "Kitty", "weight": 3, "sound": "fx-meow"},
+    {"id": "bunny", "kind": "bunny", "label": "Bunny", "weight": 1, "sound": "fx-sniff"},
+    {"id": "bunny2", "kind": "bunny", "label": "Second Bunny", "weight": 1, "sound": "fx-sniff"}
+  ],
+  "friends": [
+    {"id": "friendSilly", "kind": "friend", "label": "Bloop", "weight": 2, "sound": "fx-boing", "treats": ["ball", "frisbee", "star"]},
+    {"id": "friendBerry", "kind": "friend", "label": "Berry", "weight": 2, "sound": "fx-mmm", "treats": ["strawberry", "star"]},
+    {"id": "friendCounter", "kind": "friend", "label": "Dottie", "weight": 2, "sound": "fx-chime", "treats": ["star", "ball"], "countHost": true}
+  ],
+  "stickerBook": [
+    ["sk-yellowDog", "sk-chocolateDog", "sk-gingerDog", "sk-blackDog", "sk-puppy", "sk-kitty", "sk-bunny", "sk-bunny2", "sk-paw"],
+    ["sk-apple", "sk-pear", "sk-banana", "sk-grapes", "sk-orange", "sk-strawberry", "sk-carrot", "sk-peapod", "sk-watermelon"],
+    ["sk-sun", "sk-moon", "sk-star", "sk-rainbow", "sk-cloud", "sk-flower", "sk-butterfly", "sk-leaf", "sk-ladybug"],
+    ["sk-friendSilly", "sk-friendBerry", "sk-friendCounter", "sk-ball", "sk-frisbee", "sk-bone", "sk-kite", "sk-sailboat", "sk-bubbles"]
+  ],
+  "patterns": {
+    "levels": [
+      { "id": 1, "units": ["AB"], "cars": [5, 6] },
+      { "id": 2, "units": ["AAB", "ABB"], "cars": [6] },
+      { "id": 3, "units": ["ABC"], "cars": [6] }
+    ],
+    "sets": [
+      { "id": "pets", "items": [
+        { "id": "yellowDog", "name": "yellow dog" }, { "id": "blackDog", "name": "black dog" },
+        { "id": "kitty", "name": "kitty" }, { "id": "bunny", "name": "bunny" } ] },
+      { "id": "fruit", "items": [
+        { "id": "apple", "name": "apple" }, { "id": "banana", "name": "banana" }, { "id": "grapes", "name": "grapes" },
+        { "id": "orange", "name": "orange" }, { "id": "pear", "name": "pear" }, { "id": "strawberry", "name": "strawberry" } ] },
+      { "id": "shapes", "items": [
+        { "id": "sh-circle", "name": "circle" }, { "id": "sh-square", "name": "square" }, { "id": "sh-triangle", "name": "triangle" },
+        { "id": "sh-star", "name": "star" }, { "id": "sh-heart", "name": "heart" } ] },
+      { "id": "colours", "items": [
+        { "id": "red-heart", "name": "red heart" }, { "id": "yellow-star", "name": "yellow star" },
+        { "id": "blue-circle", "name": "blue circle" }, { "id": "green-triangle", "name": "green triangle" } ] }
+    ]
+  },
+  "clips": {
+    "find": "p-find",
+    "like": "p-like",
+    "count": "p-count",
+    "tryAgain": [
+      "t-again1",
+      "t-again2"
+    ],
+    "cheer": [
+      "c-yay1",
+      "c-yay2",
+      "c-great"
+    ],
+    "done": "c-done",
+    "homeLetters": "h-letters",
+    "homeCount": "h-count",
+    "numberPrefix": "n-", "and": "w-and", "all": "p-all",
+    "next": "p-next", "toot": "fx-toot",
+    "homeAdd": "h-add",
+    "homePattern": "h-pattern",
+    "homeStories": "h-stories",
+    "homeBook": "h-book",
+    "box": "p-box",
+    "newSticker": "c-new",
+    "levelUp": "c-level",
+    "yay": "c-yay1",
+    "pop": "fx-pop",
+    "confetti": "fx-confetti",
+    "sneeze": "fx-sneeze",
+    "giggle": "fx-giggle",
+    "zoom": "fx-zoom",
+    "boing": "fx-boing",
+    "chime": "fx-chime"
+  }
+}
