@@ -1,3 +1,4 @@
+import { activeProfile } from '../store.js';
 // One story (#story/<id>; design.md 9.10 and 11.2, plan l3 and f5). The page art fills the top of the
 // screen and one 22 px line of text sits under it, the same words the voice reads. Narration plays on
 // page entry and tapping the art plays it again. Big arrows (88 px), swipe, page dots (no numbers) and
@@ -59,8 +60,8 @@ export function render(ctx) {
     await Promise.race([ctx.audio ? ctx.audio.play([q.yes]) : wait(1200), wait(5000)]);
     await wait(250);
     if (!main.isConnected) return;
-    const got = storySticker(ctx.state.book, data.stickerBook);
-    for (const g of got) if (!g.owned && !ctx.state.book.includes(g.id)) ctx.state.book.push(g.id);
+    const got = storySticker(activeProfile(ctx.state).book, data.stickerBook);
+    for (const g of got) if (!g.owned && !activeProfile(ctx.state).book.includes(g.id)) activeProfile(ctx.state).book.push(g.id);
     ctx.session.newStickers = got.filter((g) => !g.owned).map((g) => g.id);
     ctx.save();
     main.replaceWith(roundEnd(ctx, { act: { id: 'stories' }, got, leveledUp: false, playAgain: () => ctx.refresh() }));

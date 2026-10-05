@@ -5,5 +5,6 @@ patterns and short picture stories, played with a grown-up.
 
 - Works in the browser and keeps working offline after the first visit.
 - Stores nothing online. Progress stays on the phone, and "Delete my data" removes it.
+- Up to four players on one phone, with an optional grown-up password to lock levels and settings.
 - No accounts, no ads, no purchases, no tracking, no links out.
 - Original drawings and voice clips. The font is used under the SIL Open Font License (see `fonts/`).

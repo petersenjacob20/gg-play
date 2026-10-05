@@ -244,6 +244,55 @@ function friendCounter() {
       eye(66, 32)));
 }
 
+
+// Pip (Design §11.2 dig host): a small round green dino with a pale-yellow tummy, tiny arms, soft
+// round spikes, dot eyes with a white sparkle, a smile with no teeth, and a little spade. Never roars.
+function friendDino() {
+  const G = '#5DBB63'; const TUM = '#F7E7A8'; const SPIKE = '#3E8E41';
+  return g('char',
+    g('body',
+      ell(42, 108, 8, 5, G), ell(78, 108, 8, 5, G),
+      circ(60, 78, 32, G),
+      el('ellipse', { cx: 60, cy: 88, rx: 18, ry: 14, fill: TUM }),
+      ell(38, 70, 5, 8, G, { transform: 'rotate(25 38 70)' }),
+      ell(82, 70, 5, 8, G, { transform: 'rotate(-25 82 70)' })),
+    g('spikes',
+      circ(48, 48, 7, SPIKE), circ(60, 42, 8, SPIKE), circ(72, 48, 7, SPIKE)),
+    g('head',
+      circ(60, 52, 22, G),
+      smile(60, 56, 5),
+      eye(52, 48), eye(68, 48),
+      el('circle', { cx: 55, cy: 46, r: 1.4, fill: '#FFFFFF' }),
+      el('circle', { cx: 71, cy: 46, r: 1.4, fill: '#FFFFFF' })),
+    g('spade',
+      el('rect', { x: 86, y: 62, width: 4, height: 28, rx: 1.5, fill: '#8A5A2E' }),
+      path('M80 62L98 62L89 48Z', '#C0C8D0')));
+}
+
+// Sea princess (Design §11.2): warm brown skin, short curly dark-brown hair with a small gold
+// starfish crown, sunny yellow-orange tail with a coral-pink fin, pale-blue swim top. Only cheers.
+// Not allowed: red hair, green tail, seashell top, fork/trident, crab/fish sidekick.
+function friendSea() {
+  const SKIN = '#C68A5E'; const HAIR = '#4A3426'; const TAIL = '#F2A03A'; const FIN = '#F28CB1'; const TOP = '#A8D8EA';
+  return g('char',
+    g('tail',
+      path('M60 70C48 88 42 108 60 112C78 108 72 88 60 70Z', TAIL),
+      path('M48 108Q60 122 72 108Q60 114 48 108Z', FIN)),
+    g('body',
+      ell(60, 62, 16, 18, SKIN),
+      path('M46 52Q60 68 74 52Q74 42 60 44Q46 42 46 52Z', TOP)),
+    g('head',
+      circ(60, 28, 16, SKIN),
+      // curls
+      circ(48, 18, 7, HAIR), circ(60, 12, 8, HAIR), circ(72, 18, 7, HAIR), circ(44, 28, 5, HAIR), circ(76, 28, 5, HAIR),
+      // gold starfish crown
+      path('M60 8l2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z', '#F2C230'),
+      smile(60, 32, 4),
+      eye(54, 26), eye(66, 26)),
+    g('poms',
+      circ(32, 58, 7, '#B8E0F0'), circ(88, 58, 7, '#B8E0F0')));
+}
+
 export const DRAW = {
   yellowDog: () => dog(DOGS.yellowDog),
   chocolateDog: () => dog(DOGS.chocolateDog),
@@ -256,6 +305,8 @@ export const DRAW = {
   friendSilly,
   friendBerry,
   friendCounter,
+  friendDino,
+  friendSea,
 };
 
 // The drawing tree for one character (unknown ids fall back to the yellow dog).

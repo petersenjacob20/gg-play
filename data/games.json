@@ -1,0 +1,117 @@
+{
+  "games": [
+    {
+      "id": "letterhunt",
+      "title": "{kitty}'s Letter Hunt",
+      "titleDefault": "Letter Hunt",
+      "host": "kitty",
+      "theme": "hunt",
+      "tile": "tl-letterhunt",
+      "label": "h-letterhunt",
+      "edge": "#4AA3DF",
+      "ladder": [
+        { "act": "match", "mode": "case", "lv": 1 },
+        { "act": "match", "mode": "case", "lv": 2 },
+        { "act": "match", "mode": "case", "lv": 3 },
+        { "act": "match", "mode": "case", "lv": 4 },
+        { "act": "match", "mode": "case", "lv": 5 },
+        { "act": "hunt", "lv": 1 },
+        { "act": "hunt", "lv": 2 }
+      ]
+    },
+    {
+      "id": "fetch",
+      "title": "{yellowDog}'s Fetch Count",
+      "titleDefault": "Fetch Count",
+      "host": "yellowDog",
+      "theme": "park",
+      "tile": "tl-fetch",
+      "label": "h-fetch",
+      "edge": "#5DBB63",
+      "item": "frisbee",
+      "ladder": [
+        { "act": "count", "lv": 1 },
+        { "act": "count", "lv": 2 },
+        { "act": "count", "lv": 3 },
+        { "act": "add", "lv": 1 },
+        { "act": "add", "lv": 2 }
+      ]
+    },
+    {
+      "id": "dig",
+      "title": "Dino Dig",
+      "titleDefault": "Dino Dig",
+      "host": "friendDino",
+      "theme": "dig",
+      "tile": "tl-dig",
+      "label": "h-dig",
+      "edge": "#F28C28",
+      "ladder": [
+        { "act": "letters", "lv": 1 },
+        { "act": "letters", "lv": 2 },
+        { "act": "letters", "lv": 3 },
+        { "act": "letters", "lv": 4 },
+        { "act": "letters", "lv": 5 }
+      ]
+    },
+    {
+      "id": "sea",
+      "title": "Under the Sea",
+      "titleDefault": "Under the Sea",
+      "host": "friendSea",
+      "theme": "sea",
+      "tile": "tl-sea",
+      "label": "h-sea",
+      "edge": "#2BB3A3",
+      "ladder": [
+        { "act": "pattern", "lv": 1, "scene": "sea" },
+        { "act": "pattern", "lv": 2, "scene": "sea" },
+        { "act": "pattern", "lv": 3, "scene": "sea" }
+      ]
+    },
+    {
+      "id": "farm",
+      "title": "{chocolateDog} & {blackDog}'s Color Farm",
+      "titleDefault": "Color Farm",
+      "host": "chocolateDog",
+      "theme": "farm",
+      "tile": "tl-farm",
+      "label": "h-farm",
+      "edge": "#D9534F",
+      "ladder": [
+        { "act": "sort", "mode": "color", "n": 2, "lv": 1 },
+        { "act": "sort", "mode": "shape", "n": 2, "lv": 1 },
+        { "act": "sort", "mode": "color", "n": 3, "lv": 1 },
+        { "act": "sort", "mode": "shape", "n": 3, "lv": 1 }
+      ]
+    },
+    {
+      "id": "monster",
+      "title": "Silly Monster Snacks",
+      "titleDefault": "Silly Monster Snacks",
+      "host": "friendSilly",
+      "theme": "kitchen",
+      "tile": "tl-monster",
+      "label": "h-monster",
+      "edge": "#E86FA8",
+      "ladder": [
+        { "act": "monster", "lv": 1 },
+        { "act": "monster", "lv": 2 },
+        { "act": "monster", "lv": 3 }
+      ]
+    },
+    {
+      "id": "stories",
+      "title": "Story Time",
+      "titleDefault": "Story Time",
+      "host": null,
+      "theme": "stories",
+      "tile": "tl-stories",
+      "label": "h-stories",
+      "edge": "#F2C230",
+      "ladder": [],
+      "route": "#stories",
+      "noLevels": true
+    }
+  ]
+}

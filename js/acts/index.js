@@ -1,13 +1,13 @@
-// The activities (plan f3). Each quiz activity is one module with makeQuestion(data, level, prev, rng);
-// the shared quiz screen (screens/play.js) runs all of them. Adding arrived in piece 3, patterns in
-// piece 4. Story Time (piece 5a) is not a quiz: its tile opens the shelf (screens/stories.js).
+// The activity engines (plan f3 / l1). Each quiz activity is one module with makeQuestion(...).
+// Games (games.json) are ladders of these steps. Story Time is not a quiz: its tile opens #stories.
 import letters from './letters.js';
 import count from './count.js';
 import add from './add.js';
 import pattern from './pattern.js';
 
 export const ACTS = { letters, count, add, pattern };
-// Home tiles and Dad's level rows, in home order. `soon` = no content yet in this piece (none since piece 5a).
+
+// Compatibility for older tests: activity list in the old home order. Home itself reads games.json.
 export const TILES = [
   { id: 'letters', name: 'Letters', clip: 'homeLetters', route: '#play/letters' },
   { id: 'count', name: 'Counting', clip: 'homeCount', route: '#play/count' },
@@ -15,4 +15,4 @@ export const TILES = [
   { id: 'pattern', name: 'Patterns', clip: 'homePattern', route: '#play/pattern' },
   { id: 'stories', name: 'Stories', clip: 'homeStories', route: '#stories', noLevels: true },
 ];
-export const SOON = TILES.filter((t) => t.soon).map((t) => t.id);
+export const SOON = [];

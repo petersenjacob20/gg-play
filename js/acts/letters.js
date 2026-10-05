@@ -4,7 +4,7 @@
 // Levels 1-5 add letter batches (plan f5, piece 2): 1 m s a t p b, 2 n d f o i, 3 h l r g c,
 // 4 e u w j k, 5 v y z q x. A letter's batch is its "level" field in activities.json.
 import { choicesFor, letterPool, pickLetter, pickNot, NEVER_TOGETHER } from '../engine.js';
-import { LEVEL_MAX } from '../store.js';
+import { LEVEL_MAX, activeProfile } from '../store.js';
 
 // How Dad's line writes a sound when it isn't the letter itself: c as in cat, x as in fox.
 export const SAY = { c: 'k', x: 'ks' };
@@ -53,6 +53,6 @@ export default {
   },
   // Written with each finished question: how often each letter came up (letters enabled only).
   record(state, q) {
-    state.seenLetters[q.target] = (state.seenLetters[q.target] || 0) + 1;
+    const p = activeProfile(state); p.seenLetters[q.target] = (p.seenLetters[q.target] || 0) + 1;
   },
 };

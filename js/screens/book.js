@@ -1,3 +1,4 @@
+import { activeProfile } from '../store.js';
 // The sticker book (design.md 9.7, plan f4/f6). Home sits top left; one page of 9 slots (3 x 3, each
 // 96 px or more). A sticker she has shows its picture, a little tilted, in a white die-cut frame; one
 // she doesn't have yet is a dashed light-gray outline of its shape (nothing to read, no lock, no "?").
@@ -23,10 +24,10 @@ export function startPage(pages, book, fresh = []) {
 export function render(ctx) {
   const data = ctx.data;
   const pages = data.stickerBook;
-  const owned = new Set(ctx.state.book);
+  const owned = new Set(activeProfile(ctx.state).book);
   const fresh = ctx.session.newStickers || [];
   ctx.session.newStickers = []; // they shine once
-  let page = startPage(pages, ctx.state.book, fresh);
+  let page = startPage(pages, activeProfile(ctx.state).book, fresh);
   const grid = h('div', { class: 'book-page' });
   const dotsEl = h('div', { class: 'page-dots', 'aria-hidden': 'true' }, pages.map(() => h('span', { class: 'page-dot' })));
   const prevBtn = h('button', { type: 'button', class: 'icon-btn page-arrow prev', 'aria-label': 'Page back', onclick: () => turn(-1) }, icon('arrowLeft'));

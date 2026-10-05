@@ -415,7 +415,7 @@ export const TREAT_IDS = ['ball', 'frisbee', 'bone', 'star', 'apple', 'strawberr
 
 // Sticker book (plan f4, design.md 9.7): sk-<id>. Pets and friends are the same drawings as in the
 // game (stickers stay drawings even when a pet has a photo); everything else is a picture above.
-const CHAR_STICKERS = ['yellowDog', 'chocolateDog', 'gingerDog', 'blackDog', 'puppy', 'kitty', 'bunny', 'bunny2', 'friendSilly', 'friendBerry', 'friendCounter'];
+const CHAR_STICKERS = ['yellowDog', 'chocolateDog', 'gingerDog', 'blackDog', 'puppy', 'kitty', 'bunny', 'bunny2', 'friendSilly', 'friendBerry', 'friendCounter', 'friendDino', 'friendSea'];
 export function stickerArt(skId) {
   const id = String(skId).replace(/^sk-/, '');
   if (CHAR_STICKERS.includes(id)) return el('g', { transform: 'translate(1 0) scale(0.82)' }, drawChar(id));

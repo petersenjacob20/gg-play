@@ -12,9 +12,10 @@ import { ACTS } from '../acts/index.js';
 import { hasPhoto } from '../photos.js';
 import { react, surprise, reactionClip, surpriseClips, reducedMotion } from '../fun.js';
 import { roundEnd } from '../reward.js';
-import { getBook } from '../store.js';
+import { getBook, activeProfile } from '../store.js';
+import { stepAt, ladderMax, keysForLevel } from '../games.js';
 
-// Which #play/<id> values exist: the quiz activities (Story Time has its own #stories route).
+// Which activity engines exist (Story Time has its own #stories route).
 export const known = (id) => Object.hasOwn(ACTS, id);
 
 function dots(n) {
@@ -88,43 +89,85 @@ function flyInto(fromEl, toEl, tree, layer, done) {
 }
 
 export function render(ctx) {
-  const id = ctx.param;
-  const act = ACTS[id];
+  const game = ctx.game;
+  const profile = activeProfile(ctx.state);
+  // Resolve the act: from the game's current ladder step, or from #play/<act>.
+  let actId = ctx.param;
+  let actLevel = null;
+  let progKey = actId;
+  let progMax = null;
+  if (game && !game.noLevels) {
+    progKey = game.id;
+    progMax = ladderMax(game);
+    const stepLv = profile.levels[game.id]?.lv || 1;
+    const warmLv = stepLv; // warm-up uses previous ladder step below
+    const step = stepAt(game, warmLv);
+    actId = step ? step.act : actId;
+    actLevel = step ? step.lv : 1;
+  }
+  const act = ACTS[actId];
+  if (!act) return h('main', { class: 'home' }, h('p', { text: 'Missing activity.' }));
   const data = ctx.data;
-  const session = (ctx.session[act.id] = ctx.session[act.id] || { prev: null, rocky: 0, warm: 0, lastCheer: null, lastReaction: null, surprisedLastRound: false, lastSurprise: null });
+  const sessionKey = game ? game.id : act.id;
+  const session = (ctx.session[sessionKey] = ctx.session[sessionKey] || { prev: null, rocky: 0, warm: 0, lastCheer: null, lastReaction: null, surprisedLastRound: false, lastSurprise: null });
   const pawsEl = paws(0);
-  const stage = h('div', { class: { count: 'stage count-stage', add: 'stage count-stage add-stage', pattern: 'stage count-stage pattern-stage' }[act.id] || 'stage' });
+  const theme = (game && game.theme) || '';
+  const stage = h('div', { class: ({ count: 'stage count-stage', add: 'stage count-stage add-stage', pattern: 'stage count-stage pattern-stage' }[act.id] || 'stage') + (theme ? ` theme-${theme}` : '') });
   const cardsRow = h('div', { class: 'cards' });
   const layer = h('div', { class: 'fx-layer', 'aria-hidden': 'true' });
-  const main = h('main', { class: `kid play ${act.id === 'letters' ? 'letters' : 'count'}${act.id === 'add' ? ' add' : ''}${act.id === 'pattern' ? ' pattern' : ''}`, 'data-act': act.id }, topBar(ctx, { progress: pawsEl }), stage, cardsRow, layer);
+  const main = h('main', { class: `kid play ${act.id === 'letters' ? 'letters' : 'count'}${act.id === 'add' ? ' add' : ''}${act.id === 'pattern' ? ' pattern' : ''}${theme ? ` theme-${theme}` : ''}`, 'data-act': act.id, 'data-game': game ? game.id : '' }, topBar(ctx, { progress: pawsEl }), stage, cardsRow, layer);
   const round = { done: 0, firstTries: 0, helped: false, surprised: false };
   const dogs = activePets(data, ctx.state).filter((p) => p.kind === 'dog');
   const dogId = dogs.length ? dogs[0].id : 'yellowDog';
 
   function endRound() {
-    const prog = ctx.state.levels[act.id];
-    const p = progress({ ...prog, rocky: session.rocky }, round.firstTries, round.helped, act.max);
-    ctx.state.levels[act.id] = { lv: p.lv, top: p.top, good: p.good };
+    const max = progMax || act.max;
+    const prog = profile.levels[progKey] || { lv: 1, top: 1, good: 0 };
+    const p = progress({ ...prog, rocky: session.rocky }, round.firstTries, round.helped, max);
+    const keys = game && !game.noLevels ? keysForLevel(game.ladder, p.lv, p.top) : { at: '', topAt: '' };
+    profile.levels[progKey] = { lv: p.lv, top: p.top, good: p.good, at: keys.at, topAt: keys.topAt };
     session.rocky = p.rocky;
-    if (p.leveledUp) session.warm = 2; // the next round opens with 2 questions from the level below
+    if (p.leveledUp) session.warm = 2;
     session.surprisedLastRound = round.surprised;
-    const got = pickStickers(ctx.state.book, getBook(), p.leveledUp ? 2 : 1);
-    for (const g of got) if (!g.owned && !ctx.state.book.includes(g.id)) ctx.state.book.push(g.id);
+    const got = pickStickers(profile.book, getBook(), p.leveledUp ? 2 : 1);
+    for (const g of got) if (!g.owned && !profile.book.includes(g.id)) profile.book.push(g.id);
     ctx.session.newStickers = got.filter((g) => !g.owned).map((g) => g.id);
     ctx.save();
     ctx.question = null;
-    if (main.isConnected) main.replaceWith(roundEnd(ctx, { act, got, leveledUp: p.leveledUp, playAgain: () => ctx.refresh() }));
+    if (main.isConnected) main.replaceWith(roundEnd(ctx, { act: game || act, got, leveledUp: p.leveledUp, playAgain: () => ctx.refresh() }));
   }
 
   function next() {
     if (round.done > 0 && !main.isConnected) return;
     if (round.done >= ROUND) { endRound(); return; }
-    const lv = ctx.state.levels[act.id].lv;
-    const level = session.warm > 0 && lv > 1 ? lv - 1 : lv;
-    if (session.warm > 0) session.warm--;
-    const q = act.makeQuestion(data, level, session.prev, Math.random);
+    // Ladder position (game) or act level (#play)
+    let ladderLv = (profile.levels[progKey] || { lv: 1 }).lv;
+    let level;
+    if (game && !game.noLevels) {
+      if (session.warm > 0 && ladderLv > 1) { ladderLv -= 1; session.warm--; }
+      else if (session.warm > 0) session.warm--;
+      const step = stepAt(game, ladderLv);
+      actId = step.act;
+      level = step.lv;
+    } else {
+      level = session.warm > 0 && ladderLv > 1 ? ladderLv - 1 : ladderLv;
+      if (session.warm > 0) session.warm--;
+    }
+    const playAct = ACTS[actId] || act;
+    const q = playAct.makeQuestion(data, level, session.prev, Math.random);
+    // Sea theme: keep the train scene type but mark it so CSS draws bubbles.
+    if (game && game.theme === 'sea' && q.scene && q.scene.type === 'train') q.scene.skin = 'sea';
     session.prev = q;
-    const who = q.host === 'count' ? countHost(data, ctx.state) : host(data, ctx.state);
+    // Prefer the game's host when set and switched on; else the usual host / countHost.
+    let who;
+    if (game && game.host) {
+      const all = [...(data.pets || []), ...(data.friends || [])];
+      const prefer = all.find((x) => x.id === game.host);
+      const on = prefer && (prefer.kind === 'friend' || (ctx.state.pets[prefer.id] && ctx.state.pets[prefer.id].on !== false));
+      who = on ? prefer : (q.host === 'count' ? countHost(data, ctx.state) : host(data, ctx.state));
+    } else {
+      who = q.host === 'count' ? countHost(data, ctx.state) : host(data, ctx.state);
+    }
     const pet = petView(data, who.id);
     const speaker = h('button', { type: 'button', class: 'speaker', 'aria-label': 'Hear it again' }, icon('speaker'));
     let treat = null;
@@ -148,14 +191,15 @@ export function render(ctx) {
     };
     const rowsOf = (n, pic) => rowsOf5(n).map((k) => h('div', { class: 'treat-row' }, Array.from({ length: k }, () => countable(pic))));
     if (q.scene.type === 'treats') {
-      treat = treatFor(who, data.treats);
+      treat = (game && game.item) || treatFor(who, data.treats);
       const n = q.scene.n;
       const blanket = h('div', { class: `blanket size-${n <= 4 ? 'big' : 'rows'}` }, rowsOf(n, treat));
       stage.replaceChildren(h('div', { class: 'host small' }, pet, speaker), blanket);
     } else if (q.scene.type === 'groups') {
       // Adding (design.md 9.10): two groups of the same fruit or veg, a soft dashed divider between
       // them; on a right tap the divider melts away and the groups slide together.
-      const { item, a, b, rows } = q.scene;
+      const { a, b, rows } = q.scene;
+      const item = (game && game.item) || q.scene.item;
       const blanket = h('div', { class: `blanket add-blanket ${rows ? 'stacked' : 'side'}`, 'data-a': String(a), 'data-b': String(b), 'data-item': item },
         h('div', { class: 'add-group' }, rowsOf(a, item)),
         h('span', { class: 'add-divider', 'aria-hidden': 'true' }),
@@ -168,8 +212,9 @@ export function render(ctx) {
       // in from the right. Items are drawn cropped (CAR_BOX) so each fills about 85% of its car.
       const box = '0 0 100 100';
       const empty = h('span', { class: 'car empty' }, h('span', { class: 'car-load' }));
-      const train = h('div', { class: 'train roll-in', 'data-cars': String(q.scene.cars), 'data-unit': q.scene.unit, 'data-set': q.scene.set, 'aria-hidden': 'true' },
-        h('span', { class: 'engine' }, drawing(art('trainEngine'), { box })),
+      const sea = q.scene.skin === 'sea' || theme === 'sea';
+      const train = h('div', { class: `train roll-in${sea ? ' sea-row' : ''}`, 'data-cars': String(q.scene.cars), 'data-unit': q.scene.unit, 'data-set': q.scene.set, 'aria-hidden': 'true' },
+        sea ? h('span', { class: 'engine sea-lead', 'aria-hidden': 'true' }) : h('span', { class: 'engine' }, drawing(art('trainEngine'), { box })),
         q.scene.row.map((id) => h('span', { class: 'car', 'data-item': id }, h('span', { class: 'car-load' }, drawing(itemArt(id), { box: CAR_BOX })))),
         empty);
       trainGo = () => {
