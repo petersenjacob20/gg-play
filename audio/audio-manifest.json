@@ -17,10 +17,10 @@
  },
  "snd-a": {
   "kind": "phon",
-  "input": "ˈæpᵊl",
-  "phonemes": "ˈæpᵊl -> vowel 20-110ms held to 260ms",
-  "seconds": 0.26,
-  "bytes": 1872,
+  "input": "ˈæ",
+  "phonemes": "ˈæ",
+  "seconds": 0.456,
+  "bytes": 2736,
   "checked": "machine"
  },
  "snd-t": {
@@ -499,10 +499,10 @@
  },
  "snd-n": {
   "kind": "onset",
-  "input": "nˈʌt",
-  "phonemes": "nˈʌt [keep n]",
-  "seconds": 0.53,
-  "bytes": 3600,
+  "input": "nˈɛst",
+  "phonemes": "nˈɛst",
+  "seconds": 0.192,
+  "bytes": 1152,
   "checked": "machine"
  },
  "snd-d": {
@@ -523,18 +523,18 @@
  },
  "snd-o": {
   "kind": "phon",
-  "input": "ˈɑktəpəs",
-  "phonemes": "ˈɑktəpəs -> vowel 30-140ms held to 260ms",
-  "seconds": 0.26,
-  "bytes": 1872,
+  "input": "ˈɑ",
+  "phonemes": "ˈɑ",
+  "seconds": 0.456,
+  "bytes": 2736,
   "checked": "machine"
  },
  "snd-i": {
   "kind": "phon",
-  "input": "ˈɪ",
-  "phonemes": "ˈɪ -> vowel 10-120ms held to 260ms",
-  "seconds": 0.26,
-  "bytes": 1872,
+  "input": "ˈɪɡ",
+  "phonemes": "ˈɪɡ",
+  "seconds": 0.432,
+  "bytes": 2592,
   "checked": "machine"
  },
  "snd-h": {
@@ -579,18 +579,18 @@
  },
  "snd-e": {
   "kind": "phon",
-  "input": "ˈɛɡ",
-  "phonemes": "ˈɛɡ -> vowel 0-180ms held to 260ms",
-  "seconds": 0.26,
-  "bytes": 1872,
+  "input": "ˈɛ",
+  "phonemes": "ˈɛ",
+  "seconds": 0.456,
+  "bytes": 2736,
   "checked": "machine"
  },
  "snd-u": {
   "kind": "phon",
-  "input": "ˈʌp",
-  "phonemes": "ˈʌp -> vowel 50-100ms held to 260ms",
-  "seconds": 0.26,
-  "bytes": 1872,
+  "input": "ˈʌ",
+  "phonemes": "ˈʌ",
+  "seconds": 0.456,
+  "bytes": 2736,
   "checked": "machine"
  },
  "snd-w": {
@@ -628,8 +628,8 @@
  "snd-y": {
   "kind": "phon",
   "input": "jʌ",
-  "phonemes": "jʌ -> cv 0-405ms (burst + 90ms voicing)",
-  "seconds": 0.332,
+  "phonemes": "jʌ",
+  "seconds": 0.384,
   "bytes": 2304,
   "checked": "machine"
  },
@@ -859,12 +859,13 @@
   "checked": "machine"
  },
  "s-ark-2": {
-  "kind": "text",
-  "input": "Noah worked hard. Tap, tap, tap went his hammer!",
-  "phonemes": "nˈOə wˈɜɹkt hˈɑɹd. tˈæp, tˈæp, tˈæp wˈɛnt hɪz hˈæməɹ!",
-  "seconds": 3.217,
+  "kind": "ipa",
+  "input": "nˈOə wˈɜɹkt hˈɑɹd. tˈæp, tˈæp, tˈæp wˈɛntt hɪz hˈæməɹ!",
+  "phonemes": "nˈOə wˈɜɹkt hˈɑɹd. tˈæp, tˈæp, tˈæp wˈɛntt hɪz hˈæməɹ!",
+  "seconds": 3.288,
   "bytes": 16440,
-  "checked": "machine"
+  "checked": "machine",
+  "text": "Noah worked hard. Tap, tap, tap went his hammer!"
  },
  "s-ark-3": {
   "kind": "text",
@@ -1000,10 +1001,11 @@
  "s-nativity-3": {
   "kind": "text",
   "input": "Every room was full, so they rested in a cozy stable.",
-  "phonemes": "ˈɛvəɹi ɹˈum wʌz fˈʊl, sˌO ðA ɹˈɛstᵻd ɪn ɐ kˈOzi stˈAbᵊl.",
-  "seconds": 3.132,
-  "bytes": 15960,
-  "checked": "machine"
+  "phonemes": "Every room was full, so they rested in a cozy stable.",
+  "seconds": 3.288,
+  "bytes": 16440,
+  "checked": "machine",
+  "text": "Every room was full, so they rested in a cozy stable."
  },
  "s-nativity-4": {
   "kind": "text",
@@ -1079,10 +1081,10 @@
  },
  "s-storm-5": {
   "kind": "ipa",
-  "input": "ʤˈizəs sˈɛd, “wˈɪnd, hˈʌʃ. wˈAvz, bˈi kˈɑlm.” ˌænd ðA wɜɹ!",
-  "phonemes": "ʤˈizəs sˈɛd, “wˈɪnd, hˈʌʃ. wˈAvz, bˈi kˈɑlm.” ˌænd ðA wɜɹ!",
-  "seconds": 3.744,
-  "bytes": 18960,
+  "input": "ʤˈizəs sˈɛd, “wˈɪnd, hˈʌʃ. wˈAvz, bˈi. kˈɑlm.” ˌænd ðA wɜɹ!",
+  "phonemes": "ʤˈizəs sˈɛd, “wˈɪnd, hˈʌʃ. wˈAvz, bˈi. kˈɑlm.” ˌænd ðA wɜɹ!",
+  "seconds": 3.864,
+  "bytes": 19320,
   "checked": "machine",
   "text": "Jesus said, \"Wind, hush. Waves, be calm.\" And they were!"
  },
@@ -1237,6 +1239,110 @@
   "phonemes": "jˈɛs! ʤˈizəs lˈʌvz ðˌɛm, ænd ʤˈizəs lˈʌvz ju!",
   "seconds": 2.598,
   "bytes": 13320,
+  "checked": "machine"
+ },
+ "hi-blackDog": {
+  "kind": "text",
+  "input": "I'm Black Dog!",
+  "phonemes": "ˌIm blˈæk dˈɔɡ!",
+  "seconds": 1.04,
+  "bytes": 6624,
+  "checked": "machine"
+ },
+ "hi-bunny": {
+  "kind": "text",
+  "input": "I'm Bunny!",
+  "phonemes": "ˌIm bˈʌni!",
+  "seconds": 0.678,
+  "bytes": 4464,
+  "checked": "machine"
+ },
+ "hi-bunny2": {
+  "kind": "text",
+  "input": "I'm Second Bunny!",
+  "phonemes": "ˌIm sˈɛkənd bˈʌni!",
+  "seconds": 0.927,
+  "bytes": 5904,
+  "checked": "machine"
+ },
+ "hi-chocolateDog": {
+  "kind": "text",
+  "input": "I'm Chocolate Dog!",
+  "phonemes": "ˌIm ʧˈɑkᵊlət dˈɔɡ!",
+  "seconds": 1.164,
+  "bytes": 7344,
+  "checked": "machine"
+ },
+ "hi-friendBerry": {
+  "kind": "text",
+  "input": "I'm Berry!",
+  "phonemes": "ˌIm bˈɛɹi!",
+  "seconds": 0.678,
+  "bytes": 4464,
+  "checked": "machine"
+ },
+ "hi-friendCounter": {
+  "kind": "text",
+  "input": "I'm Dottie!",
+  "phonemes": "ˌIm dˈɑTi!",
+  "seconds": 0.7,
+  "bytes": 4608,
+  "checked": "machine"
+ },
+ "hi-friendDino": {
+  "kind": "text",
+  "input": "I'm Pip!",
+  "phonemes": "ˌIm pˈɪp!",
+  "seconds": 0.775,
+  "bytes": 5040,
+  "checked": "machine"
+ },
+ "hi-friendSea": {
+  "kind": "text",
+  "input": "I'm Coral!",
+  "phonemes": "ˌIm kˈɔɹəl!",
+  "seconds": 0.786,
+  "bytes": 5040,
+  "checked": "machine"
+ },
+ "hi-friendSilly": {
+  "kind": "text",
+  "input": "I'm Bloop!",
+  "phonemes": "ˌIm blˈup!",
+  "seconds": 0.612,
+  "bytes": 4032,
+  "checked": "machine"
+ },
+ "hi-gingerDog": {
+  "kind": "text",
+  "input": "I'm Ginger Dog!",
+  "phonemes": "ˌIm ʤˈɪnʤəɹ dˈɔɡ!",
+  "seconds": 0.942,
+  "bytes": 6048,
+  "checked": "machine"
+ },
+ "hi-kitty": {
+  "kind": "text",
+  "input": "I'm Kitty!",
+  "phonemes": "ˌIm kˈɪTi!",
+  "seconds": 0.824,
+  "bytes": 5328,
+  "checked": "machine"
+ },
+ "hi-puppy": {
+  "kind": "text",
+  "input": "I'm Puppy!",
+  "phonemes": "ˌIm pˈʌpi!",
+  "seconds": 0.613,
+  "bytes": 4032,
+  "checked": "machine"
+ },
+ "hi-yellowDog": {
+  "kind": "text",
+  "input": "I'm Yellow Dog!",
+  "phonemes": "ˌIm jˈɛlO dˈɔɡ!",
+  "seconds": 0.993,
+  "bytes": 6336,
   "checked": "machine"
  }
 }

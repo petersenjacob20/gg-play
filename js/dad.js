@@ -480,6 +480,21 @@ export function openDadPanel(ctx, view = 'menu') {
     ];
   } else if (view === 'levels') {
     body = levelsView(ctx);
+  } else if (view === 'fun') {
+    body = [
+      h('h2', { id: 'sheet-title', text: 'Voices' }),
+      h('p', { class: 'sheet-sub', text: 'Hello voices and pet names.' }),
+    ];
+    body.push(sheetBtn(`Hello voices: ${ctx.state.intros !== false ? 'On' : 'Off'}`, () => {
+      ctx.state.intros = !(ctx.state.intros !== false); ctx.save(); openDadPanel(ctx, 'fun');
+    }, '', { 'aria-pressed': ctx.state.intros !== false ? 'true' : 'false' }));
+    body.push(h('p', { class: 'sheet-hint', text: 'Characters say hi when they show up.' }));
+    body.push(sheetBtn(`Say pet names: ${ctx.state.sayNames !== false ? 'On' : 'Off'}`, () => {
+      ctx.state.sayNames = !(ctx.state.sayNames !== false); ctx.save(); openDadPanel(ctx, 'fun');
+    }, '', { 'aria-pressed': ctx.state.sayNames !== false ? 'true' : 'false' }));
+    body.push(h('p', { class: 'sheet-hint', text: "Uses this phone's own voice for names you typed. Names stay on the phone." }));
+    body.push(sheetBtn('Back', () => openDadPanel(ctx, 'menu')));
+    body.push(sheetBtn('Close', () => closeDadPanel(), 'plain'));
   } else if (view === 'profiles') {
     openProfiles(ctx); return;
   } else {
@@ -496,6 +511,17 @@ export function openDadPanel(ctx, view = 'menu') {
         openDadPanel(ctx, 'menu');
       }, '', { 'aria-pressed': ctx.state.sound ? 'true' : 'false' }),
     ];
+    // Character Fun toggles (design.md §13.6) — behind the grown-up lock
+    const funToggles = () => {
+      body.push(sheetBtn(`Hello voices: ${ctx.state.intros !== false ? 'On' : 'Off'}`, () => {
+        ctx.state.intros = !(ctx.state.intros !== false); ctx.save(); openDadPanel(ctx, 'menu');
+      }, '', { 'aria-pressed': ctx.state.intros !== false ? 'true' : 'false' }));
+      body.push(h('p', { class: 'sheet-hint', text: 'Characters say hi when they show up.' }));
+      body.push(sheetBtn(`Say pet names: ${ctx.state.sayNames !== false ? 'On' : 'Off'}`, () => {
+        ctx.state.sayNames = !(ctx.state.sayNames !== false); ctx.save(); openDadPanel(ctx, 'menu');
+      }, '', { 'aria-pressed': ctx.state.sayNames !== false ? 'true' : 'false' }));
+      body.push(h('p', { class: 'sheet-hint', text: "Uses this phone's own voice for names you typed. Names stay on the phone." }));
+    };
     if (!locked) {
       body.push(sheetBtn('Set up a grown-up password', () => openSetupLock(ctx)));
       body.push(h('p', { class: 'sheet-hint', text: 'Stops little hands from changing levels or wiping progress.' }));
@@ -506,6 +532,16 @@ export function openDadPanel(ctx, view = 'menu') {
     }
     body.push(sheetBtn('Family pets', () => withUnlock(ctx, () => { closeDadPanel(); ctx.go('#pets'); })));
     body.push(sheetBtn('Levels', () => withUnlock(ctx, () => openDadPanel(ctx, 'levels'))));
+    // Hello / Say pet names: require unlock when a password exists
+    if (locked) {
+      body.push(sheetBtn('Hello voices & names', () => withUnlock(ctx, () => {
+        // expand toggles on a mini view — or apply funToggles into menu after unlock by opening menu unlocked
+        ctx._dadUnlocked = true;
+        openDadPanel(ctx, 'fun');
+      })));
+    } else {
+      funToggles();
+    }
     body.push(sheetBtn('Delete my data', () => openDadPanel(ctx, 'confirm'), 'danger-outline'));
     body.push(sheetBtn('Close', () => closeDadPanel(), 'plain'));
   }

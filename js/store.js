@@ -59,6 +59,8 @@ export function defaults() {
   return {
     v: VERSION,
     sound: true,
+    intros: true,   // Hello voices (Amendment n)
+    sayNames: true, // Say pet names via on-device speech only (Amendment n)
     pets,
     lock: null,
     active: 'p1',
@@ -204,6 +206,8 @@ export function normalize(obj, { letters = enabledLetters, book = catalog } = {}
     }
   }
   if (typeof obj.sound === 'boolean') s.sound = obj.sound;
+  if (typeof obj.intros === 'boolean') s.intros = obj.intros;
+  if (typeof obj.sayNames === 'boolean') s.sayNames = obj.sayNames;
   s.lock = normalizeLock(obj.lock);
 
   const profiles = {};

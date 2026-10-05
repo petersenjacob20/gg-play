@@ -10,7 +10,8 @@ import { petView, paws, fillPaw, topBar, icon, setPose } from '../ui.js';
 import { runQuestion, cue } from '../quiz.js';
 import { ACTS } from '../acts/index.js';
 import { hasPhoto } from '../photos.js';
-import { react, surprise, reactionClip, surpriseClips, reducedMotion } from '../fun.js';
+import { react, surprise, reactionClip, surpriseClips, reducedMotion, playTrick, trickClip } from '../fun.js';
+import { playHello, nextTrick, hostDoesFun, characterById } from '../character.js';
 import { roundEnd } from '../reward.js';
 import { getBook, activeProfile } from '../store.js';
 import { stepAt, ladderMax, keysForLevel } from '../games.js';
@@ -274,9 +275,22 @@ export function render(ctx) {
         const sp = surpriseRoll({ thisRound: round.surprised, lastRound: session.surprisedLastRound, talking: false, reducedMotion: reducedMotion(), lastKind: session.lastSurprise });
         let tail = [reactionClip(kind, data.clips) || cheer];
         if (sp) { round.surprised = true; session.lastSurprise = sp; tail = surpriseClips(sp, data.clips, cheer); }
+        // Character Fun n1: host trick after green hop (wrong answers never reach here)
+        let trick = null;
+        if (hostDoesFun(game) && who) {
+          const ch = characterById(data, who.id) || who;
+          trick = nextTrick(ch.tricks, session.lastTrick);
+          if (trick) session.lastTrick = trick;
+          const tClip = trickClip(trick, data.clips);
+          if (tClip && !sp) tail = [tClip];
+        }
         rightLine = [...q.lead, ...tail];
         const leadMs = ctx.audio ? ctx.audio.estimateMs(q.lead) : 700;
         react({ kind, pet, card: rightCard, layer, delay: (kind === 'boing' || kind === 'twirl') && !sp ? leadMs : 0 });
+        if (trick) {
+          const delay = Math.min(leadMs, 400);
+          setTimeout(() => playTrick({ kind: trick, pet, layer, data, state: ctx.state, card: rightCard }), delay);
+        }
         // the pop rides on top of the voice line (scheduled just after the right line starts, so it is not cut)
         if (kind === 'starpop' && ctx.audio) setTimeout(() => ctx.audio.fx([data.clips.pop]), 30);
         if (sp) surprise({ kind: sp, layer, data, state: ctx.state, hostEl: pet, delay: Math.min(leadMs, 600) });
@@ -297,6 +311,15 @@ export function render(ctx) {
       dadText: q.dadText({ treat }),
     };
     setPose(pet, 'idle');
+    // Character Fun n1: hello once per host arrival this session (not Story Time)
+    if (hostDoesFun(game) && who && who.id) {
+      session.hellos = session.hellos || {};
+      if (!session.hellos[who.id]) {
+        session.hellos[who.id] = true;
+        const ch = characterById(data, who.id) || who;
+        playHello(ctx, ch);
+      }
+    }
     say();
   }
 

@@ -91,3 +91,84 @@ export function confetti(layer, n = 36) {
   layer.appendChild(bits);
   later(1500, () => bits.remove());
 }
+
+// Character Fun tricks (Amendment n / design.md §13.2). Under 1 s. Picture-only. Ids never contain a name.
+const snackArt = () => {
+  // fruit/veg only (EM fix): carrot or apple slice — fruit and veg only
+  return Math.random() < 0.5 ? art('carrot') : art('apple');
+};
+
+export function playTrick({ kind, pet, layer, data, state, card }) {
+  if (!kind || !pet) return;
+  if (reducedMotion()) { flash(pet, 'react-glow', 900); return; }
+  const append = (el, ms = 900) => { if (layer && el) { layer.appendChild(el); later(ms, () => el.remove()); } };
+  if (kind === 'tongueBoing') {
+    flash(pet, 'trick-tongue', 800);
+    const b = friendView('friendSilly', 'pop-up');
+    append(b, 900);
+  } else if (kind === 'offerBerry') {
+    flash(pet, 'trick-offer', 800);
+    const berry = h('span', { class: 'trick-prop berry', 'aria-hidden': 'true' }, drawing(art('strawberry') || art('star'), { box: '0 0 100 100' }));
+    pet.appendChild(berry); later(900, () => berry.remove());
+  } else if (kind === 'numberSparkles') {
+    flash(pet, 'trick-sparkle', 800);
+    const d = h('div', { class: 'trick-nums', 'aria-hidden': 'true' },
+      ...['1', '2', '3'].map((n, i) => h('span', { class: `tn t${i}`, text: n })));
+    append(d, 900);
+  } else if (kind === 'happyToot') {
+    flash(pet, 'trick-toot', 700);
+  } else if (kind === 'tailFlip') {
+    flash(pet, 'trick-tail', 800);
+  } else if (kind === 'snuggle') {
+    flash(pet, 'trick-snuggle', 900);
+  } else if (kind === 'crunchSnack') {
+    flash(pet, 'trick-crunch', 800);
+    const prop = h('span', { class: 'trick-prop snack', 'aria-hidden': 'true' }, drawing(snackArt(), { box: '0 0 100 100' }));
+    pet.appendChild(prop); later(900, () => prop.remove());
+  } else if (kind === 'loudHopPeek') {
+    flash(pet, 'trick-hop', 500);
+    later(400, () => {
+      flash(pet, 'trick-peek', 500);
+      const kittyOn = state && state.pets && state.pets.kitty && state.pets.kitty.on !== false;
+      if (kittyOn && data) {
+        const k = h('div', { class: 'trick-kitty-peek', 'aria-hidden': 'true' },
+          h('div', { class: 'pet pose-hmm', 'aria-hidden': 'true' }, drawing(drawChar('kitty'))));
+        append(k, 900);
+      }
+    });
+  } else if (kind === 'cuddleLean') {
+    flash(pet, 'trick-lean', 800);
+  } else if (kind === 'pawTap') {
+    flash(pet, 'trick-paw', 700);
+  } else if (kind === 'petThenHop') {
+    // one gentle pet, then the hop — always works (EM fix: never gated)
+    flash(pet, 'trick-pet', 400);
+    later(350, () => flash(pet, 'trick-hop', 500));
+  } else if (kind === 'pileHug') {
+    flash(pet, 'trick-pile', 900);
+    const on = activePets(data, state).slice(0, 4);
+    if (on.length && layer) {
+      const pile = h('div', { class: 'trick-pile', 'aria-hidden': 'true' },
+        ...on.map((p, i) => h('div', { class: `pile-pal p${i}` }, drawing(drawChar(p.id)))));
+      append(pile, 1000);
+    }
+  } else if (kind === 'dropBall') {
+    flash(pet, 'trick-drop', 800);
+    const ball = h('span', { class: 'trick-prop ball', 'aria-hidden': 'true' }, drawing(art('ball') || art('star'), { box: '0 0 100 100' }));
+    pet.appendChild(ball); later(900, () => ball.remove());
+  } else if (kind === 'spin' || kind === 'zoomies' || kind === 'boing' || kind === 'twirl' || kind === 'earflop' || kind === 'starpop') {
+    react({ kind, pet, card, layer });
+  } else {
+    flash(pet, 'react-glow', 800);
+  }
+}
+
+export function trickClip(kind, clips) {
+  if (!clips) return null;
+  if (kind === 'happyToot') return clips.toot || clips.boing;
+  if (kind === 'tongueBoing' || kind === 'boing') return clips.boing;
+  if (kind === 'numberSparkles' || kind === 'twirl') return clips.chime;
+  if (kind === 'crunchSnack') return clips.pop || clips.boing;
+  if (kind === 'loudHopPeek') return clips.yip || null;
+  return null;
+}

@@ -1,7 +1,7 @@
 // Offline: app shell cached first (build plan section 1).
 // Bump CACHE on every content or code change. Older gg- caches are deleted on activate;
 // caches of other apps on the same origin are never touched.
-const CACHE = 'gg-v1-20261005ma';
+const CACHE = 'gg-v1-20261005nc';
 const ASSETS = [
   './',
   './audio/audio-manifest.json',
@@ -30,6 +30,19 @@ const ASSETS = [
   './audio/h-letters.mp3',
   './audio/h-pattern.mp3',
   './audio/h-stories.mp3',
+  './audio/hi-blackDog.mp3',
+  './audio/hi-bunny.mp3',
+  './audio/hi-bunny2.mp3',
+  './audio/hi-chocolateDog.mp3',
+  './audio/hi-friendBerry.mp3',
+  './audio/hi-friendCounter.mp3',
+  './audio/hi-friendDino.mp3',
+  './audio/hi-friendSea.mp3',
+  './audio/hi-friendSilly.mp3',
+  './audio/hi-gingerDog.mp3',
+  './audio/hi-kitty.mp3',
+  './audio/hi-puppy.mp3',
+  './audio/hi-yellowDog.mp3',
   './audio/n-1.mp3',
   './audio/n-10.mp3',
   './audio/n-11.mp3',
@@ -178,6 +191,7 @@ const ASSETS = [
   './js/acts/pattern.js',
   './js/art.js',
   './js/audio.js',
+  './js/character.js',
   './js/dad.js',
   './js/dom.js',
   './js/engine.js',

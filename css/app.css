@@ -67,7 +67,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 
 /* Home (design.md 9.2): parade, a 2 x 2 picture grid with Stories full width, the Sticker book bar */
 .home { gap: 10px; }
-.home .topbar { min-height: 52px; }
+.home .topbar { min-height: 56px; }
 .dad-title { margin: 0; font-size: 14px; font-weight: 700; color: #7A6656; letter-spacing: .02em; }
 .big-buttons { display: flex; flex-direction: column; gap: 16px; }
 .big-btn {
@@ -134,7 +134,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 /* Dad button: gray pill, hand icon, a ring fills over 1 second while held */
 .dad-btn {
   position: relative; flex: none;
-  width: 92px; height: 48px; border-radius: 24px;
+  width: 96px; height: 56px; border-radius: 24px;
   background: #D9D4CB; color: var(--ink);
   display: inline-flex; align-items: center; justify-content: center; gap: 4px;
   font-size: 16px; font-weight: 800;
@@ -161,7 +161,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .sheet h2 { margin: 0 0 2px; font-size: 22px; }
 .sheet-sub { margin: 0 0 4px; color: #6B5646; font-size: 16px; }
 .sheet-btn {
-  min-height: 52px; width: 100%; border-radius: 14px;
+  min-height: 56px; width: 100%; border-radius: 14px;
   border: 2px solid #CFC6B8; background: #FBF7F0;
   font-size: 18px; font-weight: 700; text-align: left; padding: 0 16px;
 }
@@ -213,7 +213,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .dad-screen { display: flex; flex-direction: column; gap: 10px; padding-bottom: 24px; }
 .dad-head { display: flex; align-items: center; gap: 10px; }
 .dad-head h1 { margin: 0; font-size: 26px; }
-.dad-back { min-height: 44px; min-width: 44px; padding: 0 14px; border-radius: 12px; border: 2px solid #CFC6B8; background: #FFFFFF; font-weight: 800; font-size: 17px; }
+.dad-back { min-height: 56px; min-width: 56px; padding: 0 14px; border-radius: 12px; border: 2px solid #CFC6B8; background: #FFFFFF; font-weight: 800; font-size: 17px; }
 .dad-sub { margin: 0; font-size: 17px; font-weight: 700; }
 .dad-note { margin: 0; font-size: 15px; color: #6B5646; }
 .pet-cards { display: flex; flex-direction: column; gap: 10px; }
@@ -227,10 +227,10 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .pc-title { font-size: 18px; overflow-wrap: anywhere; }
 .pc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 16px; }
 .pc-name { font-size: 14px; color: #6B5646; }
-.name-input { min-height: 44px; width: 100%; border: 2px solid #CFC6B8; border-radius: 10px; padding: 0 10px; font-size: 17px; background: #FFFDF9; }
-.switch { position: relative; width: 60px; height: 44px; flex: none; }
-.switch::before { content: ""; position: absolute; left: 4px; right: 4px; top: 8px; bottom: 8px; border-radius: 14px; background: #CFC6B8; transition: background .15s; }
-.switch::after { content: ""; position: absolute; left: 8px; top: 12px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; transition: transform .15s; }
+.name-input { min-height: 56px; width: 100%; border: 2px solid #CFC6B8; border-radius: 10px; padding: 0 10px; font-size: 17px; background: #FFFDF9; }
+.switch { position: relative; width: 64px; height: 56px; flex: none; }
+.switch::before { content: ""; position: absolute; left: 4px; right: 4px; top: 12px; bottom: 12px; border-radius: 14px; background: #CFC6B8; transition: background .15s; }
+.switch::after { content: ""; position: absolute; left: 8px; top: 16px; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; transition: transform .15s; }
 .switch[aria-checked="true"]::before { background: var(--grass); }
 .switch[aria-checked="true"]::after { transform: translateX(24px); }
 
@@ -490,7 +490,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .level-pic .train-pic { width: 64px; height: 32px; }
 .level-name { font-size: 18px; font-weight: 800; }
 .level-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-.level-btn { width: 44px; height: 44px; border-radius: 12px; font-size: 18px; font-weight: 800; border: 2px solid #E3DCD0; background: #FFFFFF; color: #A39787; }
+.level-btn { width: 56px; height: 56px; border-radius: 12px; font-size: 18px; font-weight: 800; border: 2px solid #E3DCD0; background: #FFFFFF; color: #A39787; }
 .level-btn.reached { border: 3px solid var(--sky); color: var(--ink); }
 .level-btn.current { background: var(--sky); border: 3px solid var(--sky); color: #FFFFFF; }
 .level-line { margin: 0; font-size: 15px; color: #6B5646; }
@@ -555,7 +555,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .pc-sticker .photo-tilt { width: 100%; }
 .pet-card.off .pc-art.has-photo { filter: none; }
 .pc-photo { display: flex; flex-wrap: wrap; gap: 8px; }
-.photo-btn { min-height: 44px; padding: 0 14px; border-radius: 12px; border: 2px solid #CFC6B8; background: #FBF7F0; font-weight: 800; font-size: 16px; }
+.photo-btn { min-height: 56px; padding: 0 14px; border-radius: 12px; border: 2px solid #CFC6B8; background: #FBF7F0; font-weight: 800; font-size: 16px; }
 .photo-btn.remove { color: var(--danger); border-color: #E3B4B0; background: #FFFFFF; }
 .pc-status { margin: 0; font-size: 15px; font-weight: 700; color: var(--danger); }
 .pc-status:empty { display: none; }
@@ -566,7 +566,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .lineup-stage { display: flex; justify-content: center; }
 .lineup-canvas { display: block; width: min(100%, 52vh, 420px); aspect-ratio: 1; border-radius: 16px; background: #2B2420; touch-action: none; cursor: grab; }
 .lineup-zoom-row { display: flex; align-items: center; gap: 12px; font-weight: 800; }
-.lineup-zoom { flex: 1; min-height: 44px; accent-color: var(--sky); }
+.lineup-zoom { flex: 1; min-height: 56px; accent-color: var(--sky); }
 .lineup-status { margin: 0; font-weight: 700; }
 .lineup-status:empty { display: none; }
 .lineup-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
@@ -696,7 +696,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .sheet-btn.primary { background: var(--sky); }
 .sheet-link {
   background: none; border: none; color: #4A6FA5; text-decoration: underline;
-  font-size: 15px; padding: 12px; min-height: 44px; cursor: pointer;
+  font-size: 15px; padding: 12px; min-height: 56px; cursor: pointer;
 }
 .profile-row {
   display: flex; align-items: center; gap: 8px; width: 100%;
@@ -712,11 +712,11 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .profile-name { flex: 1; font-weight: 700; }
 .profile-check { font-size: 22px; color: #3E8E41; }
 .profile-more {
-  width: 44px; height: 44px; min-width: 44px; border: 3px solid var(--ink);
+  width: 56px; height: 56px; min-width: 56px; border: 3px solid var(--ink);
   border-radius: 12px; background: #fff; font-size: 22px; line-height: 1;
 }
 .tune-btns { display: flex; gap: 8px; width: 100%; }
-.tune-btns .sheet-btn { flex: 1; min-height: 44px; font-size: 14px; padding: 8px; }
+.tune-btns .sheet-btn { flex: 1; min-height: 56px; font-size: 14px; padding: 8px; }
 .toast {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
   background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 14px;
@@ -748,3 +748,45 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .game-tile.edge-farm { border-bottom-color: #D9534F; }
 .game-tile.edge-monster { border-bottom-color: #E86FA8; }
 .game-tile.edge-stories { border-bottom-color: #F2C230; }
+
+
+/* Character Fun n1 tricks (design.md §13.2) — under 1 s, picture only */
+.trick-tongue { animation: trick-tongue 0.8s ease; }
+@keyframes trick-tongue { 0%,100%{ transform: scale(1);} 40%{ transform: scale(1.12) rotate(-6deg);} 70%{ transform: scale(1.08) rotate(6deg);} }
+.trick-offer { animation: trick-bob 0.8s ease; }
+.trick-sparkle { animation: trick-bob 0.8s ease; }
+.trick-toot { animation: trick-stomp 0.7s ease; }
+@keyframes trick-stomp { 0%,100%{ transform: translateY(0);} 30%{ transform: translateY(8px);} 60%{ transform: translateY(-6px);} }
+.trick-tail { animation: trick-tail 0.8s ease; }
+@keyframes trick-tail { 0%,100%{ transform: rotate(0);} 40%{ transform: rotate(-18deg) scaleX(-1);} 70%{ transform: rotate(12deg);} }
+.trick-snuggle { animation: trick-snuggle 0.9s ease; }
+@keyframes trick-snuggle { 0%,100%{ transform: scale(1);} 50%{ transform: scale(0.86) translateY(10px);} }
+.trick-crunch { animation: trick-bob 0.8s ease; }
+.trick-hop { animation: trick-hop 0.5s ease; }
+@keyframes trick-hop { 0%,100%{ transform: translateY(0);} 40%{ transform: translateY(-22px) scale(1.05);} }
+.trick-peek { animation: trick-peek 0.5s ease; }
+@keyframes trick-peek { 0%{ transform: translateY(0);} 50%{ transform: translateY(6px) scale(0.95);} 100%{ transform: translateY(0);} }
+.trick-lean { animation: trick-lean 0.8s ease; }
+@keyframes trick-lean { 0%,100%{ transform: rotate(0);} 50%{ transform: rotate(-14deg) translateX(-8px);} }
+.trick-paw { animation: trick-paw 0.7s ease; }
+@keyframes trick-paw { 0%,100%{ transform: scale(1);} 30%{ transform: scale(1.1) rotate(8deg);} 60%{ transform: scale(0.95) rotate(-4deg);} }
+.trick-pet { animation: trick-pet 0.4s ease; }
+@keyframes trick-pet { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.06);} }
+.trick-pile { animation: trick-bob 0.9s ease; }
+.trick-drop { animation: trick-bob 0.8s ease; }
+@keyframes trick-bob { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-10px);} }
+.trick-prop { position: absolute; width: 36px; height: 36px; right: -4px; top: 8px; pointer-events: none; z-index: 3; }
+.trick-prop.snack { width: 40px; height: 40px; }
+.trick-prop.ball { top: auto; bottom: -4px; right: 10px; animation: ball-drop 0.8s ease forwards; }
+@keyframes ball-drop { from{ transform: translateY(-20px);} to{ transform: translateY(18px);} }
+.trick-nums { position: absolute; inset: 10% 10% auto; display: flex; gap: 8px; justify-content: center; pointer-events: none; z-index: 4; }
+.trick-nums .tn { font-family: "GG Letters", Andika, sans-serif; font-size: 28px; font-weight: 700; color: #5B3A29;
+  animation: tn-pop 0.9s ease forwards; opacity: 0; }
+.trick-nums .t0 { animation-delay: 0ms; } .trick-nums .t1 { animation-delay: 80ms; } .trick-nums .t2 { animation-delay: 160ms; }
+@keyframes tn-pop { 0%{ opacity:0; transform: translateY(8px) scale(0.6);} 40%{ opacity:1; transform: translateY(-6px) scale(1.1);} 100%{ opacity:0; transform: translateY(-18px);} }
+.trick-kitty-peek { position: absolute; right: 8%; top: 18%; width: 64px; height: 64px; pointer-events: none; z-index: 4;
+  animation: kitty-peek 0.9s ease; }
+@keyframes kitty-peek { 0%{ transform: translateY(20px); opacity:0;} 40%{ opacity:1; transform: translateY(0);} 100%{ opacity:0; transform: translateY(-8px);} }
+.trick-pile { position: absolute; left: 50%; top: 20%; transform: translateX(-50%); display: flex; gap: 4px; pointer-events: none; z-index: 4; }
+.trick-pile .pile-pal { width: 48px; height: 48px; }
+.fx-layer .trick-nums, .fx-layer .trick-kitty-peek, .fx-layer .trick-pile { position: absolute; }

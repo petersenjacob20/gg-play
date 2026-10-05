@@ -1,7 +1,7 @@
 // Audio (build plan section 5): pre-made clips listed in ./audio/audio-manifest.json, played with
-// Web Audio after the first tap (iOS needs a tap to unlock audio). Never on-phone speech, so pet
-// names can never be spoken. A clip that is missing, still pending, or fails to load is simply
-// skipped: the game keeps working silently and the screens show their visual cues instead.
+// Web Audio after the first tap (iOS needs a tap to unlock audio). Pet names are never in clips;
+// Character Fun (Amendment n) may speak a typed pet name only via character.js on-device speech.
+// A clip that is missing, still pending, or fails to load is simply skipped.
 // Pure helpers (playable, planSequence, estimateMs) are importable from Node.
 
 export const MANIFEST_URL = './audio/audio-manifest.json';
@@ -9,14 +9,14 @@ const DEFAULT_MS = { snd: 500, w: 650, n: 550, p: 1500, t: 900, c: 900, h: 900, 
 
 export function playable(manifest, id) {
   const e = manifest && typeof id === 'string' ? manifest[id] : null;
-  return Boolean(e && typeof e === 'object' && !e.pending && /^[a-z0-9-]+$/.test(id) && clipFile(manifest, id));
+  return Boolean(e && typeof e === 'object' && !e.pending && /^[a-zA-Z0-9-]+$/.test(id) && clipFile(manifest, id));
 }
 
 // The clip's file inside ./audio/: the manifest's own "file" field when it is a plain safe name,
 // otherwise <id>.mp3 (the generator's default). Never a path or another origin.
 export function clipFile(manifest, id) {
   const e = manifest && manifest[id];
-  if (e && typeof e.file === 'string') return /^[a-z0-9-]+\.mp3$/.test(e.file) ? e.file : null;
+  if (e && typeof e.file === 'string') return /^[a-zA-Z0-9-]+\.mp3$/.test(e.file) ? e.file : null;
   return `${id}.mp3`;
 }
 

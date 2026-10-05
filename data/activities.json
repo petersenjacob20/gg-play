@@ -477,56 +477,136 @@
       "kind": "dog",
       "label": "Yellow Dog",
       "weight": 3,
-      "sound": "fx-woof"
+      "sound": "fx-woof",
+      "hello": {
+        "clip": "hi-yellowDog",
+        "pitch": 0.9,
+        "rate": 0.85
+      },
+      "tricks": [
+        "snuggle",
+        "spin",
+        "boing"
+      ]
     },
     {
       "id": "chocolateDog",
       "kind": "dog",
       "label": "Chocolate Dog",
       "weight": 3,
-      "sound": "fx-woof"
+      "sound": "fx-woof",
+      "hello": {
+        "clip": "hi-chocolateDog",
+        "pitch": 0.85,
+        "rate": 0.8
+      },
+      "tricks": [
+        "cuddleLean",
+        "spin",
+        "boing"
+      ]
     },
     {
       "id": "gingerDog",
       "kind": "dog",
       "label": "Ginger Dog",
       "weight": 3,
-      "sound": "fx-woof"
+      "sound": "fx-woof",
+      "hello": {
+        "clip": "hi-gingerDog",
+        "pitch": 1.15,
+        "rate": 1.2
+      },
+      "tricks": [
+        "crunchSnack",
+        "zoomies",
+        "spin"
+      ]
     },
     {
       "id": "blackDog",
       "kind": "dog",
       "label": "Black Dog",
       "weight": 3,
-      "sound": "fx-woof"
+      "sound": "fx-woof",
+      "hello": {
+        "clip": "hi-blackDog",
+        "pitch": 0.9,
+        "rate": 0.9
+      },
+      "tricks": [
+        "dropBall",
+        "spin",
+        "boing"
+      ]
     },
     {
       "id": "puppy",
       "kind": "dog",
       "label": "Puppy",
       "weight": 3,
-      "sound": "fx-yip"
+      "sound": "fx-yip",
+      "hello": {
+        "clip": "hi-puppy",
+        "pitch": 1.35,
+        "rate": 1.25
+      },
+      "tricks": [
+        "loudHopPeek",
+        "zoomies",
+        "boing"
+      ]
     },
     {
       "id": "kitty",
       "kind": "cat",
       "label": "Kitty",
       "weight": 3,
-      "sound": "fx-meow"
+      "sound": "fx-meow",
+      "hello": {
+        "clip": "hi-kitty",
+        "pitch": 1.2,
+        "rate": 1.05
+      },
+      "tricks": [
+        "pawTap",
+        "twirl",
+        "spin"
+      ]
     },
     {
       "id": "bunny",
       "kind": "bunny",
       "label": "Bunny",
       "weight": 1,
-      "sound": "fx-sniff"
+      "sound": "fx-sniff",
+      "hello": {
+        "clip": "hi-bunny",
+        "pitch": 1.0,
+        "rate": 0.95
+      },
+      "tricks": [
+        "petThenHop",
+        "spin",
+        "boing"
+      ]
     },
     {
       "id": "bunny2",
       "kind": "bunny",
       "label": "Second Bunny",
       "weight": 1,
-      "sound": "fx-sniff"
+      "sound": "fx-sniff",
+      "hello": {
+        "clip": "hi-bunny2",
+        "pitch": 1.05,
+        "rate": 1.0
+      },
+      "tricks": [
+        "pileHug",
+        "spin",
+        "boing"
+      ]
     }
   ],
   "friends": [
@@ -540,6 +620,16 @@
         "ball",
         "frisbee",
         "star"
+      ],
+      "hello": {
+        "clip": "hi-friendSilly",
+        "pitch": 1.2,
+        "rate": 1.15
+      },
+      "tricks": [
+        "tongueBoing",
+        "spin",
+        "boing"
       ]
     },
     {
@@ -551,6 +641,16 @@
       "treats": [
         "strawberry",
         "star"
+      ],
+      "hello": {
+        "clip": "hi-friendBerry",
+        "pitch": 0.95,
+        "rate": 0.9
+      },
+      "tricks": [
+        "offerBerry",
+        "twirl",
+        "spin"
       ]
     },
     {
@@ -563,7 +663,17 @@
         "star",
         "ball"
       ],
-      "countHost": true
+      "countHost": true,
+      "hello": {
+        "clip": "hi-friendCounter",
+        "pitch": 1.1,
+        "rate": 1.0
+      },
+      "tricks": [
+        "numberSparkles",
+        "twirl",
+        "boing"
+      ]
     },
     {
       "id": "friendDino",
@@ -575,17 +685,37 @@
         "ball",
         "star",
         "bone"
+      ],
+      "hello": {
+        "clip": "hi-friendDino",
+        "pitch": 0.9,
+        "rate": 1.05
+      },
+      "tricks": [
+        "happyToot",
+        "spin",
+        "boing"
       ]
     },
     {
       "id": "friendSea",
       "kind": "friend",
-      "label": "Sea Princess",
+      "label": "Coral",
       "weight": 2,
       "sound": "fx-chime",
       "treats": [
         "star",
         "ball"
+      ],
+      "hello": {
+        "clip": "hi-friendSea",
+        "pitch": 1.15,
+        "rate": 1.1
+      },
+      "tricks": [
+        "tailFlip",
+        "spin",
+        "boing"
       ]
     }
   ],
