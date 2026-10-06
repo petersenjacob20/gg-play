@@ -1,6 +1,6 @@
 // Router + screen mounting. Routes: #home, #game/<id> (a built game's current ladder step),
 // #play/<act> (test-only: plays that act via the game that owns it), #book, #stories, #story/<id>,
-// #pets. Dad help is a bottom sheet over the current screen.
+// #pets, #says (Puppy Says, also reached as #game/says). Dad help is a bottom sheet over the current screen.
 import { load, save, defaults, setLetters, setBook, setGames } from './store.js';
 import * as home from './screens/home.js';
 import * as play from './screens/play.js';
@@ -8,16 +8,17 @@ import * as book from './screens/book.js';
 import * as shelf from './screens/stories.js';
 import * as story from './screens/story.js';
 import * as pets from './screens/family.js';
+import * as says from './screens/says.js';
 import { closeDadPanel } from './dad.js';
 import { createGate } from './lock.js';
 import { createAudio } from './audio.js';
 import { routeName, routeParam } from './route.js';
 import { storyById } from './story.js';
 import { gameById, isBuilt } from './games.js';
-import { ACTS } from './acts/index.js';
+import { ACTS, SCREENS, PLAYABLE } from './acts/index.js';
 import { loadPhotos, setPhotos, revokePhotoURLs, forgetAllPhotos } from './photos.js';
 
-const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, letters: play, count: play };
+const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, says, letters: play, count: play };
 
 function paramFor(name, hash) {
   if (name === 'letters' || name === 'count') return name;
@@ -47,9 +48,15 @@ function render() {
   ctx.game = null;
   if (name === 'game') {
     const g = gameById(ctx.data.games, ctx.param);
-    if (!g || !isBuilt(g, ACTS)) { name = 'home'; ctx.param = null; }
+    if (!g || !isBuilt(g, PLAYABLE)) { name = 'home'; ctx.param = null; }
     else if (g.route) { name = routeName(g.route, ROUTES); ctx.param = routeParam(g.route); }
-    else { ctx.game = g; }
+    else {
+      ctx.game = g;
+      const own = SCREENS[g.ladder[0].act]; // a game with its own screen (Puppy Says)
+      if (own) name = own;
+    }
+  } else if (name === 'says') {
+    ctx.game = gameById(ctx.data.games, 'says');
   } else if (name === 'play' || name === 'letters' || name === 'count') {
     // test-only / old links: find a built game whose ladder uses this act
     const actId = ctx.param;

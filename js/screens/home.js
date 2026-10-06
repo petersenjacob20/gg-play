@@ -6,7 +6,7 @@ import { parade } from '../engine.js';
 import { art, stickerArt } from '../art.js';
 import { petView, setPose } from '../ui.js';
 import { dadButton } from '../dad.js';
-import { ACTS } from '../acts/index.js';
+import { PLAYABLE } from '../acts/index.js';
 import { tilePic } from '../tiles.js';
 import { builtGames, gameTitleFixed } from '../games.js';
 import { activeProfile } from '../store.js';
@@ -40,7 +40,7 @@ export function render(ctx) {
     });
     return v;
   }));
-  const games = builtGames(ctx.data.games, ACTS);
+  const games = builtGames(ctx.data.games, PLAYABLE);
   const tiles = games.map((g) => {
     const title = gameTitleFixed(g, ctx.state.pets);
     const wide = g.id === 'stories' && games.length % 2 === 1 && games[games.length - 1] === g;

@@ -16,28 +16,46 @@ export function pickLocalVoice(synth = globalThis.speechSynthesis) {
   return en;
 }
 
-// Speak "I'm <name>!" with pitch/rate. Returns true if an utterance was started.
-// Cancels any prior utterance. Never logs the name.
-export function speakPetHello(name, { pitch = 1, rate = 1, synth = globalThis.speechSynthesis } = {}) {
-  if (!synth || typeof synth.speak !== 'function') return false;
-  const n = typeof name === 'string' ? name.trim() : '';
-  if (!n) return false;
+// Speak a short line with an on-device voice only, with pitch/rate. Returns the utterance when one
+// was started, else null (no speech, no local voice, or it failed). Cancels any prior utterance.
+// Never logs the text. Used by the hello ("I'm <name>!") and Puppy Says' lead ("<name> says...").
+export function speakLocal(text, { pitch = 1, rate = 1, synth = globalThis.speechSynthesis } = {}) {
+  if (!synth || typeof synth.speak !== 'function') return null;
+  const t = typeof text === 'string' ? text.trim() : '';
+  if (!t) return null;
   const voice = pickLocalVoice(synth);
-  if (!voice) return false;
+  if (!voice) return null;
   try {
     if (typeof synth.cancel === 'function') synth.cancel();
     const U = globalThis.SpeechSynthesisUtterance;
-    if (typeof U !== 'function') return false;
-    const u = new U(`I'm ${n}!`);
+    if (typeof U !== 'function') return null;
+    const u = new U(t);
     u.voice = voice;
     u.pitch = Math.min(2, Math.max(0.5, Number(pitch) || 1));
     u.rate = Math.min(2, Math.max(0.5, Number(rate) || 1));
     u.volume = 1;
     synth.speak(u);
-    return true;
+    return u;
   } catch {
-    return false;
+    return null;
   }
+}
+
+// Speak "I'm <name>!" with pitch/rate. Returns true if an utterance was started.
+// Cancels any prior utterance. Never logs the name.
+export function speakPetHello(name, { pitch = 1, rate = 1, synth = globalThis.speechSynthesis } = {}) {
+  const n = typeof name === 'string' ? name.trim() : '';
+  if (!n) return false;
+  return Boolean(speakLocal(`I'm ${n}!`, { pitch, rate, synth }));
+}
+
+// The name Dad typed for a pet, when the voice may say it (Amendment n): Say pet names on, Sound on,
+// the pet switched on and a name typed. Otherwise '' (the default-label clip plays instead).
+export function speakableName(state, id) {
+  if (!state || state.sayNames === false || state.sound === false) return '';
+  const p = state.pets && state.pets[id];
+  if (!p || p.on === false || typeof p.name !== 'string') return '';
+  return p.name.trim();
 }
 
 export function cancelSpeech(synth = globalThis.speechSynthesis) {

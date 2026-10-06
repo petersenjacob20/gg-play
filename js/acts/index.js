@@ -7,6 +7,11 @@ import pattern from './pattern.js';
 
 export const ACTS = { letters, count, add, pattern };
 
+// Games that are not a quiz and have their own screen (Amendment p: Puppy Says). The ladder's act
+// names the screen. A game is built when its first act is a quiz act or one of these.
+export const SCREENS = { says: 'says' };
+export const PLAYABLE = { ...ACTS, ...SCREENS };
+
 // Compatibility for older tests: activity list in the old home order. Home itself reads games.json.
 export const TILES = [
   { id: 'letters', name: 'Letters', clip: 'homeLetters', route: '#play/letters' },

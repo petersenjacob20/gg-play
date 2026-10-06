@@ -101,6 +101,22 @@
       ]
     },
     {
+      "id": "says",
+      "title": "{puppy} Says",
+      "titleDefault": "Puppy Says",
+      "host": "puppy",
+      "theme": "park",
+      "tile": "tl-says",
+      "label": "h-says",
+      "edge": "#B0703C",
+      "ladder": [
+        { "act": "says", "lv": 1 },
+        { "act": "says", "lv": 2 },
+        { "act": "says", "lv": 3 },
+        { "act": "says", "lv": 4 }
+      ]
+    },
+    {
       "id": "stories",
       "title": "Story Time",
       "titleDefault": "Story Time",

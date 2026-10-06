@@ -1,5 +1,5 @@
 // On-device storage (build plan sections 1 and 6, Amendment m / m8 / save v3). One localStorage key,
-// `gg.v1` (the key name stays). Household fields (sound, pets, lock) are shared; each profile has
+// `gg.v1` (the key name stays). Household fields (sound, intros, sayNames, saysShort, pets, lock) are shared; each profile has
 // its own name, levels (keyed by game id), book and seenLetters. Photos stay in IndexedDB gg-photos.
 // A v2 save becomes profiles.p1; levels map per Amendment m2 revised (primary act from games.json).
 // Each game level is {lv,top,good,at,topAt}; at/topAt are step keys (act[:mode]:lv) so ladder inserts keep her place (m8).
@@ -61,6 +61,7 @@ export function defaults() {
     sound: true,
     intros: true,   // Hello voices (Amendment n)
     sayNames: true, // Say pet names via on-device speech only (Amendment n)
+    saysShort: false, // Puppy Says: Dad's Short round (3 moves instead of 5; Amendment p5)
     pets,
     lock: null,
     active: 'p1',
@@ -208,6 +209,7 @@ export function normalize(obj, { letters = enabledLetters, book = catalog } = {}
   if (typeof obj.sound === 'boolean') s.sound = obj.sound;
   if (typeof obj.intros === 'boolean') s.intros = obj.intros;
   if (typeof obj.sayNames === 'boolean') s.sayNames = obj.sayNames;
+  if (typeof obj.saysShort === 'boolean') s.saysShort = obj.saysShort;
   s.lock = normalizeLock(obj.lock);
 
   const profiles = {};

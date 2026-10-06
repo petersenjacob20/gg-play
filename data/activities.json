@@ -896,6 +896,139 @@
       }
     ]
   },
+  "says": {
+    "lead": "ps-lead",
+    "then": "ps-then",
+    "times": "ps-times",
+    "silly": "ps-silly",
+    "cheer": [
+      "c-yay1",
+      "c-yay2",
+      "fx-woof"
+    ],
+    "note": "Clear a soft space; spins and rolls on the rug.",
+    "moves": [
+      {
+        "id": "nose",
+        "clip": "ps-nose",
+        "anim": "wiggle",
+        "text": "Touch your nose!"
+      },
+      {
+        "id": "toes",
+        "clip": "ps-toes",
+        "anim": "freeze-sit",
+        "text": "Touch your toes!"
+      },
+      {
+        "id": "clap",
+        "clip": "ps-clap",
+        "anim": "clap-paws",
+        "count": true,
+        "countClip": "ps-c-clap",
+        "countText": "Clap",
+        "text": "Clap your hands!"
+      },
+      {
+        "id": "frog",
+        "clip": "ps-frog",
+        "anim": "hop",
+        "count": true,
+        "countClip": "ps-c-hop",
+        "countText": "Hop",
+        "text": "Hop like a frog!"
+      },
+      {
+        "id": "dino",
+        "clip": "ps-dino",
+        "anim": "stomp",
+        "count": true,
+        "countClip": "ps-c-stomp",
+        "countText": "Stomp",
+        "text": "Stomp like a dino!"
+      },
+      {
+        "id": "chick",
+        "clip": "ps-chick",
+        "anim": "flap",
+        "text": "Flap like a chick!"
+      },
+      {
+        "id": "wiggle",
+        "clip": "ps-wiggle",
+        "anim": "wiggle",
+        "text": "Wiggle like a puppy!"
+      },
+      {
+        "id": "spin",
+        "clip": "ps-spin",
+        "anim": "spin",
+        "count": true,
+        "countClip": "ps-c-spin",
+        "countText": "Spin",
+        "text": "Spin around!"
+      },
+      {
+        "id": "reach",
+        "clip": "ps-reach",
+        "anim": "reach",
+        "text": "Reach up high!"
+      },
+      {
+        "id": "roar",
+        "clip": "ps-roar",
+        "anim": "stomp",
+        "text": "Give a soft little roar!"
+      },
+      {
+        "id": "bunny",
+        "clip": "ps-bunny",
+        "anim": "freeze-sit",
+        "text": "Sit like a bunny!"
+      },
+      {
+        "id": "freeze",
+        "clip": "ps-freeze",
+        "anim": "freeze-sit",
+        "text": "Freeze!"
+      }
+    ],
+    "gym": [
+      {
+        "id": "star",
+        "clip": "ps-star",
+        "anim": "hop",
+        "count": true,
+        "countClip": "ps-c-jump",
+        "countText": "Star jump",
+        "text": "Do a star jump!"
+      },
+      {
+        "id": "bear",
+        "clip": "ps-bear",
+        "anim": "stomp",
+        "text": "Walk like a bear!"
+      },
+      {
+        "id": "tuck",
+        "clip": "ps-tuck",
+        "anim": "spin",
+        "text": "Do a tuck roll!"
+      },
+      {
+        "id": "balance",
+        "clip": "ps-balance",
+        "anim": "reach",
+        "text": "Balance on one foot!"
+      }
+    ],
+    "calm": {
+      "id": "calm",
+      "clip": "ps-calm",
+      "anim": "breathe-lie",
+      "text": "Take a big, slow breath, and lie down like a sleepy puppy."
+    }
+  },
   "clips": {
     "find": "p-find",
     "like": "p-like",
@@ -938,6 +1071,7 @@
     "h-sea": "h-pattern",
     "h-farm": "h-pattern",
     "h-monster": "h-count",
-    "h-stories": "h-stories"
+    "h-stories": "h-stories",
+    "h-says": "h-says"
   }
 }

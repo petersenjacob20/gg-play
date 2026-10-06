@@ -1352,5 +1352,221 @@
   "seconds": 0.993,
   "bytes": 6336,
   "checked": "machine"
+ },
+ "ps-lead": {
+  "kind": "text",
+  "input": "Puppy says...",
+  "phonemes": "pˈʌpi sˈɛz...",
+  "seconds": 0.855,
+  "bytes": 5472,
+  "checked": "machine"
+ },
+ "ps-then": {
+  "kind": "text",
+  "input": "then",
+  "phonemes": "ðˈɛn",
+  "seconds": 0.489,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "ps-times": {
+  "kind": "text",
+  "input": "times!",
+  "phonemes": "tˈImz!",
+  "seconds": 0.629,
+  "bytes": 4176,
+  "checked": "machine"
+ },
+ "ps-silly": {
+  "kind": "text",
+  "input": "Silly! I didn't say...",
+  "phonemes": "sˈɪli! ˌI dˈɪdᵊnt sˈA...",
+  "seconds": 1.296,
+  "bytes": 7776,
+  "checked": "machine"
+ },
+ "ps-nose": {
+  "kind": "text",
+  "input": "Touch your nose!",
+  "phonemes": "tˈʌʧ jʊɹ nˈOz!",
+  "seconds": 0.84,
+  "bytes": 5328,
+  "checked": "machine"
+ },
+ "ps-toes": {
+  "kind": "text",
+  "input": "Touch your toes!",
+  "phonemes": "tˈʌʧ jʊɹ tˈOz!",
+  "seconds": 0.878,
+  "bytes": 5616,
+  "checked": "machine"
+ },
+ "ps-clap": {
+  "kind": "text",
+  "input": "Clap your hands!",
+  "phonemes": "klˈæp jʊɹ hˈændz!",
+  "seconds": 0.924,
+  "bytes": 5904,
+  "checked": "machine"
+ },
+ "ps-frog": {
+  "kind": "text",
+  "input": "Hop like a frog!",
+  "phonemes": "hˈɑp lˈIk ɐ fɹˈɔɡ!",
+  "seconds": 1.017,
+  "bytes": 6480,
+  "checked": "machine"
+ },
+ "ps-dino": {
+  "kind": "text",
+  "input": "Stomp like a dino!",
+  "phonemes": "stˈɔmp lˈIk ɐ dˈInO!",
+  "seconds": 1.129,
+  "bytes": 7200,
+  "checked": "machine"
+ },
+ "ps-chick": {
+  "kind": "text",
+  "input": "Flap like a chick!",
+  "phonemes": "flˈæp lˈIk ɐ ʧˈɪk!",
+  "seconds": 1.02,
+  "bytes": 6480,
+  "checked": "machine"
+ },
+ "ps-wiggle": {
+  "kind": "text",
+  "input": "Wiggle like a puppy!",
+  "phonemes": "wˈɪɡᵊl lˈIk ɐ pˈʌpi!",
+  "seconds": 1.143,
+  "bytes": 7200,
+  "checked": "machine"
+ },
+ "ps-spin": {
+  "kind": "text",
+  "input": "Spin around!",
+  "phonemes": "spˈɪn əɹˈWnd!",
+  "seconds": 0.942,
+  "bytes": 6048,
+  "checked": "machine"
+ },
+ "ps-reach": {
+  "kind": "text",
+  "input": "Reach up high!",
+  "phonemes": "ɹˈiʧ ˌʌp hˈI!",
+  "seconds": 0.813,
+  "bytes": 5184,
+  "checked": "machine"
+ },
+ "ps-roar": {
+  "kind": "text",
+  "input": "Give a soft little roar!",
+  "phonemes": "ɡˈɪv ɐ sˈɔft lˈɪTᵊl ɹˈɔɹ!",
+  "seconds": 1.238,
+  "bytes": 7776,
+  "checked": "machine"
+ },
+ "ps-bunny": {
+  "kind": "text",
+  "input": "Sit like a bunny!",
+  "phonemes": "sˈɪt lˈIk ɐ bˈʌni!",
+  "seconds": 0.961,
+  "bytes": 6192,
+  "checked": "machine"
+ },
+ "ps-freeze": {
+  "kind": "text",
+  "input": "Freeze!",
+  "phonemes": "fɹˈiz!",
+  "seconds": 0.631,
+  "bytes": 4176,
+  "checked": "machine"
+ },
+ "ps-star": {
+  "kind": "text",
+  "input": "Do a star jump!",
+  "phonemes": "dˈu ɐ stˈɑɹ ʤˈʌmp!",
+  "seconds": 0.885,
+  "bytes": 5616,
+  "checked": "machine"
+ },
+ "ps-bear": {
+  "kind": "text",
+  "input": "Walk like a bear!",
+  "phonemes": "wˈɔk lˈIk ɐ bˈɛɹ!",
+  "seconds": 0.937,
+  "bytes": 6048,
+  "checked": "machine"
+ },
+ "ps-tuck": {
+  "kind": "text",
+  "input": "Do a tuck roll!",
+  "phonemes": "dˈu ɐ tˈʌk ɹˈOl!",
+  "seconds": 0.792,
+  "bytes": 5040,
+  "checked": "machine"
+ },
+ "ps-balance": {
+  "kind": "text",
+  "input": "Balance on one foot!",
+  "phonemes": "bˈæləns ˌɔn wˈʌn fˈʊt!",
+  "seconds": 1.187,
+  "bytes": 7488,
+  "checked": "machine"
+ },
+ "ps-calm": {
+  "kind": "text",
+  "input": "Take a big, slow breath, and lie down like a sleepy puppy.",
+  "phonemes": "tˈAk ɐ bˈɪɡ, slˈO bɹˈɛθ, ænd lˈI dˌWn lˈIk ɐ slˈipi pˈʌpi.",
+  "seconds": 3.292,
+  "bytes": 20160,
+  "checked": "machine"
+ },
+ "ps-c-clap": {
+  "kind": "text",
+  "input": "Clap",
+  "phonemes": "klˈæp",
+  "seconds": 0.445,
+  "bytes": 3024,
+  "checked": "machine"
+ },
+ "ps-c-hop": {
+  "kind": "text",
+  "input": "Hop!",
+  "phonemes": "hˈɑp!",
+  "seconds": 0.516,
+  "bytes": 3456,
+  "checked": "machine"
+ },
+ "ps-c-stomp": {
+  "kind": "text",
+  "input": "Stomp",
+  "phonemes": "stˈɔmp",
+  "seconds": 0.565,
+  "bytes": 3744,
+  "checked": "machine"
+ },
+ "ps-c-spin": {
+  "kind": "text",
+  "input": "Spin",
+  "phonemes": "spˈɪn",
+  "seconds": 0.548,
+  "bytes": 3600,
+  "checked": "machine"
+ },
+ "ps-c-jump": {
+  "kind": "text",
+  "input": "Star jump",
+  "phonemes": "stˈɑɹ ʤˈʌmp",
+  "seconds": 0.732,
+  "bytes": 4752,
+  "checked": "machine"
+ },
+ "h-says": {
+  "kind": "text",
+  "input": "Puppy says!",
+  "phonemes": "pˈʌpi sˈɛz!",
+  "seconds": 0.801,
+  "bytes": 5184,
+  "checked": "machine"
  }
 }

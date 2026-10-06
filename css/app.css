@@ -592,6 +592,10 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   /* reactions become a soft glow (not motion, so it keeps running); the box still glows to be tapped */
   .react-glow { animation: soft-glow .9s ease-in-out !important; }
+  /* Puppy Says: the poses show their end shape (sit, lie down) without moving; the waiting bounce and paw glow stop */
+  .says.waiting .says-pup .pup-bounce, .says.waiting .paw-btn, .says-pup.giggle .body { animation: none !important; }
+  /* the giggle keeps a still head tilt, no wiggle */
+  .says-pup.giggle .head { animation: none !important; transform: rotate(-10deg); }
   /* the rainbow's next band: a still soft highlight instead of the pulse */
   .rb-next { animation: none !important; fill: rgba(255, 236, 150, .6); }
   .gift.waiting { animation: soft-glow 3s ease-in-out infinite !important; border-radius: 24px; }
@@ -693,6 +697,75 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .play.theme-park .stage { background: linear-gradient(#B8E4F7 0%, #B8E4F7 55%, #8FCF6E 55%, #8FCF6E 100%); }
 .play.theme-dig .stage { background: linear-gradient(#E8D5A8 0%, #E8D5A8 45%, #C4A06A 45%, #8A6A3A 100%); }
 .play.theme-sea .stage { background: linear-gradient(#4AA3DF 0%, #2E7FB8 70%, #E8D9A8 70%, #E8D9A8 100%); }
+
+/* ---- Puppy Says (Amendment p): the park, the drawn puppy doing each move slowly, one big paw button.
+   Poses (Design's set): hop, clap-paws, spin, reach, stomp, flap, wiggle, freeze-sit, breathe-lie. */
+.says-stage {
+  flex: 1; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center;
+  border: var(--line); border-radius: var(--radius); overflow: hidden;
+  background: linear-gradient(#B8E4F7 0%, #B8E4F7 58%, #8FCF6E 58%, #8FCF6E 100%);
+}
+.says .paws { min-width: 0; gap: 2px; }
+.says .paw { width: 24px; height: 24px; flex: 0 1 24px; }
+.says-pup { width: min(68vw, 42vh, 300px); height: min(68vw, 42vh, 300px); flex: none; }
+.says-pup .drawing { width: 100%; height: 100%; display: block; }
+.says-pup .pup-bounce { display: block; width: 100%; height: 100%; }
+.says.waiting .says-pup .pup-bounce { animation: ps-wait 1.8s ease-in-out infinite; }
+.says-pup .mouth-paw { position: absolute; left: 40%; top: 40%; width: 20%; height: 20%; opacity: 0; transform: translateY(14%) scale(.6); transition: opacity .2s, transform .2s; pointer-events: none; }
+.says-pup .mouth-paw .drawing { width: 100%; height: 100%; }
+.says-pup.giggle .mouth-paw { opacity: 1; transform: none; }
+/* the L4 giggle: a head tilt and a shoulder wiggle on the existing parts (no new art) */
+.says-pup .body { transform-box: fill-box; transform-origin: 50% 100%; }
+.says-pup.giggle .head { transform-origin: 50% 92%; animation: ps-tilt .35s ease-out 1 forwards; }
+.says-pup.giggle .body { animation: ps-shoulders .3s ease-in-out .2s 6; }
+/* the right-answer moment: the same happy face and perked ears as a happy pet elsewhere */
+.says-pup.cheer .only-happy { display: inline; }
+.says-pup.cheer .ear.l { transform: rotate(35deg); }
+.says-pup.cheer .ear.r { transform: rotate(-35deg); }
+.says-pup.moving[data-anim="hop"] .char { animation: ps-hop 1.4s ease-in-out 2; }
+.says-pup.moving[data-anim="clap-paws"] .char { animation: ps-clap .9s ease-in-out 3; }
+.says-pup.moving[data-anim="spin"] .char { transform-origin: 50% 50%; animation: ps-spin 2s ease-in-out 1; }
+.says-pup.moving[data-anim="reach"] .char { animation: ps-reach 1.8s ease-in-out 2; }
+.says-pup.moving[data-anim="reach"] .head { transform: rotate(-8deg); }
+.says-pup.moving[data-anim="stomp"] .char { animation: ps-stomp 1.2s ease-in-out 3; }
+.says-pup.moving[data-anim="flap"] .ear.l { animation: ps-flap-l .45s ease-in-out 6; }
+.says-pup.moving[data-anim="flap"] .ear.r { animation: ps-flap-r .45s ease-in-out 6; }
+.says-pup.moving[data-anim="flap"] .char { animation: ps-bob 0.9s ease-in-out 3; }
+.says-pup.moving[data-anim="wiggle"] .char { animation: ps-wiggle .7s ease-in-out 4; }
+.says-pup.moving[data-anim="wiggle"] .tail { animation: wag .3s ease-in-out 9; }
+.says-pup.moving[data-anim="freeze-sit"] .char { animation: ps-sit .5s ease-out 1 forwards; }
+.says-pup.moving[data-anim="breathe-lie"] .char { animation: ps-breathe-lie 4.2s ease-in-out 1 forwards; }
+@keyframes ps-wait { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5%); } }
+@keyframes ps-tilt { from { transform: rotate(0); } to { transform: rotate(-10deg); } }
+@keyframes ps-shoulders { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+@keyframes ps-hop { 0%, 100% { transform: translateY(0) scale(1, 1); } 20% { transform: scale(1.06, .92); } 55% { transform: translateY(-16%) scale(.97, 1.04); } }
+@keyframes ps-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5%); } }
+@keyframes ps-clap { 0%, 100% { transform: scale(1, 1); } 40% { transform: scale(1.07, .95); } 55% { transform: scale(.97, 1.03); } }
+@keyframes ps-spin { 0%, 100% { transform: scaleX(1); } 25% { transform: scaleX(.08); } 50% { transform: scaleX(-1); } 75% { transform: scaleX(.08); } }
+@keyframes ps-reach { 0%, 100% { transform: scale(1, 1); } 50% { transform: translateY(-4%) scale(.96, 1.12); } }
+@keyframes ps-stomp { 0%, 100% { transform: rotate(0) translateY(0); } 25% { transform: rotate(-6deg) translateY(-6%); } 45% { transform: rotate(-2deg) translateY(0); } 70% { transform: rotate(6deg) translateY(-6%); } 90% { transform: rotate(2deg) translateY(0); } }
+@keyframes ps-flap-l { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(45deg); } }
+@keyframes ps-flap-r { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-45deg); } }
+@keyframes ps-wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+@keyframes ps-sit { from { transform: scale(1, 1); } to { transform: scale(1.04, .9); } }
+@keyframes ps-breathe-lie { 0% { transform: scale(1); } 35% { transform: scale(1.07); } 55% { transform: scale(1); } 100% { transform: translateY(8%) scale(1.12, .74); } }
+.digit-pop {
+  position: absolute; right: 8%; top: 6%; min-width: 1em; font-size: 104px; line-height: 1; font-weight: 700; text-align: center;
+  color: #B0703C; text-shadow: 0 4px 0 #FFFFFF, 0 -2px 0 #FFFFFF, 3px 0 0 #FFFFFF, -3px 0 0 #FFFFFF; pointer-events: none;
+}
+.digit-pop:empty { display: none; }
+.digit-pop.pop { animation: ps-pop .4s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes ps-pop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
+.paw-row { display: flex; justify-content: center; padding: 4px 0 2px; }
+.paw-btn {
+  width: 132px; height: 132px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--card); border: var(--line); box-shadow: 0 6px 0 #B0703C; -webkit-tap-highlight-color: transparent;
+}
+.paw-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #B0703C; }
+.paw-btn .paw-icon { width: 88px; height: 88px; }
+.says.waiting .paw-btn { animation: paw-glow 2.4s ease-in-out infinite; }
+@keyframes paw-glow { 0%, 100% { box-shadow: 0 6px 0 #B0703C, 0 0 0 0 rgba(176, 112, 60, 0); } 50% { box-shadow: 0 6px 0 #B0703C, 0 0 0 12px rgba(176, 112, 60, .25); } }
+.moves-list { margin: 0; padding-left: 22px; font-size: 17px; line-height: 1.6; }
 .train.sea-row .car {
   border-radius: 50%; background: rgba(255,255,255,.55); border: 3px solid rgba(255,255,255,.9);
   box-shadow: inset 0 -6px 0 rgba(74,163,223,.15);
@@ -766,6 +839,9 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .game-tile.edge-farm { border-bottom-color: #D9534F; }
 .game-tile.edge-monster { border-bottom-color: #E86FA8; }
 .game-tile.edge-stories { border-bottom-color: #F2C230; }
+.game-tile.edge-says { border-bottom-color: #B0703C; }
+.tile-art .paw-pic .drawing { width: 44px; height: 44px; }
+.ring-tile .paw-pic .drawing, .level-pic .paw-pic .drawing { width: 26px; height: 26px; }
 
 
 /* Character Fun n1 tricks (design.md §13.2) — under 1 s, picture only */

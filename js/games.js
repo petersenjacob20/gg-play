@@ -1,6 +1,6 @@
 // Games layer (plan l1, Amendment m): each game is a ladder of activity steps in games.json.
 // Pure helpers: which games are built, titles, the primary act for migration, mapping old levels.
-export const GAME_IDS = ['letterhunt', 'fetch', 'dig', 'sea', 'farm', 'monster', 'stories'];
+export const GAME_IDS = ['letterhunt', 'fetch', 'dig', 'sea', 'farm', 'monster', 'says', 'stories'];
 export const PROFILE_IDS = ['p1', 'p2', 'p3', 'p4'];
 export const PROFILE_MAX = 4;
 export const PLAYER_LABEL = 'Player'; // empty name shows as this (Design §12)

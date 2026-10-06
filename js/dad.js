@@ -4,7 +4,7 @@
 import { h } from './dom.js';
 import { deleteAll, defaults, activeProfile, resetProfileProgress, freshProfile, save, NAME_MAX } from './store.js';
 import { setLevel } from './engine.js';
-import { ACTS } from './acts/index.js';
+import { PLAYABLE } from './acts/index.js';
 import { tilePic } from './tiles.js';
 import { builtGames, gameTitleFixed, ladderMax, stepAt, displayName, PROFILE_MAX, PROFILE_IDS, keysForLevel } from './games.js';
 import { canLock, makeLock, checkLock, validPassword, createGate, PASS_MIN } from './lock.js';
@@ -366,6 +366,7 @@ export const LEVEL_LINES = {
   count: ['1 to 5', '3 to 10', '8 to 20'],
   add: ['Up to 5', '6 to 10'],
   pattern: ['AB', 'AAB, ABB', 'ABC'],
+  says: ['Puppy says one move', 'Count the moves (2 to 5)', 'Two moves in a row', 'Listen for "Puppy says"'],
 };
 
 export function levelLine(actId, lv) {
@@ -380,7 +381,7 @@ function stepLine(game, lv) {
 }
 
 function levelsView(ctx) {
-  const games = builtGames(ctx.data.games, ACTS).filter((g) => !g.noLevels);
+  const games = builtGames(ctx.data.games, PLAYABLE).filter((g) => !g.noLevels);
   const profile = activeProfile(ctx.state);
   const note = h('p', { class: 'sheet-saved', role: 'status', 'aria-live': 'polite' });
   let noteTimer = null;
@@ -495,6 +496,18 @@ export function openDadPanel(ctx, view = 'menu') {
     body.push(h('p', { class: 'sheet-hint', text: "Uses this phone's own voice for names you typed. Names stay on the phone." }));
     body.push(sheetBtn('Back', () => openDadPanel(ctx, 'menu')));
     body.push(sheetBtn('Close', () => closeDadPanel(), 'plain'));
+  } else if (view === 'moves') {
+    // Puppy Says (Amendment p5): every move, read-only, for playing without the screen. Behind the
+    // grown-up lock like Short round: with a password set and not unlocked, this asks for it first.
+    if (hasLock(ctx) && !gate(ctx).isUnlocked()) { withUnlock(ctx, () => openDadPanel(ctx, 'moves')); return; }
+    const says = ctx.data.says;
+    body = [
+      h('h2', { id: 'sheet-title', text: 'Park moves' }),
+      h('p', { class: 'sheet-sub', text: says.note }),
+      h('ul', { class: 'moves-list' }, [...says.moves, ...says.gym, says.calm].map((m) => h('li', { text: m.text }))),
+      sheetBtn('Back', () => openDadPanel(ctx, 'menu')),
+      sheetBtn('Close', () => closeDadPanel(), 'plain'),
+    ];
   } else if (view === 'profiles') {
     openProfiles(ctx); return;
   } else {
@@ -502,7 +515,7 @@ export function openDadPanel(ctx, view = 'menu') {
     body = [
       h('h2', { id: 'sheet-title', text: 'Dad help' }),
       q && q.dadText ? h('p', { class: 'sheet-sub', text: q.dadText }) : null,
-      sheetBtn('Show answer', () => { closeDadPanel(); q && q.showAnswer(); }, '', { disabled: !q }),
+      sheetBtn('Show answer', () => { closeDadPanel(); q && q.showAnswer && q.showAnswer(); }, '', { disabled: !q || !q.showAnswer }),
       sheetBtn('Skip', () => { closeDadPanel(); q && q.skip(); }, '', { disabled: !q }),
       sheetBtn('Home', () => { closeDadPanel(); ctx.go('#home'); }),
       sheetBtn(`Sound: ${ctx.state.sound ? 'On' : 'Off'}`, () => {
@@ -522,6 +535,20 @@ export function openDadPanel(ctx, view = 'menu') {
       }, '', { 'aria-pressed': ctx.state.sayNames !== false ? 'true' : 'false' }));
       body.push(h('p', { class: 'sheet-hint', text: "Uses this phone's own voice for names you typed. Names stay on the phone." }));
     };
+    // Puppy Says (Amendment p5, the whole Dad sheet behind the lock): the soft-space note, Short round and
+    // the read-only move list. With a password set and not unlocked, only one button shows, and it asks first.
+    if (q && q.says) {
+      if (!locked || gate(ctx).isUnlocked()) {
+        body.push(h('p', { class: 'sheet-hint', text: ctx.data.says.note }));
+        body.push(sheetBtn(`Short round: ${ctx.state.saysShort ? 'On' : 'Off'}`, () => withUnlock(ctx, () => {
+          ctx.state.saysShort = !ctx.state.saysShort; ctx.save(); openDadPanel(ctx, 'menu');
+        }), '', { 'aria-pressed': ctx.state.saysShort ? 'true' : 'false' }));
+        body.push(h('p', { class: 'sheet-hint', text: '3 moves instead of 5. Starts with the next round.' }));
+        body.push(sheetBtn('Park moves', () => withUnlock(ctx, () => openDadPanel(ctx, 'moves'))));
+      } else {
+        body.push(sheetBtn('Puppy Says settings', () => withUnlock(ctx, () => openDadPanel(ctx, 'menu'))));
+      }
+    }
     if (!locked) {
       body.push(sheetBtn('Set up a grown-up password', () => openSetupLock(ctx)));
       body.push(h('p', { class: 'sheet-hint', text: 'Stops little hands from changing levels or wiping progress.' }));
@@ -545,7 +572,7 @@ export function openDadPanel(ctx, view = 'menu') {
     body.push(sheetBtn('Delete my data', () => openDadPanel(ctx, 'confirm'), 'danger-outline'));
     body.push(sheetBtn('Close', () => closeDadPanel(), 'plain'));
   }
-  const sheet = h('section', { class: view === 'levels' ? 'sheet levels-sheet' : 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'sheet-title' }, body);
+  const sheet = h('section', { class: view === 'levels' ? 'sheet levels-sheet' : view === 'moves' ? 'sheet moves-sheet' : 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'sheet-title' }, body);
   const backdrop = h('div', { class: 'sheet-backdrop', onclick: () => closeDadPanel() });
   wrap.replaceChildren(backdrop, sheet);
   wrap.hidden = false;
