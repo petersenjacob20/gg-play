@@ -11,6 +11,7 @@ import * as pets from './screens/family.js';
 import * as says from './screens/says.js';
 import { closeDadPanel } from './dad.js';
 import { createGate } from './lock.js';
+import { createUpdater, safeUpdate } from './update.js';
 import { createAudio } from './audio.js';
 import { routeName, routeParam } from './route.js';
 import { storyById } from './story.js';
@@ -42,8 +43,28 @@ const ctx = {
 };
 
 let current = null;
+// pub6 (Amendment w): apply a new version on reopen (update.js decides; at most one reload per page)
+let updater = createUpdater({ hadController: false });
+let registration = null;
+// What is on screen now, for the update rule: home showing with nothing open on top.
+function onScreen() {
+  const sheet = document.getElementById('sheet');
+  const app = document.getElementById('app');
+  const name = current ? current.name : 'home';
+  return {
+    screen: name,
+    sheetOpen: !!(sheet && !sheet.hidden),
+    passwordOpen: !!(sheet && !sheet.hidden && sheet.querySelector('input[type="password"]')),
+    activityOpen: name !== 'home',
+    storyOpen: name === 'story',
+    boxOpen: !!(app && app.querySelector('.gift')),
+  };
+}
+
 function render() {
   let name = routeName(location.hash, ROUTES);
+  // a waiting update applies on landing at a clear home (an open Dad sheet waits for it to close)
+  if (updater.onSettle({ ...onScreen(), screen: name, activityOpen: name !== 'home', storyOpen: false, boxOpen: false }) === 'reload') return;
   ctx.param = paramFor(name, location.hash);
   ctx.game = null;
   if (name === 'game') {
@@ -83,7 +104,20 @@ function render() {
 
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => { /* offline mode unavailable */ });
+  const sw = navigator.serviceWorker;
+  // a page that already had a controller is an update when control changes; a first visit is not
+  const hadController = !!sw.controller;
+  updater = createUpdater({ hadController, reload: () => location.reload() });
+  sw.addEventListener('controllerchange', () => { updater.onControllerChange(onScreen()); });
+  // the Dad sheet or password prompt closing on home can be the moment it is clear
+  const sheet = document.getElementById('sheet');
+  if (sheet && typeof MutationObserver === 'function') {
+    new MutationObserver(() => { if (sheet.hidden) updater.onSettle(onScreen()); }).observe(sheet, { attributes: true, attributeFilter: ['hidden'] });
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && registration && updater.shouldCheck(Date.now())) safeUpdate(registration);
+  });
+  navigator.serviceWorker.register('./sw.js', { scope: './' }).then((reg) => { registration = reg; }).catch(() => { /* offline mode unavailable */ });
 }
 
 async function loadJSON(name) {
