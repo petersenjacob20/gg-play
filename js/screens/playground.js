@@ -316,9 +316,10 @@ function playScreen(ctx, who, zone) {
   // beside her). A part of a character's own drawing is not a prop and stays on (§16.10: friendBerry's
   // strawberry, friendDino's spade, friendSea's pom-poms).
   let heldAway = [];
-  // a live offer (the hop-off, then the offer beside her) holds her in place: a dog's bird chase waits
-  let offerHold = false; let offerToken = 0;
-  const holdOffer = (ms) => { const t = ++offerToken; offerHold = true; clock.later(ms, () => { if (t === offerToken) offerHold = false; }); };
+  // the hop-off and a live offer beside her hold her still: no ambient behaviour (a dog's bird chase)
+  // until both are over (the Architect's ride rule, build_plan 2026-10-06 12:58 AM)
+  let stillUntil = 0;
+  const holdStill = (ms) => { stillUntil = Math.max(stillUntil, Date.now() + ms); };
   const AWAY = [[() => actorWrap, ['pg-held', 'pg-treat']], [() => actor, ['trick-prop']], [() => layer, ['pg-offer']]];
   const propAway = () => {
     actorWrap.classList.add('pg-prop-away');
@@ -342,7 +343,7 @@ function playScreen(ctx, who, zone) {
         }
       }
       parent().appendChild(el);
-      if (offer) holdOffer(OFFER_MS);
+      if (offer) holdStill(OFFER_MS);
       clock.later(offer ? OFFER_MS : FX_MS, () => el.remove());
     }
     actor.classList.add('pose-happy'); actor.classList.remove('pose-idle'); // the drawn prop shows again for a moment
@@ -469,7 +470,7 @@ function playScreen(ctx, who, zone) {
       // the hop off (beside the teapots, by the station) comes first; only then the held prop comes back
       // and the offer appears (§16.10)
       lift = 0; pos = off; placeActor(reduced ? 0 : HOP_MS);
-      if (p.ride.after && p.ride.after.treat) holdOffer(HOP_MS + OFFER_MS); // the hop-off-then-offer sequence
+      holdStill(HOP_MS + (p.ride.after && p.ride.after.treat ? OFFER_MS : 0)); // every ride's hop-off, then any offer
       if (!PG.actorInView(cam, pos, vsize())) { cam = PG.fitInView(cam, pos, vsize(), world); applyCam(!reduced); } // she stays fully in view as she hops off
       smile(false);
       flash(actor, PG.trickClass('boing', reduced), big ? 600 : HOP_MS);
@@ -547,7 +548,7 @@ function playScreen(ctx, who, zone) {
     const box = h('span', { class: 'pg-offer', 'data-offer': after.treat, 'data-side': at.side > 0 ? 'right' : 'left', 'aria-hidden': 'true' }, ...parts);
     layer.appendChild(box);
     fx('fx-mmm');
-    holdOffer(OFFER_MS);
+    holdStill(OFFER_MS);
     clock.later(OFFER_MS, () => box.remove());
   };
   // the snack stand (q11): a treat from the allowlist and a happy wiggle; never a shop, nothing to count
@@ -832,9 +833,12 @@ function playScreen(ctx, who, zone) {
   clock.frame(tick);
 
   // dogs trot after a bird or squirrel for a moment, then stop (no catching, no barking)
+  // ambient behaviour never moves her while she is boarding (walking to a ride, the slide's tube row),
+  // seated (rider 1 and seat 2, before Go), riding (the tube too), hopping off, or beside a live offer
+  const ambientHeld = () => busy || !!gesture || walking || building || rideOn || !!seated || sliding || tubesAt >= 0 || Date.now() < stillUntil;
   if (who.kind === 'dog' && animals.length) {
     const chase = () => {
-      if (!busy && !gesture && !walking && !rideOn && !building && !offerHold) { // never off a live offer
+      if (!ambientHeld()) {
         const n = PG.nearestOf(animals, pos, ['bird', 'squirrel']);
         if (n && n.d < 450) walkTo(PG.chaseStep(pos, animals[n.i]), null, 'pg-trot');
       }

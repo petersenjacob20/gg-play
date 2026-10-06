@@ -21,6 +21,8 @@ import { gameById, isBuilt } from './games.js';
 import { ACTS, SCREENS, PLAYABLE } from './acts/index.js';
 import { loadPhotos, setPhotos, revokePhotoURLs, forgetAllPhotos } from './photos.js';
 
+// the routes that are a kid's game screen (with its round end); the Playground scene is added in render()
+const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says']);
 const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, says, playground, letters: play, count: play };
 
 function paramFor(name, hash) {
@@ -73,6 +75,7 @@ function render() {
   ctx.param = paramFor(name, location.hash);
   ctx.game = null;
   ctx.zone = null;
+  let scene = false; // the Playground play scene (not its pick screen)
   if (name === 'game') {
     const g = gameById(ctx.data.games, ctx.param);
     if (!g || !isBuilt(g, PLAYABLE)) { name = 'home'; ctx.param = null; }
@@ -90,6 +93,7 @@ function render() {
       if (r.fix) history.replaceState(null, '', r.fix);
       ctx.param = r.id;
       ctx.zone = r.zone || null;
+      scene = r.view === 'play';
     }
   } else if (name === 'says') {
     ctx.game = gameById(ctx.data.games, 'says');
@@ -111,6 +115,10 @@ function render() {
   ctx.question = null;
   current = { name, mod };
   document.body.dataset.screen = name;
+  // No pull-to-refresh anywhere (EM, home pub r3): html contains its overscroll (app.css); while a kid plays
+  // (a game screen, its round end, the Playground scene) .kid-play on the root switches it to none.
+  const kidPlay = KID_PLAY.has(name) || (name === 'playground' && scene);
+  document.documentElement.classList.toggle('kid-play', kidPlay);
   const root = document.getElementById('app');
   const out = mod.render(ctx);
   root.replaceChildren(...[].concat(out).flat(Infinity).filter(Boolean));

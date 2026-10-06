@@ -25,10 +25,19 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; height: 100%; overflow-x: clip; }
+/* The page itself is the one scroller and a finger drag must always scroll it (home pub, Android Chrome):
+   no overflow on html or body (on the root it propagates to the viewport as hidden and can pin the layout
+   viewport), no fixed height on html, and touch-action:none only on drag targets (the Dad hold button,
+   the line-up canvas, the Playground scene). Sideways clipping lives on .app, which never scrolls. */
+/* No pull-to-refresh anywhere in the app (EM, home pub r3). The document is the one scroller (home, Story
+   Time's shelf and reader, the Sticker book), so html contains its overscroll: the page still scrolls with a
+   finger and keeps its edge glow, but never pulls to refresh or chains out. While a kid plays (a game screen,
+   its round end, the Playground scene; main.js sets .kid-play on the root for those routes and clears it on
+   the way home) the root has no edge effect at all. Body needs no rule. No touch-action or overflow here. */
+html { -webkit-text-size-adjust: 100%; overscroll-behavior-y: contain; }
+html.kid-play, .kid.play, .kid.says, .kid.round-end, .playground.play { overscroll-behavior-y: none; }
 body {
   margin: 0;
-  min-height: 100%;
   font-family: var(--font);
   font-size: 18px;
   line-height: 1.35;
@@ -36,8 +45,6 @@ body {
   background: var(--bg);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  overscroll-behavior: none;
-  overflow-x: clip; /* nothing (like the parade walk-in) may ever widen the page sideways */
 }
 [hidden] { display: none !important; }
 button, input { font: inherit; color: inherit; }
@@ -52,6 +59,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   padding: calc(10px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
+  overflow-x: clip; /* nothing (like the parade walk-in) may widen the page sideways; clip never makes a scroller */
 }
 
 /* Kid screens: nothing to select, no long-press menus. */
@@ -66,7 +74,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 }
 
 /* Home (design.md 9.2): parade, a 2 x 2 picture grid with Stories full width, the Sticker book bar */
-.home { gap: 10px; }
+.home { gap: 10px; padding-bottom: 6px; } /* with the .app padding: 20 px + the safe area under the Sticker book (design §19: at least 16) */
 .home .topbar { min-height: 56px; }
 .dad-title { margin: 0; font-size: 14px; font-weight: 700; color: #7A6656; letter-spacing: .02em; }
 .big-buttons { display: flex; flex-direction: column; gap: 16px; }
@@ -663,7 +671,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  flex: 1;
+  flex: none; /* the Sticker book follows the grid at the 10 px gap; spare height goes below it (design §19) */
   align-content: start;
 }
 .game-grid .game-tile {
@@ -688,16 +696,40 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .tile-title {
   display: block; width: 100%; background: #FFF8EC; color: var(--ink);
   font-family: Andika, "Andika New Basic", sans-serif;
-  font-size: 15px; line-height: 1.15; text-align: center;
-  padding: 6px 8px; min-height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden; hyphens: auto;
+  /* one line (Design, home pub): every default title fits; a long typed pet name ends in an ellipsis, never
+     cut mid-letter, and the tile's aria-label has the full title (design §19) */
+  font-size: 16px; line-height: 24px; text-align: center; white-space: nowrap;
+  padding: 6px 6px; min-height: 36px;
+  overflow: hidden; text-overflow: ellipsis;
 }
+/* home tiles: the Story Time and Playground pictures are tile art like the others (56 px, centred), so
+   their row is no taller than the rest; the same when either tile is wide (design §17.1 rule 6) */
+.game-grid .game-tile .tile-art .story-pic { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; }
 .sea-bubbles { display: flex; gap: 4px; align-items: center; }
 .sea-bubbles .bubble-item .drawing { width: 36px; height: 36px; }
 .sea-bubbles .bubble.empty {
   width: 40px; height: 40px; border: 3px dashed var(--ink); border-radius: 50%; opacity: .5;
 }
+/* Home tile art stays inside the tile, at least 8 px from its edges, at every phone width (design §19):
+   the art row has 8 px padding and 2 px gaps, its pictures shrink together to fit (flex, keeping their
+   shape), and the letters and numbers scale with the tile's width (cqw). Never bigger than before. */
+.game-grid .game-tile { container-type: inline-size; }
+.game-grid .game-tile .tile-art { padding: 8px; gap: 2px; }
+.game-grid .tile-art > *, .game-grid .tile-art .sea-bubbles > * { flex: 0 1 auto; min-width: 0; }
+.game-grid .tile-art > .tile-who { flex-basis: 68px; } /* 68 + 2 x 8 fits the 84 px art band of a 132 px tile */
+.game-grid .tile-art > .tile-who.tiny { flex-basis: 48px; }
+.game-grid .tile-art > .mini-pic { flex-basis: 40px; width: auto; height: auto; }
+.game-grid .tile-art > .paw-pic { flex-basis: 44px; }
+.game-grid .tile-art > .sea-bubbles { gap: 2px; flex-basis: 154px; } /* 3 x 36 + 40 + gaps, the size it had */
+.game-grid .tile-art .sea-bubbles > .bubble-item { flex-basis: 36px; }
+.game-grid .tile-art .sea-bubbles > .bubble.empty { flex-basis: 40px; width: auto; height: auto; aspect-ratio: 1; }
+.game-grid .tile-art .tile-who .drawing, .game-grid .tile-art .tile-who.tiny .drawing, .game-grid .tile-art .mini-pic .drawing,
+.game-grid .tile-art .paw-pic .drawing, .game-grid .tile-art .sea-bubbles .bubble-item .drawing { width: 100%; height: auto; aspect-ratio: 1; }
+.game-grid .tile-art > .big-glyph, .game-grid .tile-art > .mini-glyph { flex-shrink: 0; }
+.game-grid .tile-art .big-glyph { font-size: min(48px, 31cqw); }
+.game-grid .tile-art .big-glyph.small-num { font-size: min(32px, 17cqw); }
+.game-grid .tile-art .mini-glyph { font-size: min(28px, 16cqw); }
+.game-grid .game-tile .tile-art .story-pic { flex: none; }
 
 /* Themes behind the play stage */
 .play.theme-park .stage { background: linear-gradient(#B8E4F7 0%, #B8E4F7 55%, #8FCF6E 55%, #8FCF6E 100%); }

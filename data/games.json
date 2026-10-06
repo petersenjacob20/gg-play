@@ -87,8 +87,8 @@
     },
     {
       "id": "monster",
-      "title": "Silly Monster Snacks",
-      "titleDefault": "Silly Monster Snacks",
+      "title": "Monster Snacks",
+      "titleDefault": "Monster Snacks",
       "host": "friendSilly",
       "theme": "kitchen",
       "tile": "tl-monster",

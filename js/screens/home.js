@@ -1,6 +1,8 @@
 // Home (design.md §11.1, piece 6): pet parade, then a 2-column grid of built games only (reflow, no
-// locked tiles). Each tile has a picture and a cream title strip (Andika, dark brown). Story Time is
-// full width on the last row when it is the only tile there. Sticker book bar at the bottom.
+// locked tiles). Each tile has a picture and a cream title strip (Andika, dark brown). The Playground,
+// when it is on, is the FIRST tile (top-left; CEO, so it is easy to find), then the games in Design
+// order. Story Time is full width only when it ends up alone on the last row (an odd tile count,
+// counting the Playground when present). Sticker book bar at the bottom.
 import { h, drawing } from '../dom.js';
 import { parade } from '../engine.js';
 import { art, stickerArt } from '../art.js';
@@ -43,9 +45,12 @@ export function render(ctx) {
   }));
   const games = builtGames(ctx.data.games, PLAYABLE);
   const pgOn = playgroundShips(ctx.data) && ctx.state.playground !== false;
+  const order = [...(pgOn ? ['playground'] : []), ...games.map((g) => g.id)];
+  // full width only when alone on the last row of the 2-column grid: the last tile of an odd count
+  const aloneLast = (id) => order.length % 2 === 1 && order[order.length - 1] === id;
   const tiles = games.map((g) => {
     const title = gameTitleFixed(g, ctx.state.pets);
-    const wide = g.id === 'stories' && !pgOn && games.length % 2 === 1 && games[games.length - 1] === g;
+    const wide = g.id === 'stories' && aloneLast('stories');
     return h('button', {
       type: 'button',
       class: `game-tile edge-${g.id}${wide ? ' wide' : ''}`,
@@ -60,12 +65,15 @@ export function render(ctx) {
       h('span', { class: 'tile-art', 'aria-hidden': 'true' }, tilePic(g.tile?.replace(/^tl-/, '') || g.id)),
       h('span', { class: 'tile-title', text: title }));
   });
-  // Playground tile (Amendment n / design.md §13.3) — lilac edge; only when it ships and Dad's toggle is on
+  // Playground tile (Amendment n / design.md §13.3) — lilac edge; only when it ships and Dad's toggle is on.
+  // First in the grid. It could only be alone on the last row if it were the only tile; then it goes full
+  // width with its art kept at tile size, centred (design §17.1, the CSS rule for .wide.edge-playground).
   if (pgOn) {
+    const pgWide = aloneLast('playground');
     const pgClip = (ctx.data.clips && ctx.data.clips['h-playground']) || 'c-yay1';
-    tiles.push(h('button', {
+    tiles.unshift(h('button', {
       type: 'button',
-      class: 'game-tile edge-playground',
+      class: `game-tile edge-playground${pgWide ? ' wide' : ''}`,
       'data-tile': 'playground',
       'aria-label': 'Playground',
       onclick: () => {
