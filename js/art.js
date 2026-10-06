@@ -2,6 +2,7 @@
 // shapes built from shared parts). Plain data trees, viewBox 0 0 100 100 unless noted.
 // Food pictures are fruit and veg only (the always-on food guards check every id).
 import { drawChar, strawberry } from './pets.js';
+import { PARK_ART } from './art-parks.js';
 
 const INK = '#4A3426';
 const O = { stroke: INK, 'stroke-width': 3, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' };
@@ -558,6 +559,8 @@ export const ART = {
     L('M50 22V6', INK, 3), P('M50 6L66 11L50 16Z', '#E5484D', { 'stroke-width': 2 }),
     C(50, 74, 12, '#F2C230')),
 };
+
+Object.assign(ART, PARK_ART); // Coaster Park and Water Park pieces (Amendment x)
 
 export function art(id, opts) {
   const f = ART[id];

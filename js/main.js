@@ -41,6 +41,8 @@ const ctx = {
   gate: null, // grown-up unlock gate (in memory only)
   save() { save(ctx.state); },
   go(hash) { if (location.hash === hash) render(); else location.hash = hash; },
+  // a zone gate swaps the place without a new history entry, so Back still goes to the pick screen
+  replace(hash) { if (location.hash === hash) render(); else location.replace(hash); },
   refresh() { render(); },
   afterDelete() { forgetAllPhotos(); location.hash = '#home'; location.reload(); },
 };

@@ -589,12 +589,15 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .sheet-btn.primary { background: var(--sky); border-color: var(--sky); color: #FFFFFF; text-align: center; }
 
 @media (prefers-reduced-motion: reduce) {
+  .pg-seat2 { animation: none !important; }
+  .pg-hopoff { animation: pg-fadeout .9s both !important; }
   /* Playground: every trick and ride is a short fade (q10); the camera does not ease */
   .pg-fade { animation: pg-fade .6s ease !important; }
   .pg-world.pg-ease { transition: none; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   /* reactions become a soft glow (not motion, so it keeps running); the box still glows to be tapped */
   .react-glow { animation: soft-glow .9s ease-in-out !important; }
+  .pg-go.on { animation: none !important; box-shadow: 0 4px 0 #3E8E44, 0 0 14px 4px rgba(93,187,99,.5); } /* a still glow */
   /* Puppy Says: the poses show their end shape (sit, lie down) without moving; the waiting bounce and paw glow stop */
   .says.waiting .says-pup .pup-bounce, .says.waiting .paw-btn, .says-pup.giggle .body { animation: none !important; }
   /* the giggle keeps a still head tilt, no wiggle */
@@ -961,8 +964,13 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   .pg-tricks .pg-trick-btn .drawing { width: 100%; height: 100%; max-width: 64px; max-height: 64px; }
   .pg-tricks.n4 .pg-trick-btn { min-width: 64px; min-height: 64px; }
 }
-.pg-gates { display: flex; gap: 12px; justify-content: center; padding: 8px 12px 0; }
-.pg-gate { width: 96px; height: 96px; min-width: 96px; min-height: 96px; border-radius: 18px; border: 3px solid #E8D9BE; background: #FFF9EE; }
+/* zone gates (design §16.1): the other zones' gates, overlaid bottom-left, inset 8 px */
+.pg-gates { position: absolute; left: 8px; bottom: 8px; z-index: 30; display: flex; gap: 10px; }
+.pg-gate { width: 96px; height: 96px; min-width: 96px; min-height: 96px; padding: 4px; border-radius: 14px; border: 2px solid #CFC6B8; background: #FFF9EE; }
+.building .pg-gates, .pg-on-ride .pg-gates { display: none; }
+.pg-cream { position: fixed; inset: 0; z-index: 9000; background: #FFF9EE; opacity: 0; pointer-events: none; transition: opacity 300ms ease; }
+.pg-leave .pg-cream { opacity: 1; }
+.pg-leave-rm .pg-cream { opacity: 1; transition: opacity 150ms linear !important; }
 .pg-foot { position: absolute; width: 18px; height: 18px; transform: translate(-50%, -50%);
   pointer-events: none; opacity: 0.8; animation: tn-pop 0.5s ease forwards; }
 /* piece tricks, all under 1 s */
@@ -1054,3 +1062,101 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .pg-r-flutter .pg-animal-in { animation: pg-r-flutter .9s ease-in-out; }
 @keyframes pg-r-flutter { 0%,100%{transform:scaleY(1)} 25%,75%{transform:scaleY(.6)} 50%{transform:scaleY(1)} }
 .game-grid.n5 .game-tile { min-height: 132px; }
+/* Amendment x: Coaster Park and Water Park rides (design §16). JS sets the tops from rideFit. */
+.pg-car { position: absolute; left: 50%; width: 200px; height: 100px; transform: translateX(-50%); pointer-events: none; z-index: 0; }
+.pg-car.front { z-index: 3; }
+.pg-car .pg-car-in, .pg-car .drawing, .pg-floaty .drawing, .pg-pom .drawing, .pg-sparkle .drawing, .pg-offer-treat .drawing { display: block; width: 100%; height: 100%; }
+.pg-actor-wrap.flip .pg-car .pg-car-in { transform: scaleX(-1); }
+/* seat 2 (EM fix A): only a seat she can still fill glows; boarded or riding, no glow */
+.pg-seat2 { position: absolute; left: -8px; width: 96px; height: 96px; min-width: 96px; min-height: 96px; padding: 0; border: 0; border-radius: 50%;
+  background: rgba(255, 226, 122, .35); box-shadow: 0 0 0 4px #FFE27A, 0 0 18px 6px #FFE27A; z-index: 4; cursor: pointer; animation: pg-seat-glow 1.4s ease-in-out infinite; }
+.pg-seat2.to-seat { background: rgba(255, 226, 122, .7); }
+@keyframes pg-seat-glow { 50% { box-shadow: 0 0 0 4px #FFE27A, 0 0 26px 10px #FFE27A; } }
+.pg-riding .pg-seat2 { display: none; }
+.pg-rider2 { position: absolute; left: -40px; bottom: 0; width: 160px; height: 160px; transform: scale(.78); transform-origin: 50% 100%; z-index: 1; pointer-events: none; }
+.pg-rider2 > .pet { position: absolute; inset: 0; }
+.pg-actor-wrap > .pet, .pg-actor-wrap > .pg-actor { position: relative; z-index: 2; }
+.pg-two > .pet, .pg-two > .pg-actor { left: 26px; } /* on a 2-seat ride she sits in the front seat, seat 2 shows behind */
+.pg-two > .pg-helmet { left: calc(50% + 26px); }
+.pg-two.flip > .pet, .pg-two.flip > .pg-actor { left: -26px; } /* heading the other way: mirrored */
+.pg-two.flip > .pg-helmet { left: calc(50% - 26px); }
+.pg-actor-wrap.flip > .pg-rider2 { left: 40px; }
+.pg-hopoff { position: absolute; width: 128px; height: 128px; transform: translate(-50%, -100%); pointer-events: none; animation: pg-hopoff .9s ease-out both; }
+@keyframes pg-hopoff { 0% { transform: translate(-50%, -100%) translateY(-30px); } 40% { transform: translate(-50%, -100%) translateY(-50px); } 100% { transform: translate(-50%, -100%); opacity: 0; } }
+@keyframes pg-fadeout { to { opacity: 0; } }
+.pg-hopoff .pet { width: 100%; height: 100%; }
+.pg-riders .pg-rider-tile { padding: 4px; } /* sized like the trick buttons (§15.2 floors), one row, no scrolling */
+.pg-riders .pg-rider-tile.picked { outline: 4px solid #F2C230; box-shadow: 0 0 10px #FFE27A; }
+.pg-riders .pg-rider-tile .pet { width: 100%; height: 100%; }
+.pg-rider-ghost { position: absolute; width: 80px; height: 80px; pointer-events: none; opacity: .85; z-index: 9000; }
+/* the held prop is put away while riding and comes back on hop-off (Design fix 2) */
+.pg-prop-away .frisbee, .pg-prop-away .pg-held, .pg-prop-away .pg-treat, .pg-prop-away .trick-prop { display: none !important; } /* a drawn-in part (friendBerry's strawberry, the spade, the pom-poms) stays: §16.10 */
+/* no gates while the Go paw shows (Design fix 1) */
+.pg-go-on .pg-gates { display: none; }
+.pg-car.pg-flap .pg-wings { animation: pg-flap .3s ease-in-out 3; transform-origin: 50% 100%; transform-box: fill-box; }
+@keyframes pg-flap { 0%,100%{transform:rotate(0)} 50%{transform:rotate(-18deg)} }
+.pg-ride-teapot .pg-car-in { animation: pg-teapot 2.2s linear infinite; }
+@keyframes pg-teapot { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-6deg)} 75%{transform:rotate(6deg)} }
+.pg-ride-carousel .pet, .pg-ride-carousel .pg-car { animation: pg-carousel 1.2s ease-in-out infinite; }
+@keyframes pg-carousel { 0%,100%{translate:0 0} 50%{translate:0 -10px} }
+.pg-ride-float .pet { animation: none; }
+.pg-ride-train .pet { animation: pg-pedal .6s ease-in-out infinite; }
+.pg-floaty { position: absolute; pointer-events: none; z-index: 4; } /* top layer, never over the face */
+.pg-towel { position: absolute; left: 0; width: 160px; height: 60px; pointer-events: none; z-index: 5; animation: tn-pop .3s ease; }
+.pg-towel .drawing { display: block; width: 100%; height: 100%; }
+.pg-pom { position: absolute; top: 70px; width: 54px; height: 54px; pointer-events: none; z-index: 4; animation: pg-pom .45s ease-in-out 2; }
+.pg-pom.l { left: -18px; } .pg-pom.r { right: -18px; }
+@keyframes pg-pom { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-24px) rotate(-14deg)} }
+.pg-sparkle { position: absolute; width: 70px; height: 70px; transform: translate(-50%, -50%); pointer-events: none; animation: pg-sparkle .9s ease forwards; }
+.pg-sparkle.tunnel { width: 90px; height: 90px; }
+@keyframes pg-sparkle { 0%{opacity:0; scale:.4} 30%{opacity:1; scale:1} 100%{opacity:0; scale:1.2} }
+.pg-offer { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; } /* its parts sit in world px */
+.pg-offer-who { position: absolute; width: 96px; height: 96px; transform: translate(-50%, -88%); animation: pg-offer-in .3s ease; } /* feet on her ground line */
+.pg-offer-who .pet { width: 96px; height: 96px; }
+.pg-offer-treat { position: absolute; width: 44px; height: 44px; transform: translate(-50%, -50%); animation: pg-offer-in .3s ease; } /* between them, at paw height */
+@keyframes pg-offer-in { from { opacity: 0; } to { opacity: 1; } }
+.pg-whoosh > .pet, .pg-whoosh > .pg-car, .pg-whoosh > .pg-helmet { animation: pg-dip .85s ease; } /* all together, so the helmet stays on */
+@keyframes pg-dip { 0%,100%{translate:0 0} 40%{translate:0 14px} 70%{translate:0 -6px} }
+.pg-t-wave { animation: pg-wave .8s ease; transform-origin: 50% 90%; }
+@keyframes pg-wave { 0%,100%{transform:rotate(0)} 25%,75%{transform:rotate(-7deg)} 50%{transform:rotate(7deg)} }
+.pg-t-bump { animation: pg-bump .7s ease; }
+@keyframes pg-bump { 0%,100%{transform:translateX(0)} 30%{transform:translateX(18px)} 55%{transform:translateX(-6px)} }
+/* the big green Go paw: fixed bottom centre, only with a rider seated and the station in view */
+.pg-go { position: absolute; left: 50%; bottom: 12px; z-index: 40; width: 120px; height: 120px; min-width: 120px; min-height: 120px; padding: 14px;
+  transform: translateX(-50%); border-radius: 50%; border: 4px solid #FFFFFF; background: #5DBB63; box-shadow: 0 4px 0 #3E8E44; }
+.pg-go[hidden] { display: none; }
+.pg-go .drawing { display: block; width: 100%; height: 100%; pointer-events: none; }
+.pg-go.on { animation: tn-pop .3s ease, pg-go-glow 1.6s ease-in-out .3s infinite; }
+@keyframes pg-go-glow { 0%,100%{box-shadow:0 4px 0 #3E8E44, 0 0 0 0 rgba(93,187,99,.0)} 50%{box-shadow:0 4px 0 #3E8E44, 0 0 18px 6px rgba(93,187,99,.55)} }
+.pc-dragonCoaster:not(.pg-ride-on) .pg-parked { filter: drop-shadow(0 0 6px #FFE27A); } /* empty seats glow softly */
+/* on the dragon coaster the trick row and build button fade out (the gates hide on any ride) */
+.pg-tricks, .pg-build-btn { transition: opacity .3s ease; }
+.pg-big-ride .pg-tricks, .pg-big-ride .pg-build-btn { opacity: 0; pointer-events: none; }
+.pg-over { position: absolute; width: 160px; height: 160px; pointer-events: none; }
+.pg-over .pet { width: 160px; height: 160px; }
+.pg-over * { visibility: hidden; }
+.pg-over .antennae, .pg-over .antennae * { visibility: visible; }
+.pg-piece.pg-ride-on .pg-parked { visibility: hidden; }
+/* the Water Park (design §16.5) */
+.pg-tricks[hidden] { display: none; }
+.pc-lifeguard .lg-head, .pc-lifeguard .lg-arm { transform-box: fill-box; transition: transform .4s ease; }
+.pc-lifeguard .lg-head { transform-origin: 50% 100%; }
+.pc-lifeguard .lg-arm { transform-origin: 0% 100%; }
+.pc-lifeguard.look-l .lg-head { transform: rotate(-9deg); }
+.pc-lifeguard.look-r .lg-head { transform: rotate(9deg); }
+.pc-lifeguard.lg-thumb .lg-arm { animation: lg-thumb .9s ease; }
+@keyframes lg-thumb { 0%,100%{transform:rotate(0)} 30%,80%{transform:rotate(-40deg) translateY(-6px)} }
+.pc-lifeguard.lg-wave .lg-arm { animation: lg-wave .9s ease-in-out; }
+@keyframes lg-wave { 0%,100%{transform:rotate(0)} 20%,60%{transform:rotate(-50deg)} 40%,80%{transform:rotate(-25deg)} }
+.pg-piece.pg-pump { animation: pg-pump .4s ease; }
+@keyframes pg-pump { 0%,100%{translate:0 0} 50%{translate:0 4px} }
+.pg-piece.pg-tip { animation: pg-tip .9s ease; transform-origin: 50% 20%; }
+@keyframes pg-tip { 0%,100%{rotate:0deg} 35%,65%{rotate:-12deg} }
+.pg-piece.spray-0, .pg-piece.spray-1, .pg-piece.spray-2 { animation: pg-spray .9s ease; }
+@keyframes pg-spray { 0%,100%{filter:none} 40%{filter:brightness(1.12) drop-shadow(0 -10px 6px #C9EEF8)} }
+.pg-rainbow { position: absolute; width: 180px; height: 180px; transform: translate(-50%, -60%); pointer-events: none; animation: tn-pop .4s ease; }
+.pg-rainbow .drawing { display: block; width: 100%; height: 100%; }
+.pg-hic .char { animation: pg-hic .3s ease 3; }
+@keyframes pg-hic { 0%,100%{translate:0 0} 50%{translate:0 -10px} }
+.pg-tube-ride { left: 50%; width: 120px; height: 120px; }
+.pg-sparkle.star { width: 90px; height: 90px; }

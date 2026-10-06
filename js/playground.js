@@ -61,8 +61,12 @@ export function zoneById(data, id) {
 }
 // The zone gate strip shows only when 2 or more zones are ready (q10, Design's n1 rule: no dead button).
 export function gatesFor(data) {
-  const r = readyZones(data);
+  const r = readyZones(data).filter((z) => Array.isArray(z.park) && z.park.length);
   return r.length >= 2 ? r : [];
+}
+// The gate strip on the play scene (design §16.1): only the OTHER ready zones, so no gate does nothing.
+export function otherGates(data, zoneId) {
+  return gatesFor(data).filter((z) => z.id !== zoneId);
 }
 export function worldOf(zone) {
   const w = zone && zone.world;
@@ -134,19 +138,44 @@ export function nearestFree(layout, id, gx, gy, zone, data, skip = -1) {
 }
 // Sanitise one zone's list: catalog ids that zone lists, whole cells inside the world, no duplicates
 // or overlaps, at most PARK_CAP. Returns [] when nothing good is left.
-export function sanitizeLayout(list, zone, data) {
+// `base` = pieces already there (the zone's pinned pieces): her pieces must not overlap them.
+export function sanitizeLayout(list, zone, data, base = []) {
   if (!zone || !Array.isArray(list)) return [];
   const allowed = new Set(Array.isArray(zone.pieces) ? zone.pieces : []);
   const out = [];
+  const count = {};
   for (const e of list) {
     if (out.length >= PARK_CAP) break;
     if (!Array.isArray(e) || e.length !== 3) continue;
     const [id, gx, gy] = e;
     if (typeof id !== 'string' || !allowed.has(id) || !pieceById(data, id) || pieceById(data, id).id !== id) continue;
-    if (!fits(out, id, gx, gy, zone, data)) continue; // out of the world, a duplicate or an overlap
+    const max = num(pieceById(data, id).max, PARK_CAP);
+    if ((count[id] || 0) >= max) continue; // e.g. at most 1 dragon coaster
+    if (!fits(base.concat(out), id, gx, gy, zone, data, -1)) continue; // out of the world, a duplicate or an overlap
+    count[id] = (count[id] || 0) + 1;
     out.push([id, gx, gy]);
   }
   return out;
+}
+// Pinned pieces (design §16.2: the Water Park lifeguard): always there, never in the tray, never moved,
+// binned or saved. Listed per zone as `pinned: [[pieceId, gx, gy]]`; a pinned id is never a tray id.
+export function pinnedLayout(zone, data) {
+  const out = [];
+  for (const e of (zone && Array.isArray(zone.pinned) ? zone.pinned : [])) {
+    if (!Array.isArray(e) || e.length !== 3 || !pieceById(data, e[0])) continue;
+    if (Array.isArray(zone.pieces) && zone.pieces.includes(e[0])) continue;
+    if (!fits(out, e[0], e[1], e[2], zone, data)) continue;
+    out.push([e[0], e[1], e[2]]);
+  }
+  return out;
+}
+export const isPinned = (entry, zone) => !!(entry && zone && Array.isArray(zone.pinned) && zone.pinned.some((e) => e[0] === entry[0]));
+// What gets saved for a zone: her pieces only (pinned ones are re-added on load).
+export const savable = (layout, zone) => layout.filter((e) => !isPinned(e, zone)).map((e) => [e[0], e[1], e[2]]);
+export function canAdd(layout, id, data) {
+  const p = pieceById(data, id);
+  if (!p) return false;
+  return layout.filter((e) => e[0] === id).length < num(p.max, PARK_CAP);
 }
 // The per-profile `parks` field: { <ready zone id>: [[pieceId, gx, gy], ...] }. Zones that are not
 // ready, unknown keys and empty or bad lists are dropped (an empty park falls back to the default).
@@ -155,16 +184,18 @@ export function normalizeParks(obj, data) {
   if (!isObj(obj)) return out;
   for (const z of readyZones(data)) {
     if (!Object.hasOwn(obj, z.id)) continue;
-    const list = sanitizeLayout(obj[z.id], z, data);
+    const list = sanitizeLayout(obj[z.id], z, data, pinnedLayout(z, data));
     if (list.length) out[z.id] = list;
   }
   return out;
 }
 // What she plays in: her saved park for this zone, or the zone's default.
+// Pinned pieces come first and are always there (the sanitiser re-adds them).
 export function layoutFor(profile, zone, data) {
   const saved = profile && isObj(profile.parks) ? profile.parks[zone && zone.id] : null;
-  const list = sanitizeLayout(saved, zone, data);
-  return list.length ? list : sanitizeLayout(defaultLayout(zone), zone, data);
+  const pins = pinnedLayout(zone, data);
+  const list = sanitizeLayout(saved, zone, data, pins);
+  return pins.concat(list.length ? list : sanitizeLayout(defaultLayout(zone), zone, data, pins));
 }
 export function pieceBox(entry, data) {
   const p = pieceById(data, entry[0]); const c = cellOf(data);
@@ -179,11 +210,14 @@ export function pieceAt(layout, data, x, y) {
 }
 // Where the character stands at the start: beside the slide (or the first piece), on open ground.
 export function startSpot(layout, zone, data) {
-  const id = (pg(data) && pg(data).startBeside) || 'slide';
+  const id = (zone && zone.startBeside) || (pg(data) && pg(data).startBeside) || 'slide';
   const i = Math.max(0, layout.findIndex((e) => e[0] === id));
   const w = worldOf(zone);
   if (!layout.length) return { x: w.w / 2, y: w.h / 2 };
   const b = pieceBox(layout[i], data);
+  // a zone may name the exact spot beside its start piece (from the piece's centre), e.g. the coaster station
+  const at = zone && Array.isArray(zone.startAt) && layout[i][0] === id ? zone.startAt : null;
+  if (at) return clampToWorld({ x: b.x + b.w / 2 + num(at[0]), y: b.y + b.h / 2 + num(at[1]) }, zone);
   return { x: Math.min(w.w - 60, b.x + b.w + 70), y: Math.min(w.h - 20, b.y + b.h - 10) };
 }
 // The spot in front of a piece where the character walks to play it.
@@ -286,10 +320,21 @@ export function zoneAnimals(zone, layout, data) {
     }
     const w = worldOf(zone);
     const pts = a.path.map(([x, y]) => ({ x: Math.min(w.w - 20, Math.max(20, ox + num(x))), y: Math.min(w.h - 20, Math.max(20, oy + num(y))) }));
+    // D (EM fix list): no animal ever lands on or crosses a pinned piece (the lifeguard)
+    if (layout.some((e) => isPinned(e, zone) && loopCrosses(pts, pieceBox(e, data), ANIMAL_CLEAR))) continue;
     out.push({ kind: kind.id, art: kind.art, reaction: kind.reaction, sound: kind.sound || null, size: num(kind.size, 56), speed: Math.max(5, num(a.speed, 40)), pts, anchor: a.anchor || null });
     if (out.length >= max) break;
   }
   return out;
+}
+export const ANIMAL_CLEAR = 40;
+export function loopCrosses(pts, box, pad = ANIMAL_CLEAR) {
+  const L = loopLength(pts);
+  for (let d = 0; d <= L; d += 10) {
+    const q = alongLoop(pts, d);
+    if (q.x >= box.x - pad && q.x <= box.x + box.w + pad && q.y >= box.y - pad && q.y <= box.y + box.h + pad) return true;
+  }
+  return false;
 }
 // Position along a closed loop after travelling `dist` units.
 export function alongLoop(pts, dist) {
@@ -359,7 +404,47 @@ export function ridePath(entry, data, zone) {
   if (!isRide(p)) return [];
   const b = pieceBox(entry, data); const w = worldOf(zone);
   const cx = b.x + b.w / 2; const cy = b.y + b.h / 2;
-  return p.ride.path.map(([x, y]) => ({ x: Math.min(w.w - 40, Math.max(40, cx + num(x))), y: Math.min(w.h - 10, Math.max(120, cy + num(y))) }));
+  return p.ride.path.map(([x, y, tag]) => {
+    const q = { x: Math.min(w.w - 40, Math.max(40, cx + num(x))), y: Math.min(w.h - 10, Math.max(120, cy + num(y))) };
+    if (typeof tag === 'string') q.tag = tag; // a ride beat at this point: peek, whoosh, tunnel (Amendment x1)
+    return q;
+  });
+}
+// Where a ride lets the rider off: where it started, or (lazy ring) at the ladder, an offset in data.
+export function rideOff(entry, data, zone, start) {
+  const p = pieceById(data, entry && entry[0]);
+  if (!isRide(p) || !Array.isArray(p.ride.offAt)) return { x: start.x, y: start.y };
+  const b = pieceBox(entry, data);
+  return clampToWorld({ x: b.x + b.w / 2 + num(p.ride.offAt[0]), y: b.y + b.h / 2 + num(p.ride.offAt[1]) }, zone);
+}
+// Big but gentle (Amendment q11/x1): no inversions, and no downhill leg steeper than the data max
+// (the drop over the distance along the track). Climbs may be steeper: climbing never reads as falling.
+export const maxHillSlope = (data) => Math.min(0.8, Math.max(0.1, num(pg(data) && pg(data).maxHillSlope, 0.65)));
+export function steepestDrop(path) {
+  let worst = 0;
+  for (let i = 0; i < path.length; i++) {
+    const a = path[i]; const b = path[(i + 1) % path.length];
+    const dx = num(b[0]) - num(a[0]); const dy = num(b[1]) - num(a[1]);
+    const len = Math.hypot(dx, dy);
+    if (dy > 0 && len) worst = Math.max(worst, dy / len);
+  }
+  return worst;
+}
+// The gear a rider always wears: a helmet (bikes, scooters and the coaster rides) or floaties (water).
+export const rideGear = (piece) => (piece && piece.ride && piece.ride.gear === 'floaties' ? 'floaties' : 'helmet');
+// The car drawn with the rider (the piece's art by default; per character, e.g. friendSilly's banana seat).
+export function rideCar(piece, whoId) {
+  const r = piece && piece.ride; if (!r) return null;
+  if (isObj(r.carFor) && typeof whoId === 'string' && Object.hasOwn(r.carFor, whoId)) return r.carFor[whoId];
+  return r.car || piece.art;
+}
+export const rideSeats = (piece) => Math.max(1, Math.min(2, num(piece && piece.ride && piece.ride.seats, 1)));
+// Teapots spin slowly: one turn every 2 s or slower (q11). A lap of the path is one turn.
+export const SPIN_MIN_MS = 2000;
+export function lapMs(piece, data) {
+  if (!isRide(piece)) return 0;
+  const pts = piece.ride.path.map(([x, y]) => ({ x: num(x), y: num(y) }));
+  return Math.round((loopLength(pts) / rideSpeed(piece, data)) * 1000);
 }
 // The legs of one ride from `start`: on at the first point, round the loop, back to the first point,
 // then hop off where it started. Each leg's ms keeps the ride at `speed`.
@@ -370,7 +455,9 @@ export function rideLegs(start, pts, speed) {
   let at = start;
   for (const q of stops) {
     const d = Math.hypot(q.x - at.x, q.y - at.y);
-    legs.push({ x: q.x, y: q.y, ms: Math.round((d / speed) * 1000), dir: q.x >= at.x ? 1 : -1 });
+    const leg = { x: q.x, y: q.y, ms: Math.round((d / speed) * 1000), dir: q.x >= at.x ? 1 : -1 };
+    if (q.tag) leg.tag = q.tag;
+    legs.push(leg);
     at = q;
   }
   return legs;
@@ -388,7 +475,9 @@ export function rideFit(data, id) {
   const own = typeof id === 'string' && id !== 'default' && Object.hasOwn(f, id) && isObj(f[id]) ? f[id] : {};
   const o = { ...base, ...own };
   const keepClear = Array.isArray(o.keepClear) ? o.keepClear.filter((q) => Array.isArray(q) && q.length === 2).map(([x, y]) => [num(x), num(y)]) : [];
-  return { head: num(o.head, 22), eyes: num(o.eyes, 48), feet: num(o.feet, 160), helmet: num(o.helmet, 54), helmetX: num(o.helmetX, 0), keepClear };
+  // `over`: a part of the drawing (a group class) drawn again on top of the helmet, e.g. friendCounter's antennae
+  const over = typeof o.over === 'string' && /^[a-z]+$/.test(o.over) ? o.over : null;
+  return { head: num(o.head, 22), eyes: num(o.eyes, 48), feet: num(o.feet, 160), helmet: num(o.helmet, 54), helmetX: num(o.helmetX, 0), keepClear, over };
 }
 // Is a point (px in the 160 box) under the helmet? The dome is two curves from the pgHelmet art
 // (M10 66 Q10 14 50 12 Q90 14 90 66, in a 100 box), then the brim band down to 74.
@@ -411,18 +500,156 @@ export function rideAnchors(data, id) {
   return { vehicleTop, helmetTop, helmetSize: fit.helmet, helmetX: fit.helmetX, brimY, domeY: Math.round(helmetTop + fit.helmet * HELMET.domeTop),
     strapY: helmetTop + fit.helmet * HELMET.straps, seatY: vehicleTop + Math.round(VEHICLE.h * VEHICLE.seatTop), wheelY: vehicleTop + Math.round(VEHICLE.h * VEHICLE.wheelTop), fit };
 }
+// Floaties (design §16.5): drawn whenever a character is in a water area, on the top layer, never over
+// the face. The kind is per character (a pet life vest, armbands, or a ring for the noodle shape), with
+// its top in the 160 px drawing box; the numbers live in data (rideFit.<id>.floaty).
+export const FLOATY_KINDS = Object.freeze(['vest', 'armbands', 'ring']);
+export function floatyFit(data, who) {
+  const id = who && who.id;
+  const f = (pg(data) && isObj(pg(data).rideFit)) ? pg(data).rideFit : {};
+  const own = typeof id === 'string' && id !== 'default' && Object.hasOwn(f, id) && isObj(f[id]) && isObj(f[id].floaty) ? f[id].floaty : {};
+  const kind = FLOATY_KINDS.includes(own.kind) ? own.kind : (who && who.kind === 'friend' ? 'armbands' : 'vest');
+  const fit = rideFit(data, id);
+  return { kind, top: num(own.top, fit.eyes + 30), x: num(own.x, 0), w: num(own.w, kind === 'armbands' ? 150 : 110) };
+}
+// The CSS timing functions a move uses (ease-in-out for walks, ease-in for the frisbee run, linear, ease,
+// ease-out): the share of the way along at time share t (0..1), so a frame can tell where she is drawn.
+const EASES = { 'ease-in-out': [0.42, 0, 0.58, 1], 'ease-in': [0.42, 0, 1, 1], 'ease-out': [0, 0, 0.58, 1], ease: [0.25, 0.1, 0.25, 1], linear: [0, 0, 1, 1] };
+export function easeAt(name, t) {
+  const k = Math.min(1, Math.max(0, Number(t) || 0));
+  const [x1, y1, x2, y2] = EASES[name] || EASES['ease-in-out'];
+  const bez = (a, b, u) => 3 * a * u * (1 - u) * (1 - u) + 3 * b * u * u * (1 - u) + u * u * u;
+  let lo = 0; let hi = 1; let u = k;
+  for (let i = 0; i < 30; i++) { u = (lo + hi) / 2; if (bez(x1, x2, u) < k) lo = u; else hi = u; }
+  return bez(y1, y2, u);
+}
+// Is this spot in a water area of a floaties zone (design §16.5: the splash pad, the lazy pool, the slide
+// landing, the sprayers, bucket and cups)? Floaties are drawn whenever it is.
+export function inWater(layout, data, zone, pt) {
+  if (!zone || zone.floaties !== true || !pt) return false;
+  return layout.some((e) => {
+    const p = pieceById(data, e[0]);
+    if (!p || !(p.water || p.wet)) return false;
+    const b = pieceBox(e, data);
+    return pt.x >= b.x && pt.x <= b.x + b.w && pt.y >= b.y && pt.y <= b.y + b.h;
+  });
+}
+// The Water Park's cheer (EM fix B): an existing clip from data, with a guard gap; null where a zone has none.
+export const CHEER_GAP_MS = 2000;
+export function cheerOf(zone) {
+  const c = zone && zone.cheer;
+  if (!c || typeof c.clip !== 'string' || !/^c-/.test(c.clip)) return null;
+  return { clip: c.clip, gapMs: Math.max(800, Math.min(4000, Number(c.gapMs) || CHEER_GAP_MS)) };
+}
+// Seat 2 (Amendment x1, EM fix A): she boards a second character herself. Who may ride in seat 2 is in data
+// (`playground.seat2`: "any" or a list of ids); it is never the rider in seat 1, and only characters that are
+// switched on. Anything else is dropped.
+export function seat2Allowed(data, state, id, whoId) {
+  if (typeof id !== 'string' || !id || id === whoId) return false;
+  const list = pg(data) && pg(data).seat2;
+  if (Array.isArray(list) && !list.includes(id)) return false;
+  return playgroundCast(data, state).some((c) => c.id === id);
+}
+export const seat2Choices = (data, state, whoId) => playgroundCast(data, state).map((c) => c.id).filter((id) => seat2Allowed(data, state, id, whoId));
+// §16.10: the rider row shows up to 4 of them, never her; each time it opens it moves on to the next 4
+// in pick order (wrapping), so everyone gets a turn. No scrolling.
+export const RIDER_ROW = 4;
+export function riderPage(ids, rot = 0, n = RIDER_ROW) {
+  const list = Array.isArray(ids) ? ids : [];
+  if (!list.length) return { ids: [], next: 0 };
+  const k = Math.min(n, list.length);
+  const start = ((Math.floor(Number(rot)) || 0) % list.length + list.length) % list.length;
+  return { ids: Array.from({ length: k }, (_, i) => list[(start + i) % list.length]), next: (start + k) % list.length };
+}
+export const sanitizeSeat2 = (data, state, id, whoId) => (seat2Allowed(data, state, id, whoId) ? id : null);
+// Design fix 3: the picked character's whole drawing stays in view with a margin (zone start, gate arrival,
+// arriving at a piece). Moves the camera only as far as needed, inside the world.
+export const VIEW_MARGIN = 16;
+export function fitInView(cam, pt, view, world, margin = VIEW_MARGIN) {
+  const b = actorBox(pt);
+  let { x, y } = cam;
+  if (b.x - margin < x) x = b.x - margin;
+  if (b.x + b.w + margin > x + view.w) x = b.x + b.w + margin - view.w;
+  if (b.y - margin < y) y = b.y - margin;
+  if (b.y + b.h + margin > y + view.h) y = b.y + b.h + margin - view.h;
+  return clampCamera({ x, y }, view, world);
+}
+export function actorInView(cam, pt, view, margin = VIEW_MARGIN) {
+  const b = actorBox(pt);
+  return b.x - margin >= cam.x - 0.5 && b.x + b.w + margin <= cam.x + view.w + 0.5 && b.y - margin >= cam.y - 0.5 && b.y + b.h + margin <= cam.y + view.h + 0.5;
+}
+// The camera at zone start and gate arrival: centred on her, clamped so her whole drawing is in view
+// (16 px), then (§16.10) nudged, only if she stays fully in view, so a pinned piece near her (the
+// lifeguard and chair) sits wholly in view and clear of the overlays: the build button (top right) and
+// the gate strip (bottom left).
+export const OVERLAY = Object.freeze({ top: 116, bottom: 104, side: 8 });
+export function startCamera(pt, layout, zone, data, view, world) {
+  let cam = fitInView(centerOn(pt, view, world), pt, view, world);
+  for (const e of (Array.isArray(layout) ? layout : []).filter((x) => isPinned(x, zone))) {
+    const b = pieceBox(e, data);
+    let { x, y } = cam;
+    if (b.x - x < OVERLAY.side) x = b.x - OVERLAY.side;
+    if (b.x + b.w - x > view.w - OVERLAY.side) x = b.x + b.w + OVERLAY.side - view.w;
+    if (b.y + b.h - y > view.h - OVERLAY.bottom) y = b.y + b.h + OVERLAY.bottom - view.h;
+    if (b.y - y < OVERLAY.top) y = b.y - OVERLAY.top;
+    const c = clampCamera({ x, y }, view, world);
+    if (actorInView(c, pt, view)) cam = c;
+  }
+  return cam;
+}
+// Design fix 4 / §16.10: friendBerry's offer stands BESIDE the rider on the same ground line, never on top:
+// the rider's body (the middle half of the 160 px drawing), a gap, friendBerry's body (a 96 px drawing),
+// with the strawberry in the gap at paw height. It goes on the side with room; if neither side has room
+// in the view, the camera shifts just enough (keeping the rider fully in view, 16 px margin) and the
+// result says so. With `avoid` (the ride she just left) friendBerry stands off it when the other side
+// works. Returns { side, who: feet point, treat: centre, cam }.
+export const OFFER = Object.freeze({ body: 40, whoW: 96, whoBody: 24, gap: 56, treat: 44, paw: 58, pad: 8 });
+export function offerSpot(pt, cam, view, world = null, avoid = null) {
+  const D = OFFER.body + OFFER.gap + OFFER.whoBody; // centre to centre
+  const reach = D + OFFER.whoW / 2 + OFFER.pad;
+  const roomR = cam.x + view.w - pt.x; const roomL = pt.x - cam.x;
+  const order = roomR >= roomL ? [1, -1] : [-1, 1];
+  const build = (side, c) => ({ side, who: { x: pt.x + side * D, y: pt.y }, treat: { x: pt.x + side * (OFFER.body + OFFER.gap / 2), y: pt.y - OFFER.paw }, cam: c });
+  const clear = (o) => !avoid || o.who.x + OFFER.whoW / 2 <= avoid.x || o.who.x - OFFER.whoW / 2 >= avoid.x + avoid.w || o.who.y <= avoid.y || o.who.y - OFFER.whoW >= avoid.y + avoid.h;
+  const options = [];
+  for (const side of order) if (side > 0 ? roomR >= reach : roomL >= reach) options.push(build(side, cam));
+  // a side that needs the camera to shift a little (the rider still fully in view, 16 px margin)
+  for (const side of order) {
+    const want = side > 0 ? pt.x + reach - view.w : pt.x - reach;
+    const c = world ? clampCamera({ x: want, y: cam.y }, view, world) : { x: want, y: cam.y };
+    const fits = side > 0 ? c.x + view.w - pt.x >= reach : pt.x - c.x >= reach;
+    if (fits && actorInView(c, pt, view) && !options.some((o) => o.side === side)) options.push(build(side, c));
+  }
+  // never standing on the ride she just left (e.g. the teapots) when the other side works
+  return options.find(clear) || options[0] || build(order[0], cam);
+}
+// Riders and animals share one moving cap (x4): with someone on a ride, one fewer animal wanders.
+export const MOVING_CAP = 6;
+export const movingAnimals = (animals, riders) => Math.max(0, Math.min(animals, MOVING_CAP - Math.max(0, riders)));
 export function canRide(riding, i, data) {
   return !riding.has(i) && riding.size < maxRiding(data);
 }
 // The snack stand gives only what is on the allowlist (q11): plain popcorn, plain cotton candy and
 // soft-serve in a cup. Anything else in data is ignored.
 export const SNACKS_ALLOWED = Object.freeze(['popcorn', 'cottonCandy', 'iceCreamCup']);
+// The Water Park cooler (x2, EM 6:14 PM): watermelon, fruit pops and orange slices only, fruit only.
+export const COOLER_ALLOWED = Object.freeze(['watermelon', 'fruitPop', 'orangeSlices']);
+export const allowedFor = (piece) => (piece && piece.cooler ? COOLER_ALLOWED : SNACKS_ALLOWED);
 export function snackList(piece) {
-  return piece && Array.isArray(piece.snacks) ? piece.snacks.filter((x) => SNACKS_ALLOWED.includes(x)) : [];
+  const ok = allowedFor(piece);
+  return piece && Array.isArray(piece.snacks) ? piece.snacks.filter((x) => ok.includes(x)) : [];
 }
 export function snackArt(data, id) {
   const m = pg(data) && isObj(pg(data).snackArt) ? pg(data).snackArt : {};
-  return SNACKS_ALLOWED.includes(id) && Object.hasOwn(m, id) ? m[id] : null;
+  return (SNACKS_ALLOWED.includes(id) || COOLER_ALLOWED.includes(id)) && Object.hasOwn(m, id) ? m[id] : null;
+}
+// Personality reactions by id (design §16.4): after a piece (or any ride), that character plays one of
+// its own tricks. Data: playground.reactions [{who, after: <piece id> | 'anyRide', trick}].
+export function reactionFor(data, whoId, piece) {
+  const list = pg(data) && Array.isArray(pg(data).reactions) ? pg(data).reactions : [];
+  if (!piece) return null;
+  const r = list.find((x) => isObj(x) && x.who === whoId && (x.after === piece.id || (x.after === 'anyRide' && isRide(piece))));
+  return r ? r.trick : null;
 }
 
 // ---- trick button glyphs (design.md §15.2) ----
@@ -465,6 +692,16 @@ export function frisbeeTiming(data) {
 // off the pieces. If nothing is open it still lands, just a short hop away: it never gets lost.
 export function frisbeeTarget(from, layout, zone, data, dir = 1) {
   const s = dir < 0 ? -1 : 1;
+  // a midway or floating target nearby (Amendment x1/x2): the disc lands right on it
+  let best = null;
+  layout.forEach((e) => {
+    const p = pieceById(data, e[0]);
+    if (!p || !p.target) return;
+    const b = pieceBox(e, data); const c = clampToWorld({ x: b.x + b.w / 2, y: b.y + b.h / 2 }, zone);
+    const d = Math.hypot(c.x - from.x, c.y - from.y);
+    if (d >= 110 && d <= 520 && (!best || d < best.d)) best = { ...c, d };
+  });
+  if (best) return { x: best.x, y: best.y, target: true };
   const open = (pt) => pieceAt(layout, data, pt.x, pt.y) < 0 && pieceAt(layout, data, pt.x, pt.y - 50) < 0;
   for (const d of [280, 240, 200, 160, 130]) {
     for (const side of [s, -s]) {

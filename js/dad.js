@@ -344,7 +344,7 @@ function openResetPark(ctx) {
   const p = activeProfile(ctx.state);
   const name = p.name && p.name.trim();
   const body = h('p', { class: 'sheet-sub' });
-  body.textContent = name ? `This puts ${name}'s park back to the starting park.` : "This puts this player's park back to the starting park.";
+  body.textContent = name ? `This puts ${name}'s parks back to the starting parks.` : "This puts this player's parks back to the starting parks."; // all 3 zones (§16)
   openSheet([
     h('h2', { id: 'sheet-title', text: 'Reset park?' }),
     body,
@@ -583,9 +583,9 @@ export function openDadPanel(ctx, view = 'menu') {
         body.push(sheetBtn(`Playground: ${ctx.state.playground !== false ? 'On' : 'Off'}`, () => withUnlock(ctx, () => {
           ctx.state.playground = !(ctx.state.playground !== false); ctx.save(); openDadPanel(ctx, 'menu');
         }), '', { 'aria-pressed': ctx.state.playground !== false ? 'true' : 'false', 'data-dad': 'playground' }));
-        body.push(h('p', { class: 'sheet-hint', text: 'Shows the Playground tile on home.' }));
+        body.push(h('p', { class: 'sheet-hint', text: 'Shows the Playground (park, coaster and water) on home.' }));
         body.push(sheetBtn('Reset park', () => withUnlock(ctx, () => openResetPark(ctx)), 'danger-outline', { 'data-dad': 'reset-park' }));
-        body.push(h('p', { class: 'sheet-hint', text: "Puts this player's park back to the starting park." }));
+        body.push(h('p', { class: 'sheet-hint', text: "Puts this player's parks back to the starting parks." }));
       } else {
         body.push(sheetBtn('Playground settings', () => withUnlock(ctx, () => openDadPanel(ctx, 'menu')), '', { 'data-dad': 'playground-settings' }));
       }

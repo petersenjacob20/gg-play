@@ -1274,6 +1274,544 @@
           "cottonCandy",
           "iceCreamCup"
         ]
+      },
+      {
+        "id": "dragonCoaster",
+        "art": "pgDragonCoaster",
+        "w": 4,
+        "h": 3,
+        "trick": "ride",
+        "sound": "fx-chime",
+        "max": 1,
+        "ride": {
+          "anim": "coaster",
+          "seats": 2,
+          "gear": "helmet",
+          "car": "pgDragonCar",
+          "front": true,
+          "go": true,
+          "inversion": false,
+          "speed": 131,
+          "ms": 6012,
+          "path": [
+            [
+              10,
+              90
+            ],
+            [
+              -140,
+              90
+            ],
+            [
+              -152,
+              30
+            ],
+            [
+              -120,
+              -22
+            ],
+            [
+              -70,
+              -32,
+              "peek"
+            ],
+            [
+              0,
+              0,
+              "whoosh"
+            ],
+            [
+              40,
+              -10
+            ],
+            [
+              100,
+              20
+            ],
+            [
+              150,
+              50,
+              "tunnel"
+            ],
+            [
+              185,
+              72
+            ],
+            [
+              150,
+              90
+            ]
+          ]
+        }
+      },
+      {
+        "id": "teapots",
+        "art": "pgTeapots",
+        "w": 3,
+        "h": 2,
+        "trick": "ride",
+        "sound": "fx-chime",
+        "ride": {
+          "anim": "teapot",
+          "seats": 2,
+          "gear": "helmet",
+          "car": "pgTeapotCar",
+          "front": true,
+          "turns": 2,
+          "speed": 170,
+          "ms": 4330,
+          "path": [
+            [
+              0,
+              46
+            ],
+            [
+              -57,
+              35
+            ],
+            [
+              -80,
+              10
+            ],
+            [
+              -57,
+              -15
+            ],
+            [
+              0,
+              -26
+            ],
+            [
+              57,
+              -15
+            ],
+            [
+              80,
+              10
+            ],
+            [
+              57,
+              35
+            ],
+            [
+              0,
+              46
+            ],
+            [
+              -57,
+              35
+            ],
+            [
+              -80,
+              10
+            ],
+            [
+              -57,
+              -15
+            ],
+            [
+              0,
+              -26
+            ],
+            [
+              57,
+              -15
+            ],
+            [
+              80,
+              10
+            ],
+            [
+              57,
+              35
+            ]
+          ],
+          "after": {
+            "who": "friendBerry",
+            "treat": "strawberry"
+          },
+          "offAt": [
+            -220,
+            70
+          ]
+        }
+      },
+      {
+        "id": "carousel",
+        "art": "pgCarousel",
+        "w": 3,
+        "h": 3,
+        "trick": "ride",
+        "chime": [
+          523,
+          659,
+          784,
+          659
+        ],
+        "ride": {
+          "anim": "carousel",
+          "seats": 1,
+          "gear": "helmet",
+          "car": "pgHorseSeat",
+          "carFor": {
+            "friendSilly": "pgBananaSeat"
+          },
+          "speed": 200,
+          "ms": 2307,
+          "path": [
+            [
+              0,
+              65
+            ],
+            [
+              -71,
+              52
+            ],
+            [
+              -100,
+              20
+            ],
+            [
+              -71,
+              -12
+            ],
+            [
+              0,
+              -25
+            ],
+            [
+              71,
+              -12
+            ],
+            [
+              100,
+              20
+            ],
+            [
+              71,
+              52
+            ]
+          ],
+          "hide": false
+        }
+      },
+      {
+        "id": "bumpers",
+        "art": "pgBumpers",
+        "w": 2,
+        "h": 2,
+        "trick": "bump",
+        "sound": "fx-boing",
+        "sounds": [
+          "fx-boing",
+          "fx-giggle"
+        ]
+      },
+      {
+        "id": "balloonTower",
+        "art": "pgBalloonTower",
+        "w": 2,
+        "h": 3,
+        "trick": "ride",
+        "sound": "fx-chime",
+        "still": true,
+        "ride": {
+          "anim": "float",
+          "seats": 1,
+          "gear": "helmet",
+          "car": "pgBasket",
+          "front": true,
+          "speed": 110,
+          "ms": 3818,
+          "path": [
+            [
+              0,
+              40
+            ],
+            [
+              0,
+              -60
+            ],
+            [
+              0,
+              -170,
+              "view"
+            ],
+            [
+              0,
+              -60
+            ]
+          ],
+          "hide": false
+        }
+      },
+      {
+        "id": "kiddieTrain",
+        "art": "pgKiddieTrain",
+        "w": 3,
+        "h": 1,
+        "trick": "ride",
+        "sound": "fx-toot",
+        "ride": {
+          "anim": "train",
+          "seats": 1,
+          "gear": "helmet",
+          "car": "pgTrainCar",
+          "front": true,
+          "speed": 600,
+          "ms": 7167,
+          "path": [
+            [
+              0,
+              0
+            ],
+            [
+              1150,
+              0
+            ],
+            [
+              1150,
+              -820
+            ],
+            [
+              -180,
+              -820
+            ],
+            [
+              -180,
+              0
+            ]
+          ]
+        }
+      },
+      {
+        "id": "ferris",
+        "art": "pgFerris",
+        "w": 3,
+        "h": 3,
+        "trick": "wave",
+        "sound": "fx-chime",
+        "still": true
+      },
+      {
+        "id": "ticketBooth",
+        "art": "pgTicketBooth",
+        "w": 2,
+        "h": 2,
+        "trick": "wave",
+        "sound": "fx-pop"
+      },
+      {
+        "id": "balloonArch",
+        "art": "pgBalloonArch",
+        "w": 2,
+        "h": 1,
+        "trick": "wave",
+        "sound": "fx-chime"
+      },
+      {
+        "id": "fountain",
+        "art": "pgFountain",
+        "w": 2,
+        "h": 2,
+        "trick": "splash",
+        "sound": "fx-splash",
+        "sounds": [
+          "fx-splash",
+          "fx-giggle"
+        ]
+      },
+      {
+        "id": "tents",
+        "art": "pgTents",
+        "w": 2,
+        "h": 1,
+        "trick": "peekaboo",
+        "sound": "fx-giggle"
+      },
+      {
+        "id": "hills",
+        "art": "pgHills",
+        "w": 3,
+        "h": 1,
+        "trick": "wave",
+        "sound": "fx-chime"
+      },
+      {
+        "id": "target",
+        "art": "pgTarget",
+        "w": 1,
+        "h": 1,
+        "trick": "wave",
+        "sound": "fx-pop",
+        "target": true
+      },
+      {
+        "id": "lifeguard",
+        "art": "pgLifeguard",
+        "w": 2,
+        "h": 2,
+        "trick": "wave",
+        "pinned": true
+      },
+      {
+        "id": "lazyPool",
+        "art": "pgLazyPool",
+        "w": 4,
+        "h": 2,
+        "trick": "splash",
+        "sound": "fx-splash",
+        "water": true
+      },
+      {
+        "id": "lazyRing",
+        "art": "pgLazyRing",
+        "w": 1,
+        "h": 1,
+        "trick": "ride",
+        "sound": "fx-splash",
+        "ride": {
+          "anim": "ring",
+          "seats": 1,
+          "gear": "floaties",
+          "car": "pgRing",
+          "front": true,
+          "speed": 130,
+          "ms": 4198,
+          "path": [
+            [
+              -125,
+              -45
+            ],
+            [
+              -162,
+              -15
+            ],
+            [
+              -250,
+              -3
+            ],
+            [
+              -338,
+              -15
+            ],
+            [
+              -375,
+              -45
+            ],
+            [
+              -338,
+              -75
+            ],
+            [
+              -250,
+              -87
+            ],
+            [
+              -162,
+              -75
+            ]
+          ],
+          "offAt": [
+            -35,
+            -80
+          ]
+        }
+      },
+      {
+        "id": "curlySlide",
+        "art": "pgCurlySlide",
+        "w": 2,
+        "h": 3,
+        "trick": "whoosh",
+        "sound": "fx-zoom",
+        "wet": true,
+        "tubes": [
+          "red",
+          "yellow",
+          "blue",
+          "green"
+        ]
+      },
+      {
+        "id": "bucket",
+        "art": "pgBucket",
+        "w": 2,
+        "h": 3,
+        "trick": "pump",
+        "sound": "fx-splash",
+        "wet": true,
+        "pumps": 10
+      },
+      {
+        "id": "sprayers",
+        "art": "pgSprayers",
+        "w": 2,
+        "h": 2,
+        "trick": "spray",
+        "sound": "fx-splash",
+        "wet": true,
+        "sprayers": 3
+      },
+      {
+        "id": "dumpCups",
+        "art": "pgDumpCups",
+        "w": 2,
+        "h": 2,
+        "trick": "splash",
+        "sound": "fx-splash",
+        "sounds": [
+          "fx-splash",
+          "fx-giggle"
+        ],
+        "wet": true
+      },
+      {
+        "id": "floatTargets",
+        "art": "pgFloatTargets",
+        "w": 2,
+        "h": 1,
+        "trick": "wave",
+        "sound": "fx-pop",
+        "target": true
+      },
+      {
+        "id": "umbrellas",
+        "art": "pgUmbrellas",
+        "w": 2,
+        "h": 2,
+        "trick": "rest",
+        "sound": "fx-pop"
+      },
+      {
+        "id": "lifeRings",
+        "art": "pgLifeRings",
+        "w": 1,
+        "h": 1,
+        "trick": "wave",
+        "sound": "fx-pop"
+      },
+      {
+        "id": "towels",
+        "art": "pgTowels",
+        "w": 2,
+        "h": 1,
+        "trick": "rest",
+        "sound": "fx-pop"
+      },
+      {
+        "id": "cooler",
+        "art": "pgCooler",
+        "w": 2,
+        "h": 2,
+        "trick": "treat",
+        "sound": "fx-mmm",
+        "cooler": true,
+        "snacks": [
+          "watermelon",
+          "fruitPop",
+          "orangeSlices"
+        ]
       }
     ],
     "animals": [
@@ -1541,31 +2079,433 @@
       },
       {
         "id": "coaster",
-        "ready": false,
-        "gate": null,
+        "ready": true,
+        "gate": "pgGateCoaster",
         "world": {
-          "w": 1200,
+          "w": 1500,
           "h": 1100
         },
         "sky": "#FBE3C8",
         "ground": "#B9E08F",
-        "pieces": [],
-        "park": [],
-        "animals": []
+        "pieces": [
+          "dragonCoaster",
+          "teapots",
+          "carousel",
+          "bumpers",
+          "balloonTower",
+          "kiddieTrain",
+          "ferris",
+          "ticketBooth",
+          "balloonArch",
+          "fountain",
+          "tents",
+          "hills",
+          "target",
+          "snacks",
+          "flowers",
+          "bench"
+        ],
+        "park": [
+          [
+            "dragonCoaster",
+            5,
+            3
+          ],
+          [
+            "teapots",
+            11,
+            2
+          ],
+          [
+            "carousel",
+            1,
+            1
+          ],
+          [
+            "bumpers",
+            10,
+            7
+          ],
+          [
+            "balloonTower",
+            12,
+            6
+          ],
+          [
+            "kiddieTrain",
+            1,
+            9
+          ],
+          [
+            "ferris",
+            1,
+            5
+          ],
+          [
+            "ticketBooth",
+            5,
+            7
+          ],
+          [
+            "balloonArch",
+            7,
+            0
+          ],
+          [
+            "fountain",
+            7,
+            8
+          ],
+          [
+            "tents",
+            10,
+            0
+          ],
+          [
+            "hills",
+            4,
+            0
+          ],
+          [
+            "target",
+            13,
+            9
+          ],
+          [
+            "snacks",
+            5,
+            9
+          ],
+          [
+            "bench",
+            10,
+            10
+          ],
+          [
+            "flowers",
+            9,
+            1
+          ]
+        ],
+        "animals": [
+          {
+            "kind": "bird",
+            "speed": 60,
+            "path": [
+              [
+                300,
+                450
+              ],
+              [
+                520,
+                380
+              ],
+              [
+                700,
+                440
+              ],
+              [
+                540,
+                500
+              ]
+            ]
+          },
+          {
+            "kind": "bird",
+            "speed": 50,
+            "path": [
+              [
+                1000,
+                560
+              ],
+              [
+                1180,
+                500
+              ],
+              [
+                1220,
+                640
+              ],
+              [
+                1060,
+                680
+              ]
+            ]
+          },
+          {
+            "kind": "duck",
+            "anchor": "fountain",
+            "speed": 30,
+            "path": [
+              [
+                -40,
+                -10
+              ],
+              [
+                30,
+                -30
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                -20,
+                30
+              ]
+            ]
+          },
+          {
+            "kind": "butterfly",
+            "anchor": "flowers",
+            "speed": 45,
+            "path": [
+              [
+                -40,
+                -40
+              ],
+              [
+                40,
+                -60
+              ],
+              [
+                60,
+                10
+              ],
+              [
+                -30,
+                20
+              ]
+            ]
+          },
+          {
+            "kind": "butterfly",
+            "speed": 40,
+            "path": [
+              [
+                860,
+                960
+              ],
+              [
+                960,
+                920
+              ],
+              [
+                1000,
+                1020
+              ],
+              [
+                880,
+                1040
+              ]
+            ]
+          }
+        ],
+        "startBeside": "dragonCoaster",
+        "startAt": [
+          100,
+          160
+        ]
       },
       {
         "id": "water",
-        "ready": false,
-        "gate": null,
+        "ready": true,
+        "gate": "pgGateWater",
         "world": {
-          "w": 1200,
+          "w": 1500,
           "h": 1100
         },
-        "sky": "#CDEFFB",
-        "ground": "#9FDCF0",
-        "pieces": [],
-        "park": [],
-        "animals": []
+        "sky": "#DDF3FB",
+        "ground": "#F2DDB0",
+        "floaties": true,
+        "startBeside": "splash",
+        "pinned": [
+          [
+            "lifeguard",
+            6,
+            5
+          ]
+        ],
+        "pieces": [
+          "splash",
+          "lazyPool",
+          "lazyRing",
+          "curlySlide",
+          "bucket",
+          "sprayers",
+          "dumpCups",
+          "floatTargets",
+          "umbrellas",
+          "lifeRings",
+          "towels",
+          "cooler",
+          "snacks"
+        ],
+        "park": [
+          [
+            "lazyPool",
+            8,
+            4
+          ],
+          [
+            "lazyRing",
+            12,
+            5
+          ],
+          [
+            "splash",
+            4,
+            5
+          ],
+          [
+            "curlySlide",
+            1,
+            1
+          ],
+          [
+            "bucket",
+            12,
+            0
+          ],
+          [
+            "sprayers",
+            6,
+            8
+          ],
+          [
+            "dumpCups",
+            9,
+            7
+          ],
+          [
+            "floatTargets",
+            9,
+            9
+          ],
+          [
+            "umbrellas",
+            3,
+            3
+          ],
+          [
+            "lifeRings",
+            9,
+            2
+          ],
+          [
+            "towels",
+            12,
+            9
+          ],
+          [
+            "cooler",
+            13,
+            6
+          ],
+          [
+            "snacks",
+            3,
+            9
+          ]
+        ],
+        "animals": [
+          {
+            "kind": "bird",
+            "speed": 60,
+            "path": [
+              [
+                260,
+                680
+              ],
+              [
+                420,
+                640
+              ],
+              [
+                470,
+                740
+              ],
+              [
+                320,
+                780
+              ]
+            ]
+          },
+          {
+            "kind": "bird",
+            "speed": 50,
+            "path": [
+              [
+                1100,
+                820
+              ],
+              [
+                1260,
+                780
+              ],
+              [
+                1300,
+                880
+              ],
+              [
+                1160,
+                900
+              ]
+            ]
+          },
+          {
+            "kind": "butterfly",
+            "speed": 45,
+            "path": [
+              [
+                420,
+                240
+              ],
+              [
+                520,
+                200
+              ],
+              [
+                560,
+                280
+              ],
+              [
+                460,
+                300
+              ]
+            ]
+          },
+          {
+            "kind": "butterfly",
+            "speed": 40,
+            "path": [
+              [
+                1300,
+                300
+              ],
+              [
+                1400,
+                260
+              ],
+              [
+                1440,
+                360
+              ],
+              [
+                1340,
+                380
+              ]
+            ]
+          }
+        ],
+        "startAt": [
+          200,
+          -120
+        ],
+        "cheer": {
+          "clip": "c-yay1",
+          "gapMs": 2000
+        }
       }
     ],
     "frisbeeColors": {
@@ -1583,7 +2523,10 @@
     "snackArt": {
       "popcorn": "pgPopcorn",
       "cottonCandy": "pgCottonCandy",
-      "iceCreamCup": "pgIceCreamCup"
+      "iceCreamCup": "pgIceCreamCup",
+      "watermelon": "watermelon",
+      "fruitPop": "pgFruitPop",
+      "orangeSlices": "pgOrangeSlices"
     },
     "rideFit": {
       "default": {
@@ -1596,17 +2539,36 @@
       "friendSilly": {
         "head": 28,
         "eyes": 62,
-        "helmet": 64
+        "helmet": 64,
+        "floaty": {
+          "kind": "armbands",
+          "top": 96,
+          "x": 0,
+          "w": 150
+        }
       },
       "friendBerry": {
         "head": 9,
         "eyes": 30,
-        "helmet": 48
+        "helmet": 48,
+        "floaty": {
+          "kind": "ring",
+          "top": 104,
+          "x": 0,
+          "w": 130
+        }
       },
       "friendCounter": {
         "head": 20,
         "eyes": 42,
         "helmet": 38,
+        "over": "antennae",
+        "floaty": {
+          "kind": "armbands",
+          "top": 86,
+          "x": 0,
+          "w": 150
+        },
         "keepClear": [
           [
             53,
@@ -1629,48 +2591,152 @@
       "friendDino": {
         "head": 34,
         "eyes": 57,
-        "helmet": 54
+        "helmet": 54,
+        "floaty": {
+          "kind": "armbands",
+          "top": 84,
+          "x": 0,
+          "w": 126
+        }
       },
       "friendSea": {
         "head": 3,
         "eyes": 30,
-        "helmet": 54
+        "helmet": 54,
+        "floaty": {
+          "kind": "armbands",
+          "top": 70,
+          "x": 0,
+          "w": 104
+        }
       },
       "yellowDog": {
         "head": 22,
-        "eyes": 48
+        "eyes": 48,
+        "floaty": {
+          "kind": "vest",
+          "top": 92,
+          "x": 0,
+          "w": 110
+        }
       },
       "chocolateDog": {
         "head": 22,
-        "eyes": 48
+        "eyes": 48,
+        "floaty": {
+          "kind": "vest",
+          "top": 92,
+          "x": 0,
+          "w": 110
+        }
       },
       "gingerDog": {
         "head": 22,
-        "eyes": 47
+        "eyes": 47,
+        "floaty": {
+          "kind": "vest",
+          "top": 92,
+          "x": 0,
+          "w": 110
+        }
       },
       "blackDog": {
         "head": 22,
-        "eyes": 47
+        "eyes": 47,
+        "floaty": {
+          "kind": "vest",
+          "top": 92,
+          "x": 0,
+          "w": 110
+        }
       },
       "puppy": {
         "head": 20,
         "eyes": 49,
-        "helmet": 58
+        "helmet": 58,
+        "floaty": {
+          "kind": "vest",
+          "top": 96,
+          "x": 0,
+          "w": 100
+        }
       },
       "kitty": {
         "head": 24,
-        "eyes": 49
+        "eyes": 49,
+        "floaty": {
+          "kind": "vest",
+          "top": 96,
+          "x": 0,
+          "w": 100
+        }
       },
       "bunny": {
         "head": 39,
         "eyes": 61,
-        "helmet": 52
+        "helmet": 52,
+        "floaty": {
+          "kind": "vest",
+          "top": 96,
+          "x": 0,
+          "w": 100
+        }
       },
       "bunny2": {
         "head": 39,
         "eyes": 61,
-        "helmet": 52
+        "helmet": 52,
+        "floaty": {
+          "kind": "vest",
+          "top": 96,
+          "x": 0,
+          "w": 100
+        }
       }
-    }
+    },
+    "maxHillSlope": 0.65,
+    "reactions": [
+      {
+        "who": "puppy",
+        "after": "dragonCoaster",
+        "trick": "loudHopPeek"
+      },
+      {
+        "who": "kitty",
+        "after": "ticketBooth",
+        "trick": "pawTap"
+      },
+      {
+        "who": "chocolateDog",
+        "after": "bench",
+        "trick": "cuddleLean"
+      },
+      {
+        "who": "bunny",
+        "after": "bench",
+        "trick": "petThenHop"
+      },
+      {
+        "who": "bunny2",
+        "after": "anyRide",
+        "trick": "pileHug"
+      },
+      {
+        "who": "friendSea",
+        "after": "dragonCoaster",
+        "trick": "pomPoms"
+      },
+      {
+        "who": "friendDino",
+        "after": "tunnel",
+        "trick": "happyToot"
+      },
+      {
+        "who": "friendSilly",
+        "after": "whoosh",
+        "trick": "tongueBoing"
+      }
+    ],
+    "seat2": "any"
   }
 }

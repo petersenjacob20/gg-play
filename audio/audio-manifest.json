@@ -1600,5 +1600,45 @@
   "seconds": 0.959,
   "bytes": 6048,
   "checked": "machine"
+ },
+ "pk-go": {
+  "kind": "text",
+  "input": "Go!",
+  "phonemes": "ɡˌO!",
+  "seconds": 0.43,
+  "bytes": 2880,
+  "checked": "machine"
+ },
+ "pk-red": {
+  "kind": "text",
+  "input": "Red!",
+  "phonemes": "ɹˈɛd!",
+  "seconds": 0.471,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "pk-yellow": {
+  "kind": "text",
+  "input": "Yellow!",
+  "phonemes": "jˈɛlO!",
+  "seconds": 0.499,
+  "bytes": 3312,
+  "checked": "machine"
+ },
+ "pk-blue": {
+  "kind": "text",
+  "input": "Blue!",
+  "phonemes": "blˈu!",
+  "seconds": 0.473,
+  "bytes": 3168,
+  "checked": "machine"
+ },
+ "pk-green": {
+  "kind": "text",
+  "input": "Green!",
+  "phonemes": "ɡɹˈin!",
+  "seconds": 0.527,
+  "bytes": 3456,
+  "checked": "machine"
  }
 }

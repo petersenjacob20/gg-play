@@ -234,8 +234,7 @@ function friendCounter() {
       ell(60, 76, 19, 30, 'none'),
       ...[44, 50, 56, 62, 68, 74].map((x) => circ(x, 48, 4, '#FFFFFF', { 'stroke-width': 1.5 }))),
     g('head',
-      line('M54 22q-4-14-14-12q-5 3 0 7'),
-      line('M66 22q4-14 14-12q5 3 0 7'),
+      g('antennae', line('M54 22q-4-14-14-12q-5 3 0 7'), line('M66 22q4-14 14-12q5 3 0 7')), // drawn again above a helmet (design §15.4)
       circ(60, 34, 15, MINT),
       el('circle', { cx: 51, cy: 38, r: 3, fill: '#F7B0A0' }),
       el('circle', { cx: 69, cy: 38, r: 3, fill: '#F7B0A0' }),
