@@ -10,6 +10,7 @@ import { PLAYABLE } from '../acts/index.js';
 import { tilePic } from '../tiles.js';
 import { builtGames, gameTitleFixed } from '../games.js';
 import { activeProfile } from '../store.js';
+import { playgroundShips } from '../playground.js';
 
 export function bookBar(ctx) {
   const last = activeProfile(ctx.state).book.slice(-3);
@@ -41,9 +42,10 @@ export function render(ctx) {
     return v;
   }));
   const games = builtGames(ctx.data.games, PLAYABLE);
+  const pgOn = playgroundShips(ctx.data) && ctx.state.playground !== false;
   const tiles = games.map((g) => {
     const title = gameTitleFixed(g, ctx.state.pets);
-    const wide = g.id === 'stories' && games.length % 2 === 1 && games[games.length - 1] === g;
+    const wide = g.id === 'stories' && !pgOn && games.length % 2 === 1 && games[games.length - 1] === g;
     return h('button', {
       type: 'button',
       class: `game-tile edge-${g.id}${wide ? ' wide' : ''}`,
@@ -58,9 +60,26 @@ export function render(ctx) {
       h('span', { class: 'tile-art', 'aria-hidden': 'true' }, tilePic(g.tile?.replace(/^tl-/, '') || g.id)),
       h('span', { class: 'tile-title', text: title }));
   });
+  // Playground tile (Amendment n / design.md §13.3) — lilac edge; only when it ships and Dad's toggle is on
+  if (pgOn) {
+    const pgClip = (ctx.data.clips && ctx.data.clips['h-playground']) || 'c-yay1';
+    tiles.push(h('button', {
+      type: 'button',
+      class: 'game-tile edge-playground',
+      'data-tile': 'playground',
+      'aria-label': 'Playground',
+      onclick: () => {
+        ctx.intro = pgClip;
+        ctx.go('#playground');
+      },
+    },
+      h('span', { class: 'tile-art', 'aria-hidden': 'true' }, tilePic('playground')),
+      h('span', { class: 'tile-title', text: 'Playground' })));
+  }
+  const n = tiles.length;
   return h('main', { class: 'home' },
     h('div', { class: 'topbar' }, h('p', { class: 'dad-title', text: 'Pet Parade' }), dadButton(ctx)),
     row,
-    h('div', { class: `game-grid n${games.length}` }, tiles),
+    h('div', { class: `game-grid n${n}` }, tiles),
     bookBar(ctx));
 }

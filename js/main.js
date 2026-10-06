@@ -1,7 +1,7 @@
 // Router + screen mounting. Routes: #home, #game/<id> (a built game's current ladder step),
 // #play/<act> (test-only: plays that act via the game that owns it), #book, #stories, #story/<id>,
-// #pets, #says (Puppy Says, also reached as #game/says). Dad help is a bottom sheet over the current screen.
-import { load, save, defaults, setLetters, setBook, setGames } from './store.js';
+// #pets, #says (Puppy Says, also reached as #game/says), #playground, #playground/<id>. Dad help is a bottom sheet over the current screen.
+import { load, save, defaults, setLetters, setBook, setGames, setPlayground } from './store.js';
 import * as home from './screens/home.js';
 import * as play from './screens/play.js';
 import * as book from './screens/book.js';
@@ -9,17 +9,19 @@ import * as shelf from './screens/stories.js';
 import * as story from './screens/story.js';
 import * as pets from './screens/family.js';
 import * as says from './screens/says.js';
+import * as playground from './screens/playground.js';
 import { closeDadPanel } from './dad.js';
 import { createGate } from './lock.js';
 import { createUpdater, safeUpdate } from './update.js';
 import { createAudio } from './audio.js';
 import { routeName, routeParam } from './route.js';
+import { resolvePlayground } from './playground.js';
 import { storyById } from './story.js';
 import { gameById, isBuilt } from './games.js';
 import { ACTS, SCREENS, PLAYABLE } from './acts/index.js';
 import { loadPhotos, setPhotos, revokePhotoURLs, forgetAllPhotos } from './photos.js';
 
-const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, says, letters: play, count: play };
+const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, says, playground, letters: play, count: play };
 
 function paramFor(name, hash) {
   if (name === 'letters' || name === 'count') return name;
@@ -34,6 +36,7 @@ const ctx = {
   intro: null,
   session: {},
   param: null,
+  zone: null, // #playground/<id>/<zone>: a ready zone id (q10)
   game: null, // the games.json entry when playing via #game/<id>
   gate: null, // grown-up unlock gate (in memory only)
   save() { save(ctx.state); },
@@ -67,6 +70,7 @@ function render() {
   if (updater.onSettle({ ...onScreen(), screen: name, activityOpen: name !== 'home', storyOpen: false, boxOpen: false }) === 'reload') return;
   ctx.param = paramFor(name, location.hash);
   ctx.game = null;
+  ctx.zone = null;
   if (name === 'game') {
     const g = gameById(ctx.data.games, ctx.param);
     if (!g || !isBuilt(g, PLAYABLE)) { name = 'home'; ctx.param = null; }
@@ -75,6 +79,15 @@ function render() {
       ctx.game = g;
       const own = SCREENS[g.ladder[0].act]; // a game with its own screen (Puppy Says)
       if (own) name = own;
+    }
+  } else if (name === 'playground') {
+    // #playground/<id>: camelCase ids need routeIds (q0); a bad or switched-off id goes back to #playground
+    const r = resolvePlayground(ctx.data, ctx.state, location.hash);
+    if (r.view === 'off') { name = 'home'; ctx.param = null; }
+    else {
+      if (r.fix) history.replaceState(null, '', r.fix);
+      ctx.param = r.id;
+      ctx.zone = r.zone || null;
     }
   } else if (name === 'says') {
     ctx.game = gameById(ctx.data.games, 'says');
@@ -134,6 +147,7 @@ async function start() {
     setLetters(ctx.data.letters.map((l) => l.id));
     setBook(ctx.data.stickerBook.flat());
     setGames(ctx.data.games);
+    setPlayground(ctx.data);
     ctx.state = load();
   } catch {
     document.getElementById('app').textContent = 'Could not load the game. Reload once.';

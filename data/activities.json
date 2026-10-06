@@ -487,7 +487,8 @@
         "snuggle",
         "spin",
         "boing"
-      ]
+      ],
+      "frisbee": "yellow"
     },
     {
       "id": "chocolateDog",
@@ -521,7 +522,8 @@
         "crunchSnack",
         "zoomies",
         "spin"
-      ]
+      ],
+      "frisbee": "green"
     },
     {
       "id": "blackDog",
@@ -538,7 +540,8 @@
         "dropBall",
         "spin",
         "boing"
-      ]
+      ],
+      "frisbee": "blue"
     },
     {
       "id": "puppy",
@@ -1072,6 +1075,602 @@
     "h-farm": "h-pattern",
     "h-monster": "h-count",
     "h-stories": "h-stories",
-    "h-says": "h-says"
+    "h-says": "h-says",
+    "h-playground": "h-playground",
+    "cheep": "fx-cheep",
+    "quack": "fx-quack",
+    "splash": "fx-splash"
+  },
+  "playground": {
+    "cell": 100,
+    "walkSpeed": 500,
+    "maxMoving": 6,
+    "cap": 24,
+    "startBeside": "slide",
+    "aliases": {
+      "puddle": "splash",
+      "swing": "swings"
+    },
+    "pieces": [
+      {
+        "id": "slide",
+        "art": "pgSlide",
+        "w": 2,
+        "h": 2,
+        "trick": "whoosh",
+        "sound": "fx-zoom"
+      },
+      {
+        "id": "swings",
+        "art": "pgSwings",
+        "w": 2,
+        "h": 2,
+        "trick": "swing",
+        "sound": "fx-chime"
+      },
+      {
+        "id": "sandbox",
+        "art": "pgSandbox",
+        "w": 2,
+        "h": 1,
+        "trick": "digRoll",
+        "sound": "fx-pop"
+      },
+      {
+        "id": "splash",
+        "art": "pgSplash",
+        "w": 2,
+        "h": 2,
+        "trick": "splash",
+        "sound": "fx-splash",
+        "water": true
+      },
+      {
+        "id": "climber",
+        "art": "pgClimber",
+        "w": 2,
+        "h": 2,
+        "trick": "climb",
+        "sound": "fx-boing"
+      },
+      {
+        "id": "seesaw",
+        "art": "pgSeesaw",
+        "w": 2,
+        "h": 1,
+        "trick": "seesaw",
+        "sound": "fx-boing"
+      },
+      {
+        "id": "merry",
+        "art": "pgMerry",
+        "w": 2,
+        "h": 2,
+        "trick": "slowTurn",
+        "sound": "fx-chime"
+      },
+      {
+        "id": "tunnel",
+        "art": "pgTunnel",
+        "w": 2,
+        "h": 1,
+        "trick": "peekaboo",
+        "sound": "fx-giggle"
+      },
+      {
+        "id": "bench",
+        "art": "pgBench",
+        "w": 2,
+        "h": 1,
+        "trick": "rest",
+        "sound": "fx-pop"
+      },
+      {
+        "id": "tree",
+        "art": "pgTree",
+        "w": 1,
+        "h": 2,
+        "trick": "treePeek",
+        "sound": "fx-giggle"
+      },
+      {
+        "id": "flowers",
+        "art": "pgFlowers",
+        "w": 1,
+        "h": 1,
+        "trick": "sniff",
+        "sound": "fx-sniff"
+      },
+      {
+        "id": "pond",
+        "art": "pgPond",
+        "w": 2,
+        "h": 2,
+        "trick": "splash",
+        "sound": "fx-splash",
+        "water": true
+      },
+      {
+        "id": "bike",
+        "art": "pgBike",
+        "w": 2,
+        "h": 1,
+        "trick": "ride",
+        "sound": "fx-chime",
+        "ride": {
+          "anim": "pedal",
+          "seats": 1,
+          "speed": 240,
+          "ms": 3800,
+          "path": [
+            [
+              0,
+              80
+            ],
+            [
+              160,
+              140
+            ],
+            [
+              120,
+              300
+            ],
+            [
+              -120,
+              300
+            ],
+            [
+              -160,
+              140
+            ]
+          ]
+        }
+      },
+      {
+        "id": "scooter",
+        "art": "pgScooter",
+        "w": 2,
+        "h": 1,
+        "trick": "ride",
+        "sound": "fx-chime",
+        "ride": {
+          "anim": "glide",
+          "seats": 1,
+          "speed": 240,
+          "ms": 3829,
+          "path": [
+            [
+              0,
+              -70
+            ],
+            [
+              160,
+              -140
+            ],
+            [
+              120,
+              -300
+            ],
+            [
+              -120,
+              -300
+            ],
+            [
+              -160,
+              -140
+            ]
+          ]
+        }
+      },
+      {
+        "id": "snacks",
+        "art": "pgSnacks",
+        "w": 2,
+        "h": 2,
+        "trick": "treat",
+        "sound": "fx-mmm",
+        "snacks": [
+          "popcorn",
+          "cottonCandy",
+          "iceCreamCup"
+        ]
+      }
+    ],
+    "animals": [
+      {
+        "id": "bird",
+        "art": "pgBird",
+        "reaction": "hopLoop",
+        "sound": "fx-cheep",
+        "size": 56
+      },
+      {
+        "id": "squirrel",
+        "art": "pgSquirrel",
+        "reaction": "treePeek",
+        "sound": "fx-pop",
+        "size": 60
+      },
+      {
+        "id": "duck",
+        "art": "pgDuck",
+        "reaction": "quackPaddle",
+        "sound": "fx-quack",
+        "size": 64
+      },
+      {
+        "id": "butterfly",
+        "art": "pgButterfly",
+        "reaction": "flutterFlower",
+        "sound": null,
+        "size": 48
+      }
+    ],
+    "zones": [
+      {
+        "id": "park",
+        "ready": true,
+        "gate": "pgGatePark",
+        "world": {
+          "w": 1200,
+          "h": 1100
+        },
+        "sky": "#BFE6F7",
+        "ground": "#B9E08F",
+        "pieces": [
+          "slide",
+          "swings",
+          "sandbox",
+          "splash",
+          "climber",
+          "seesaw",
+          "merry",
+          "tunnel",
+          "bench",
+          "tree",
+          "flowers",
+          "pond",
+          "bike",
+          "scooter",
+          "snacks"
+        ],
+        "park": [
+          [
+            "slide",
+            4,
+            4
+          ],
+          [
+            "swings",
+            8,
+            3
+          ],
+          [
+            "sandbox",
+            5,
+            7
+          ],
+          [
+            "splash",
+            1,
+            7
+          ],
+          [
+            "climber",
+            1,
+            1
+          ],
+          [
+            "seesaw",
+            9,
+            7
+          ],
+          [
+            "merry",
+            9,
+            9
+          ],
+          [
+            "tree",
+            7,
+            0
+          ],
+          [
+            "flowers",
+            5,
+            1
+          ],
+          [
+            "pond",
+            4,
+            9
+          ],
+          [
+            "bike",
+            2,
+            4
+          ],
+          [
+            "scooter",
+            7,
+            9
+          ],
+          [
+            "snacks",
+            10,
+            4
+          ]
+        ],
+        "animals": [
+          {
+            "kind": "bird",
+            "speed": 60,
+            "path": [
+              [
+                300,
+                330
+              ],
+              [
+                520,
+                260
+              ],
+              [
+                700,
+                320
+              ],
+              [
+                540,
+                390
+              ]
+            ]
+          },
+          {
+            "kind": "bird",
+            "speed": 50,
+            "path": [
+              [
+                900,
+                620
+              ],
+              [
+                1080,
+                560
+              ],
+              [
+                1120,
+                700
+              ],
+              [
+                960,
+                740
+              ]
+            ]
+          },
+          {
+            "kind": "squirrel",
+            "anchor": "tree",
+            "speed": 70,
+            "path": [
+              [
+                -90,
+                80
+              ],
+              [
+                -30,
+                120
+              ],
+              [
+                60,
+                120
+              ],
+              [
+                110,
+                70
+              ]
+            ]
+          },
+          {
+            "kind": "duck",
+            "anchor": "pond",
+            "speed": 30,
+            "path": [
+              [
+                -40,
+                -10
+              ],
+              [
+                30,
+                -30
+              ],
+              [
+                50,
+                20
+              ],
+              [
+                -20,
+                30
+              ]
+            ]
+          },
+          {
+            "kind": "butterfly",
+            "anchor": "flowers",
+            "speed": 45,
+            "path": [
+              [
+                -40,
+                -40
+              ],
+              [
+                40,
+                -60
+              ],
+              [
+                60,
+                10
+              ],
+              [
+                -30,
+                20
+              ]
+            ]
+          },
+          {
+            "kind": "butterfly",
+            "speed": 40,
+            "path": [
+              [
+                160,
+                560
+              ],
+              [
+                260,
+                520
+              ],
+              [
+                300,
+                620
+              ],
+              [
+                180,
+                640
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "coaster",
+        "ready": false,
+        "gate": null,
+        "world": {
+          "w": 1200,
+          "h": 1100
+        },
+        "sky": "#FBE3C8",
+        "ground": "#B9E08F",
+        "pieces": [],
+        "park": [],
+        "animals": []
+      },
+      {
+        "id": "water",
+        "ready": false,
+        "gate": null,
+        "world": {
+          "w": 1200,
+          "h": 1100
+        },
+        "sky": "#CDEFFB",
+        "ground": "#9FDCF0",
+        "pieces": [],
+        "park": [],
+        "animals": []
+      }
+    ],
+    "frisbeeColors": {
+      "blue": "#3D7BE0",
+      "green": "#3FAE5A",
+      "yellow": "#F2C230",
+      "red": "#E5484D"
+    },
+    "frisbeeDefault": "red",
+    "frisbeeMs": {
+      "fly": 500,
+      "back": 380
+    },
+    "maxRiding": 2,
+    "snackArt": {
+      "popcorn": "pgPopcorn",
+      "cottonCandy": "pgCottonCandy",
+      "iceCreamCup": "pgIceCreamCup"
+    },
+    "rideFit": {
+      "default": {
+        "head": 22,
+        "eyes": 48,
+        "feet": 160,
+        "helmet": 54,
+        "helmetX": 0
+      },
+      "friendSilly": {
+        "head": 28,
+        "eyes": 62,
+        "helmet": 64
+      },
+      "friendBerry": {
+        "head": 9,
+        "eyes": 30,
+        "helmet": 48
+      },
+      "friendCounter": {
+        "head": 20,
+        "eyes": 42,
+        "helmet": 38,
+        "keepClear": [
+          [
+            53,
+            13
+          ],
+          [
+            107,
+            13
+          ],
+          [
+            65,
+            16
+          ],
+          [
+            95,
+            16
+          ]
+        ]
+      },
+      "friendDino": {
+        "head": 34,
+        "eyes": 57,
+        "helmet": 54
+      },
+      "friendSea": {
+        "head": 3,
+        "eyes": 30,
+        "helmet": 54
+      },
+      "yellowDog": {
+        "head": 22,
+        "eyes": 48
+      },
+      "chocolateDog": {
+        "head": 22,
+        "eyes": 48
+      },
+      "gingerDog": {
+        "head": 22,
+        "eyes": 47
+      },
+      "blackDog": {
+        "head": 22,
+        "eyes": 47
+      },
+      "puppy": {
+        "head": 20,
+        "eyes": 49,
+        "helmet": 58
+      },
+      "kitty": {
+        "head": 24,
+        "eyes": 49
+      },
+      "bunny": {
+        "head": 39,
+        "eyes": 61,
+        "helmet": 52
+      },
+      "bunny2": {
+        "head": 39,
+        "eyes": 61,
+        "helmet": 52
+      }
+    }
   }
 }

@@ -1568,5 +1568,37 @@
   "seconds": 0.801,
   "bytes": 5184,
   "checked": "machine"
+ },
+ "h-playground": {
+  "kind": "text",
+  "input": "Playground!",
+  "phonemes": "plˈAɡɹˌWnd!",
+  "seconds": 0.738,
+  "bytes": 4752,
+  "checked": "machine"
+ },
+ "fx-cheep": {
+  "kind": "text",
+  "input": "Tweet tweet!",
+  "phonemes": "twˈit twˈit!",
+  "seconds": 0.779,
+  "bytes": 5040,
+  "checked": "machine"
+ },
+ "fx-quack": {
+  "kind": "text",
+  "input": "Quack quack!",
+  "phonemes": "kwˈæk kwˈæk!",
+  "seconds": 0.772,
+  "bytes": 5040,
+  "checked": "machine"
+ },
+ "fx-splash": {
+  "kind": "text",
+  "input": "Splish splash!",
+  "phonemes": "splˈɪʃ splˈæʃ!",
+  "seconds": 0.959,
+  "bytes": 6048,
+  "checked": "machine"
  }
 }

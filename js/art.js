@@ -344,6 +344,20 @@ export const ART = {
     P('M12 32H88V48H12Z', '#6DB8EA'),
     el('path', { d: 'M44 32H56V48H44Z', fill: gold ? '#F2C230' : '#5DBB63', stroke: INK, 'stroke-width': 3 })),
   // A closed book with a star on the cover (the Sticker book button).
+  // Playground tile (design.md §13.3, q0): an open toy chest, lilac lid tipped back, a red ball and a
+  // gold star peeking over the rim. Original drawing, no licensed look.
+  toyChest: () => g(
+    P('M20 46L27 13H73L80 46Z', '#B57EDC'),
+    P('M27 20H73', 'none', { stroke: '#D9B8F0', 'stroke-width': 4 }),
+    P('M16 46H84V56H16Z', '#5B3A29'),
+    C(38, 44, 14, '#E5484D'),
+    L('M25 40q13 7 26 0', '#FFFFFF', 3),
+    star(64, 38, 15, 6.5, '#F2C230'),
+    el('rect', { x: 14, y: 52, width: 72, height: 36, rx: 6, fill: '#C98A4B', ...O }),
+    L('M16 65H84', '#9C6532', 2.5),
+    L('M16 77H84', '#9C6532', 2.5),
+    el('rect', { x: 11, y: 48, width: 78, height: 9, rx: 4, fill: '#B57EDC', ...O }),
+    el('rect', { x: 44, y: 55, width: 12, height: 11, rx: 2, fill: '#F2C230', ...O })),
   bookClosed: () => g(
     P('M20 14H78a6 6 0 0 1 6 6V86a6 6 0 0 1-6 6H20Z', '#8E5CC7'),
     P('M20 14H30V92H20Z', '#6E45A8'),
@@ -404,6 +418,145 @@ export const ART = {
     el('ellipse', { cx: 43, cy: 34, rx: 6.5, ry: 8.5, fill: INK }),
     el('ellipse', { cx: 57, cy: 34, rx: 6.5, ry: 8.5, fill: INK }),
     el('ellipse', { cx: 69, cy: 44, rx: 6.5, ry: 8.5, fill: INK })),
+  // ---- Playground park (Amendment q2/q3): original vector parts, no brands. Each piece is drawn in a
+  // box of 100 units per grid cell (a 2x2 piece is 0 0 200 200); animals are 0 0 100 100.
+  pgSlide: () => g(
+    P('M30 40H44V188H30Z', '#C9CFD6'), P('M70 40H84V188H70Z', '#C9CFD6'),
+    L('M30 70H84M30 100H84M30 130H84M30 160H84', '#8C96A0', 5),
+    P('M24 30H96V46H24Z', '#E5484D'),
+    P('M90 34Q130 40 150 100Q164 150 196 168V190Q156 180 138 124Q120 64 90 52Z', '#F2C230'),
+    L('M98 42Q134 52 148 104', '#FFE27A', 4),
+    P('M40 12H80L86 30H34Z', '#4AA3DF')),
+  pgSwings: () => g(
+    P('M14 190L48 18H58L28 190Z', '#5DBB63'), P('M186 190L152 18H142L172 190Z', '#5DBB63'),
+    P('M40 12H160V30H40Z', '#E5484D'),
+    L('M70 30V138M98 30V138', '#8C96A0', 3), L('M118 30V128M146 30V128', '#8C96A0', 3),
+    el('rect', { x: 62, y: 136, width: 44, height: 12, rx: 5, fill: '#4AA3DF', ...O }),
+    el('rect', { x: 110, y: 126, width: 44, height: 12, rx: 5, fill: '#F2C230', ...O })),
+  pgSandbox: () => g(
+    el('rect', { x: 6, y: 14, width: 188, height: 76, rx: 10, fill: '#B07A4A', ...O }),
+    el('rect', { x: 18, y: 24, width: 164, height: 56, rx: 6, fill: '#F1D9A0', ...O }),
+    E(70, 56, 18, 9, '#E8C783', { stroke: 'none' }),
+    P('M120 40H144L140 70H124Z', '#E5484D'), L('M122 40Q132 26 142 40', INK, 3),
+    P('M150 66L170 44', 'none', { stroke: '#4AA3DF', 'stroke-width': 5 }), E(150, 68, 7, 5, '#4AA3DF')),
+  pgSplash: () => g(
+    E(100, 130, 92, 58, '#9FDCF0'), E(100, 130, 60, 36, '#C9EEF8', { 'stroke-width': 2 }),
+    ...[[60, 1], [100, 0], [140, -1]].map(([x, k]) => L(`M${x} 126Q${x - 22 * k} 50 ${x - 40 * k - (k === 0 ? 0 : 0)} 30`, '#4AA3DF', 6)),
+    C(100, 26, 7, '#C9EEF8', { 'stroke-width': 2 }), C(20 + 40, 34, 6, '#C9EEF8', { 'stroke-width': 2 }), C(180 - 40, 34, 6, '#C9EEF8', { 'stroke-width': 2 }),
+    C(60, 126, 8, '#4AA3DF'), C(100, 126, 8, '#4AA3DF'), C(140, 126, 8, '#4AA3DF')),
+  pgClimber: () => g(
+    P('M20 186Q20 30 100 30Q180 30 180 186', 'none', { stroke: '#E86FA8', 'stroke-width': 8 }),
+    P('M56 186Q56 56 100 56Q144 56 144 186', 'none', { stroke: '#4AA3DF', 'stroke-width': 8 }),
+    L('M100 30V186', '#F2C230', 8),
+    L('M28 120H172M44 76H156', '#5DBB63', 7),
+    L('M14 188H186', INK, 4)),
+  pgSeesaw: () => g(
+    P('M86 92L100 58L114 92Z', '#E5484D'),
+    el('rect', { x: 10, y: 50, width: 180, height: 12, rx: 6, fill: '#F2C230', ...O, transform: 'rotate(-10 100 56)' }),
+    L('M28 52V36M24 36H34', INK, 4), L('M172 30V16M168 16H178', INK, 4)),
+  pgMerry: () => g(
+    E(100, 150, 90, 34, '#4AA3DF'), E(100, 140, 90, 34, '#F2C230'),
+    ...[[0, '#E5484D'], [1, '#5DBB63'], [2, '#E86FA8'], [3, '#4AA3DF']].map(([i, c]) => P(`M100 140L${100 + 88 * Math.cos(i * Math.PI / 2 + 0.4)} ${140 + 33 * Math.sin(i * Math.PI / 2 + 0.4)}`, 'none', { stroke: c, 'stroke-width': 6 })),
+    L('M100 140V40', '#8C96A0', 6), P('M40 52Q100 6 160 52Z', '#E5484D'),
+    L('M60 140V70M140 140V70', '#8C96A0', 4)),
+  pgTunnel: () => g(
+    P('M10 92Q10 10 100 10Q190 10 190 92H150Q150 44 100 44Q50 44 50 92Z', '#E86FA8'),
+    P('M30 92Q30 26 100 26Q170 26 170 92', 'none', { stroke: '#FFD54A', 'stroke-width': 7 }),
+    E(100, 92, 50, 6, '#5B3A29', { stroke: 'none' })),
+  pgBench: () => g(
+    el('rect', { x: 14, y: 20, width: 172, height: 16, rx: 5, fill: '#B07A4A', ...O }),
+    el('rect', { x: 14, y: 46, width: 172, height: 16, rx: 5, fill: '#C98A4B', ...O }),
+    L('M34 62V90M166 62V90M34 36V46M166 36V46', INK, 6)),
+  pgTree: () => g(
+    P('M42 120H58V190H42Z', '#8B5E3C'),
+    C(50, 70, 44, '#5DBB63'), C(26, 92, 22, '#4FA856'), C(74, 92, 22, '#4FA856'),
+    C(36, 58, 5, '#E5484D', { 'stroke-width': 2 }), C(66, 78, 5, '#E5484D', { 'stroke-width': 2 }),
+    E(50, 192, 30, 6, '#7FB86A', { stroke: 'none' })),
+  pgFlowers: () => g(
+    el('g', { transform: 'translate(-22 8) scale(0.62)' }, ART.flower()),
+    el('g', { transform: 'translate(20 14) scale(0.56)' }, ART.flower()),
+    el('g', { transform: 'translate(46 4) scale(0.6)' }, ART.flower())),
+  pgPond: () => g(
+    P('M20 110Q12 40 90 34Q180 26 186 104Q192 176 104 180Q24 182 20 110Z', '#6DB8EA'),
+    P('M44 104Q46 66 92 62', 'none', { stroke: '#BFE6F7', 'stroke-width': 5, 'stroke-linecap': 'round' }),
+    E(136, 136, 18, 9, '#5DBB63'), L('M168 60V20M176 64V30M160 64V36', '#3E8E46', 4),
+    E(168, 22, 4, 9, '#8B5E3C', { 'stroke-width': 2 })),
+  // animals (0 0 100 100): soft, round, friendly; no teeth or claws
+  pgBird: () => g(
+    E(50, 58, 28, 22, '#4AA3DF'), C(70, 40, 15, '#4AA3DF'),
+    P('M84 38L96 42L84 46Z', '#F2C230', { 'stroke-width': 2 }), dot(73, 37, 2.6),
+    P('M30 54Q46 40 58 56Q44 68 30 54Z', '#2F7FB8', { 'stroke-width': 2.5 }),
+    P('M24 60L8 52L14 66Z', '#2F7FB8', { 'stroke-width': 2.5 }),
+    L('M46 80V90M56 80V90', '#F28C28', 3), E(50, 64, 12, 9, '#CFE9FA', { stroke: 'none' })),
+  pgSquirrel: () => g(
+    P('M30 86Q4 70 14 40Q22 14 42 24Q30 44 46 66Z', '#B86A3C'),
+    E(58, 68, 20, 18, '#C97C48'), C(66, 42, 15, '#C97C48'),
+    P('M58 30L60 18L68 28Z', '#C97C48', { 'stroke-width': 2.5 }), P('M70 30L76 18L78 32Z', '#C97C48', { 'stroke-width': 2.5 }),
+    dot(71, 40, 2.6), C(80, 46, 3, '#4A3426', { 'stroke-width': 1 }), E(60, 72, 9, 10, '#F1D2B0', { stroke: 'none' })),
+  pgDuck: () => g(
+    E(46, 66, 32, 20, '#FFFFFF'), C(70, 40, 15, '#FFFFFF'),
+    P('M82 40L98 44L82 50Z', '#F28C28', { 'stroke-width': 2.5 }), dot(72, 37, 2.6),
+    P('M24 62Q40 50 56 64Q40 76 24 62Z', '#EDEDED', { 'stroke-width': 2.5 }),
+    L('M12 84Q50 96 88 84', '#4AA3DF', 4)),
+  pgButterfly: () => ART.butterfly(),
+  // the dogs' frisbee (q4), coloured from data
+  pgFrisbee: ({ fill = '#E5484D' } = {}) => g(
+    E(50, 54, 44, 22, fill),
+    E(50, 50, 30, 12, '#FFFFFF', { opacity: 0.35, stroke: 'none' }),
+    L('M22 56Q50 70 78 56', '#FFFFFF', 3)),
+  // rides (q11): a little bike and scooter (200 x 100), each with its helmet hanging on it; the helmet
+  // a rider always wears (0 0 100 100)
+  pgBike: () => g(
+    C(46, 70, 24, '#FFFFFF', { 'stroke-width': 5 }), C(150, 70, 24, '#FFFFFF', { 'stroke-width': 5 }),
+    C(46, 70, 4, INK), C(150, 70, 4, INK),
+    L('M46 70L82 34H128L150 70M82 34L100 70H46M100 70L128 34', '#4AA3DF', 7),
+    P('M70 24H96L92 32H74Z', INK, { 'stroke-width': 2 }), L('M128 34L134 14H150', INK, 5),
+    P('M138 14Q150 2 164 14V20H138Z', '#F2C230', { 'stroke-width': 2.5 })),
+  pgScooter: () => g(
+    el('rect', { x: 28, y: 66, width: 120, height: 12, rx: 6, fill: '#5DBB63', ...O }),
+    C(40, 84, 12, '#FFFFFF', { 'stroke-width': 4 }), C(150, 84, 12, '#FFFFFF', { 'stroke-width': 4 }),
+    L('M148 72L162 10M148 10H178', '#E5484D', 7),
+    P('M52 46Q66 30 82 46V56H52Z', '#B57EDC', { 'stroke-width': 2.5 })),
+  pgHelmet: () => g(
+    P('M10 66Q10 14 50 12Q90 14 90 66Z', '#F2C230'),
+    P('M10 66H96Q98 74 90 74H10Z', '#E5484D', { 'stroke-width': 2.5 }),
+    L('M30 40Q40 24 56 22', '#FFE27A', 5), L('M24 66V80M76 66V80', INK, 3)),
+  // the snack stand (q11): a striped awning and a counter with pictures, no words, nothing to buy
+  pgSnacks: () => g(
+    P('M14 70L30 20H170L186 70Z', '#FFFFFF'),
+    P('M30 20H58L50 70H14Z', '#E5484D', { 'stroke-width': 2 }), P('M86 20H114L118 70H82Z', '#E5484D', { 'stroke-width': 2 }),
+    P('M142 20H170L186 70H150Z', '#E5484D', { 'stroke-width': 2 }),
+    el('rect', { x: 24, y: 70, width: 152, height: 18, rx: 4, fill: '#F2C230', ...O }),
+    el('rect', { x: 32, y: 88, width: 136, height: 98, rx: 6, fill: '#C98A4B', ...O }),
+    el('g', { transform: 'translate(38 96) scale(0.4)' }, ART.pgPopcorn()),
+    el('g', { transform: 'translate(80 96) scale(0.4)' }, ART.pgCottonCandy()),
+    el('g', { transform: 'translate(122 96) scale(0.4)' }, ART.pgIceCreamCup())),
+  // the treats (0 0 100 100): plain popcorn, plain cotton candy, soft-serve in a cup
+  pgPopcorn: () => g(
+    C(36, 34, 13, '#FFF6D8'), C(52, 26, 14, '#FFF6D8'), C(66, 36, 13, '#FFF6D8'), C(48, 42, 12, '#FFF6D8'),
+    P('M22 42H78L70 94H30Z', '#FFFFFF'), P('M34 42H44L42 94H36Z', '#E5484D', { 'stroke-width': 2 }),
+    P('M56 42H66L64 94H58Z', '#E5484D', { 'stroke-width': 2 })),
+  pgCottonCandy: () => g(
+    C(40, 34, 20, '#F7A8C8'), C(60, 30, 20, '#F7A8C8'), C(50, 50, 22, '#F7A8C8'),
+    L('M40 30Q50 22 62 28', '#FFD3E4', 5), L('M50 70V96', '#FFFFFF', 7), L('M50 70V96', INK, 2)),
+  pgIceCreamCup: () => g(
+    P('M28 46Q30 20 50 18Q72 20 72 46Z', '#FFF1E0'), P('M34 34Q50 24 66 34', 'none', { stroke: '#F7A8C8', 'stroke-width': 5, 'stroke-linecap': 'round' }),
+    P('M22 46H78L70 92H30Z', '#4AA3DF'), L('M26 58H74', '#FFFFFF', 4)),
+  // build mode (q6), wordless: blocks and a little shovel to build; a big check when done; a bin
+  pgBuild: () => g(
+    el('rect', { x: 10, y: 54, width: 34, height: 34, rx: 4, fill: '#E5484D', ...O }),
+    el('rect', { x: 44, y: 54, width: 34, height: 34, rx: 4, fill: '#4AA3DF', ...O }),
+    el('rect', { x: 27, y: 20, width: 34, height: 34, rx: 4, fill: '#F2C230', ...O }),
+    L('M70 44L90 12', '#8B5E3C', 6), P('M62 40Q58 56 70 60Q82 60 80 46Z', '#8C96A0')),
+  pgDone: () => g(C(50, 50, 42, '#5DBB63'), L('M28 52L44 68L74 34', '#FFFFFF', 10)),
+  pgBin: () => g(
+    P('M24 32H76L70 90H30Z', '#8C96A0'), el('rect', { x: 16, y: 20, width: 68, height: 12, rx: 4, fill: '#6F7A84', ...O }),
+    L('M40 18Q50 8 60 18', INK, 4), L('M40 44V80M50 44V80M60 44V80', '#C9D1D8', 4)),
+  // zone gate (shown only when 2 or more zones are ready, q10)
+  pgGatePark: () => g(
+    P('M14 92V40Q50 6 86 40V92H72V46Q50 24 28 46V92Z', '#5DBB63'),
+    L('M50 22V6', INK, 3), P('M50 6L66 11L50 16Z', '#E5484D', { 'stroke-width': 2 }),
+    C(50, 74, 12, '#F2C230')),
 };
 
 export function art(id, opts) {

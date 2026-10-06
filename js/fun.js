@@ -156,6 +156,17 @@ export function playTrick({ kind, pet, layer, data, state, card }) {
     flash(pet, 'trick-drop', 800);
     const ball = h('span', { class: 'trick-prop ball', 'aria-hidden': 'true' }, drawing(art('ball') || art('star'), { box: '0 0 100 100' }));
     pet.appendChild(ball); later(900, () => ball.remove());
+  } else if (kind === 'whoosh') {
+    flash(pet, 'trick-whoosh', 800);
+  } else if (kind === 'digRoll') {
+    flash(pet, 'trick-dig', 800);
+  } else if (kind === 'swing') {
+    flash(pet, 'trick-swing', 900);
+  } else if (kind === 'splash') {
+    flash(pet, 'trick-splash', 800);
+    const drops = h('div', { class: 'trick-splash-drops', 'aria-hidden': 'true' },
+      ...Array.from({ length: 8 }, (_, i) => h('span', { class: `drop d${i}` })));
+    append(drops, 900);
   } else if (kind === 'spin' || kind === 'zoomies' || kind === 'boing' || kind === 'twirl' || kind === 'earflop' || kind === 'starpop') {
     react({ kind, pet, card, layer });
   } else {
@@ -170,5 +181,8 @@ export function trickClip(kind, clips) {
   if (kind === 'numberSparkles' || kind === 'twirl') return clips.chime;
   if (kind === 'crunchSnack') return clips.pop || clips.boing;
   if (kind === 'loudHopPeek') return clips.yip || null;
+  if (kind === 'whoosh' || kind === 'splash') return clips.zoom || clips.boing;
+  if (kind === 'digRoll') return clips.pop || null;
+  if (kind === 'swing') return clips.chime || null;
   return null;
 }

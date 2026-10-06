@@ -1,12 +1,14 @@
 // On-device storage (build plan sections 1 and 6, Amendment m / m8 / save v3). One localStorage key,
 // `gg.v1` (the key name stays). Household fields (sound, intros, sayNames, saysShort, pets, lock) are shared; each profile has
-// its own name, levels (keyed by game id), book and seenLetters. Photos stay in IndexedDB gg-photos.
+// its own name, levels (keyed by game id), book, seenLetters and parks (the Playground parks she built,
+// Amendment q6/q10: { <ready zone id>: [[pieceId, gx, gy], ...] }, no version bump). Photos stay in IndexedDB gg-photos.
 // A v2 save becomes profiles.p1; levels map per Amendment m2 revised (primary act from games.json).
 // Each game level is {lv,top,good,at,topAt}; at/topAt are step keys (act[:mode]:lv) so ladder inserts keep her place (m8).
 // A broken or unknown save starts fresh. Pure helpers are importable from Node.
 
 import { GAME_IDS, PROFILE_IDS, mapOldLevel, primaryAct, ladderMax, resolveLevel, keysForLevel } from './games.js';
 import { LOCK_ALG, LOCK_ITER } from './lock.js';
+import { normalizeParks } from './playground.js';
 
 export const KEY = 'gg.v1';
 export const CACHE_PREFIX = 'gg-';
@@ -37,6 +39,12 @@ export function setGames(list) {
 }
 export function getGames() { return gamesList; }
 
+// The Playground data (zones and pieces), set once at boot so the parks sanitiser knows the catalog.
+let playgroundData = null;
+export function setPlayground(data) {
+  playgroundData = data && data.playground ? { playground: data.playground } : null;
+}
+
 export function freshLevel(game) {
   const ladder = game && Array.isArray(game.ladder) ? game.ladder : [];
   const keys = keysForLevel(ladder, 1, 1);
@@ -50,7 +58,7 @@ export function freshProfile(name = '') {
     if (g && g.noLevels) continue;
     levels[id] = freshLevel(g);
   }
-  return { name: capName(name).trim(), levels, book: [], seenLetters: {} };
+  return { name: capName(name).trim(), levels, book: [], seenLetters: {}, parks: {} };
 }
 
 export function defaults() {
@@ -62,6 +70,7 @@ export function defaults() {
     intros: true,   // Hello voices (Amendment n)
     sayNames: true, // Say pet names via on-device speech only (Amendment n)
     saysShort: false, // Puppy Says: Dad's Short round (3 moves instead of 5; Amendment p5)
+    playground: true, // Playground home tile (Amendment n)
     pets,
     lock: null,
     active: 'p1',
@@ -120,6 +129,7 @@ function normalizeProfile(p, { letters = enabledLetters, book = catalog } = {}) 
   out.name = capName(p.name).trim();
   out.book = normalizeBook(p.book, book);
   out.seenLetters = normalizeSeen(p.seenLetters, letters);
+  out.parks = playgroundData ? normalizeParks(p.parks, playgroundData) : {};
   if (isObj(p.levels)) {
     for (const id of GAME_IDS) {
       const g = gamesList.find((x) => x.id === id);
@@ -210,6 +220,7 @@ export function normalize(obj, { letters = enabledLetters, book = catalog } = {}
   if (typeof obj.intros === 'boolean') s.intros = obj.intros;
   if (typeof obj.sayNames === 'boolean') s.sayNames = obj.sayNames;
   if (typeof obj.saysShort === 'boolean') s.saysShort = obj.saysShort;
+  if (typeof obj.playground === 'boolean') s.playground = obj.playground;
   s.lock = normalizeLock(obj.lock);
 
   const profiles = {};
@@ -257,6 +268,14 @@ export function resetProfileProgress(state) {
   p.levels = fresh.levels;
   p.book = [];
   p.seenLetters = {};
+  p.parks = {};
+  return state;
+}
+
+// Dad's Reset park (behind the lock): this player's parks go back to the starting park.
+export function resetParks(state) {
+  const p = activeProfile(state);
+  p.parks = {};
   return state;
 }
 

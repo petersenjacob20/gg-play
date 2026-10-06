@@ -1,7 +1,7 @@
 // Offline: app shell cached first (build plan section 1).
 // Bump CACHE on every content or code change. Older gg- caches are deleted on activate;
 // caches of other apps on the same origin are never touched.
-const CACHE = 'gg-v1-20261005ng';
+const CACHE = 'gg-v1-20261005nj';
 const ASSETS = [
   './',
   './audio/audio-manifest.json',
@@ -12,14 +12,17 @@ const ASSETS = [
   './audio/c-yay1.mp3',
   './audio/c-yay2.mp3',
   './audio/fx-boing.mp3',
+  './audio/fx-cheep.mp3',
   './audio/fx-chime.mp3',
   './audio/fx-confetti.mp3',
   './audio/fx-giggle.mp3',
   './audio/fx-meow.mp3',
   './audio/fx-mmm.mp3',
   './audio/fx-pop.mp3',
+  './audio/fx-quack.mp3',
   './audio/fx-sneeze.mp3',
   './audio/fx-sniff.mp3',
+  './audio/fx-splash.mp3',
   './audio/fx-toot.mp3',
   './audio/fx-woof.mp3',
   './audio/fx-yip.mp3',
@@ -29,6 +32,7 @@ const ASSETS = [
   './audio/h-count.mp3',
   './audio/h-letters.mp3',
   './audio/h-pattern.mp3',
+  './audio/h-playground.mp3',
   './audio/h-says.mp3',
   './audio/h-stories.mp3',
   './audio/hi-blackDog.mp3',
@@ -232,6 +236,7 @@ const ASSETS = [
   './js/photo-core.js',
   './js/photos.js',
   './js/pics.js',
+  './js/playground.js',
   './js/quiz.js',
   './js/reward.js',
   './js/route.js',
@@ -240,6 +245,7 @@ const ASSETS = [
   './js/screens/family.js',
   './js/screens/home.js',
   './js/screens/play.js',
+  './js/screens/playground.js',
   './js/screens/says.js',
   './js/screens/stories.js',
   './js/screens/story.js',

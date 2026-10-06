@@ -2,11 +2,12 @@
 // password exists, locked actions (profiles, reset, levels, family pets, change password) need an
 // unlock; Show answer, Skip, Home, Sound and Delete my data stay open with the 1-second press alone.
 import { h } from './dom.js';
-import { deleteAll, defaults, activeProfile, resetProfileProgress, freshProfile, save, NAME_MAX } from './store.js';
+import { deleteAll, defaults, activeProfile, resetProfileProgress, resetParks, freshProfile, save, NAME_MAX } from './store.js';
 import { setLevel } from './engine.js';
 import { PLAYABLE } from './acts/index.js';
 import { tilePic } from './tiles.js';
 import { builtGames, gameTitleFixed, ladderMax, stepAt, displayName, PROFILE_MAX, PROFILE_IDS, keysForLevel } from './games.js';
+import { playgroundShips } from './playground.js';
 import { canLock, makeLock, checkLock, validPassword, createGate, PASS_MIN } from './lock.js';
 
 export { createGate };
@@ -338,6 +339,30 @@ function openAddProfile(ctx) {
   ]);
 }
 
+// Reset park (Amendment q6, design.md §15.5): behind the lock, with a confirm. Only this player's parks go.
+function openResetPark(ctx) {
+  const p = activeProfile(ctx.state);
+  const name = p.name && p.name.trim();
+  const body = h('p', { class: 'sheet-sub' });
+  body.textContent = name ? `This puts ${name}'s park back to the starting park.` : "This puts this player's park back to the starting park.";
+  openSheet([
+    h('h2', { id: 'sheet-title', text: 'Reset park?' }),
+    body,
+    h('p', { class: 'sheet-sub', text: 'Levels, stickers and other players stay.' }),
+    sheetBtn('Reset park', () => {
+      resetParks(ctx.state);
+      ctx.save();
+      closeDadPanel();
+      const t = h('p', { class: 'toast', role: 'status', text: 'Park reset.' });
+      document.body.append(t);
+      setTimeout(() => t.remove(), 2000);
+      // on the play scene, show the starting park right away
+      if (typeof location !== 'undefined' && /^#\/?playground\//.test(location.hash || '') && ctx.refresh) ctx.refresh();
+    }, 'danger', { 'data-dad': 'reset-park-yes' }),
+    sheetBtn('Cancel', () => openDadPanel(ctx, 'menu')),
+  ], { cls: 'reset-sheet' });
+}
+
 function openReset(ctx) {
   const p = activeProfile(ctx.state);
   const named = !!(p.name && p.name.trim());
@@ -482,6 +507,8 @@ export function openDadPanel(ctx, view = 'menu') {
   } else if (view === 'levels') {
     body = levelsView(ctx);
   } else if (view === 'fun') {
+    // behind the grown-up lock (the menu only offers it through withUnlock; this guards a direct open too)
+    if (hasLock(ctx) && !gate(ctx).isUnlocked()) { withUnlock(ctx, () => openDadPanel(ctx, 'fun')); return; }
     body = [
       h('h2', { id: 'sheet-title', text: 'Voices' }),
       h('p', { class: 'sheet-sub', text: 'Hello voices and pet names.' }),
@@ -547,6 +574,20 @@ export function openDadPanel(ctx, view = 'menu') {
         body.push(sheetBtn('Park moves', () => withUnlock(ctx, () => openDadPanel(ctx, 'moves'))));
       } else {
         body.push(sheetBtn('Puppy Says settings', () => withUnlock(ctx, () => openDadPanel(ctx, 'menu'))));
+      }
+    }
+    // Playground (design.md §13.6, Amendment q): only when the Playground ships (Design's fix: no toggle
+    // before the tile exists). Behind the lock like Puppy Says: locked, one button asks for the password.
+    if (playgroundShips(ctx.data)) {
+      if (!locked || gate(ctx).isUnlocked()) {
+        body.push(sheetBtn(`Playground: ${ctx.state.playground !== false ? 'On' : 'Off'}`, () => withUnlock(ctx, () => {
+          ctx.state.playground = !(ctx.state.playground !== false); ctx.save(); openDadPanel(ctx, 'menu');
+        }), '', { 'aria-pressed': ctx.state.playground !== false ? 'true' : 'false', 'data-dad': 'playground' }));
+        body.push(h('p', { class: 'sheet-hint', text: 'Shows the Playground tile on home.' }));
+        body.push(sheetBtn('Reset park', () => withUnlock(ctx, () => openResetPark(ctx)), 'danger-outline', { 'data-dad': 'reset-park' }));
+        body.push(h('p', { class: 'sheet-hint', text: "Puts this player's park back to the starting park." }));
+      } else {
+        body.push(sheetBtn('Playground settings', () => withUnlock(ctx, () => openDadPanel(ctx, 'menu')), '', { 'data-dad': 'playground-settings' }));
       }
     }
     if (!locked) {

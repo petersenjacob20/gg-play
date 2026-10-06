@@ -589,6 +589,9 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .sheet-btn.primary { background: var(--sky); border-color: var(--sky); color: #FFFFFF; text-align: center; }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Playground: every trick and ride is a short fade (q10); the camera does not ease */
+  .pg-fade { animation: pg-fade .6s ease !important; }
+  .pg-world.pg-ease { transition: none; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   /* reactions become a soft glow (not motion, so it keeps running); the box still glows to be tapped */
   .react-glow { animation: soft-glow .9s ease-in-out !important; }
@@ -842,6 +845,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .game-tile.edge-says { border-bottom-color: #B0703C; }
 .tile-art .paw-pic .drawing { width: 44px; height: 44px; }
 .ring-tile .paw-pic .drawing, .level-pic .paw-pic .drawing { width: 26px; height: 26px; }
+.game-tile.edge-playground { border-bottom-color: #B57EDC; }
 
 
 /* Character Fun n1 tricks (design.md §13.2) — under 1 s, picture only */
@@ -884,3 +888,169 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .trick-pile { position: absolute; left: 50%; top: 20%; transform: translateX(-50%); display: flex; gap: 4px; pointer-events: none; z-index: 4; }
 .trick-pile .pile-pal { width: 48px; height: 48px; }
 .fx-layer .trick-nums, .fx-layer .trick-kitty-peek, .fx-layer .trick-pile { position: absolute; }
+
+
+/* Playground (design.md §13.4–13.5, Amendment q: the Big Playground) */
+.playground.pick, .playground.play { min-height: 100dvh; background: #FBF4E6; display: flex; flex-direction: column; }
+.playground.play { height: 100dvh; overflow: hidden; }
+.playground .topbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; min-height: 64px; }
+.playground .topbar .grow { flex: 1; }
+.pg-pick-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 12px; padding: 12px 16px 24px; align-content: start;
+}
+.pg-pick-tile {
+  min-width: 96px; min-height: 96px; aspect-ratio: 1;
+  border: 3px solid #E8D9BE; border-radius: 18px; background: #FFF9EE;
+  padding: 8px; display: grid; place-items: center; cursor: pointer;
+}
+.pg-pick-tile .pet { width: 100%; height: 100%; max-width: 88px; max-height: 88px; }
+/* the scene: the only place with touch-action:none, so Home and the Dad corner keep working */
+.pg-scene {
+  position: relative; flex: 1 1 auto; margin: 0 12px; min-height: 260px;
+  border-radius: 20px; overflow: hidden; touch-action: none; border: 3px solid #D4C4A8;
+  background: #B9E08F; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.pg-world {
+  position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform;
+  background-image: radial-gradient(circle at 20px 20px, rgba(255,255,255,.18) 0 3px, transparent 4px),
+    radial-gradient(circle at 70px 60px, rgba(62,142,70,.18) 0 3px, transparent 4px);
+  background-size: 100px 100px;
+}
+.pg-world.pg-ease { transition: transform .22s ease-out; }
+.pg-sky { position: absolute; left: 0; top: 0; right: 0; height: 60px; }
+.pg-pieces, .pg-animals { position: absolute; inset: 0; }
+.pg-piece {
+  position: absolute; display: block; padding: 0; border: 0; background: transparent; cursor: pointer;
+  min-width: 96px; min-height: 96px;
+}
+.pg-piece .drawing { width: 100%; height: 100%; display: block; pointer-events: none; }
+.pg-animal {
+  position: absolute; left: 0; top: 0; padding: 0; border: 0; background: transparent; z-index: 4000;
+  transition-property: transform; transition-timing-function: ease-in-out; cursor: pointer;
+}
+.pg-animal::before { content: ""; position: absolute; inset: -20px; } /* a bigger tap area than the drawing */
+.pg-animal .pg-animal-in, .pg-animal .drawing { display: block; width: 100%; height: 100%; pointer-events: none; }
+.pg-animal.flip .pg-animal-in { transform: scaleX(-1); }
+.pg-actor-wrap {
+  position: absolute; z-index: 5000; width: 160px; height: 160px;
+  transform: translate(-50%, -88%); cursor: grab;
+  transition-property: left, top; transition-timing-function: ease-in-out;
+}
+.pg-actor-wrap.dragging { cursor: grabbing; }
+.pg-actor-wrap .pet { width: 160px; height: 160px; pointer-events: none; }
+.pg-actor-wrap.walking .pet, .pg-actor-wrap.pg-trot .pet { animation: trick-hop 0.3s ease infinite; }
+.pg-fx { position: absolute; inset: 0; pointer-events: none; z-index: 6000; }
+.pg-tricks {
+  display: flex; flex-wrap: nowrap; gap: 12px; justify-content: center;
+  padding: 12px 12px 20px;
+}
+.pg-trick-btn {
+  width: 96px; height: 96px; min-width: 96px; min-height: 96px;
+  border-radius: 18px; border: 3px solid #E8D9BE; background: #FFF9EE;
+  padding: 10px; display: grid; place-items: center; cursor: pointer;
+}
+.pg-trick-btn .drawing { width: 64px; height: 64px; }
+/* four buttons (dogs, with the frisbee): one row, sized to fit, 8 px gaps, never under 76 px (design §15.2) */
+.pg-tricks.n4 { gap: 8px; padding-left: 4px; padding-right: 4px; }
+.pg-tricks.n4 .pg-trick-btn { flex: 1 1 0; width: auto; height: auto; aspect-ratio: 1 / 1; min-width: 76px; min-height: 76px; max-width: 96px; padding: 8px; }
+.pg-tricks.n4 .pg-trick-btn .drawing { width: 100%; height: 100%; max-width: 64px; max-height: 64px; }
+/* under 360 px wide the row shrinks to fit, still one row, never under 64 px (Design follow-up to §15.2) */
+@media (max-width: 359px) {
+  .pg-tricks .pg-trick-btn { flex: 0 1 96px; width: auto; height: auto; aspect-ratio: 1 / 1; min-width: 64px; min-height: 64px; padding: 8px; }
+  .pg-tricks .pg-trick-btn .drawing { width: 100%; height: 100%; max-width: 64px; max-height: 64px; }
+  .pg-tricks.n4 .pg-trick-btn { min-width: 64px; min-height: 64px; }
+}
+.pg-gates { display: flex; gap: 12px; justify-content: center; padding: 8px 12px 0; }
+.pg-gate { width: 96px; height: 96px; min-width: 96px; min-height: 96px; border-radius: 18px; border: 3px solid #E8D9BE; background: #FFF9EE; }
+.pg-foot { position: absolute; width: 18px; height: 18px; transform: translate(-50%, -50%);
+  pointer-events: none; opacity: 0.8; animation: tn-pop 0.5s ease forwards; }
+/* piece tricks, all under 1 s */
+.pg-t-whoosh { animation: pg-whoosh .85s ease; }
+@keyframes pg-whoosh { 0%{transform:translate(0,0)} 45%{transform:translate(-30px,-60px) rotate(-6deg)} 100%{transform:translate(0,0) rotate(0)} }
+.pg-t-swing { animation: pg-swing .9s ease-in-out; transform-origin: 50% 0; }
+@keyframes pg-swing { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-12deg)} 75%{transform:rotate(12deg)} }
+.pg-t-digRoll { animation: trick-stomp .8s ease; }
+.pg-t-splash { animation: trick-hop .8s ease; }
+.pg-t-climb { animation: pg-climb .85s ease; }
+@keyframes pg-climb { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-46px)} }
+.pg-t-seesaw { animation: pg-seesaw .85s ease-in-out; }
+@keyframes pg-seesaw { 0%,100%{transform:translateY(0)} 30%{transform:translateY(-28px)} 60%{transform:translateY(6px)} }
+.pg-t-slowTurn { animation: pg-orbit .9s ease-in-out; }
+@keyframes pg-orbit { 0%,100%{transform:translate(0,0)} 25%{transform:translate(24px,-8px)} 50%{transform:translate(0,-16px)} 75%{transform:translate(-24px,-8px)} }
+.pg-t-peekaboo { animation: pg-peekaboo .85s ease; }
+@keyframes pg-peekaboo { 0%,100%{opacity:1; transform:scale(1)} 40%,60%{opacity:.15; transform:scale(.8)} }
+.pg-t-rest { animation: pg-rest .85s ease; }
+@keyframes pg-rest { 0%,100%{transform:scale(1,1)} 50%{transform:scale(1.06,.9)} }
+.pg-t-treePeek { animation: pg-peek .85s ease; }
+@keyframes pg-peek { 0%,100%{transform:translateX(0)} 40%,60%{transform:translateX(-26px) rotate(-8deg)} }
+.pg-t-sniff { animation: pg-sniff .85s ease; }
+@keyframes pg-sniff { 0%,100%{transform:rotate(0)} 30%,70%{transform:rotate(8deg) translateY(6px)} 50%{transform:rotate(4deg) translateY(2px)} }
+/* reduced motion: every trick and ride is a short fade, no spin loops (q10) */
+.pg-t-swim { animation: pg-swim .9s ease-in-out; }
+@keyframes pg-swim { 0%{transform:translate(0,0) rotate(0)} 15%{transform:translate(-10px,14px) rotate(-4deg)} 30%{transform:translate(10px,16px) rotate(4deg)} 45%{transform:translate(-8px,14px) rotate(-3deg)} 55%{transform:translate(0,0) rotate(0)} 65%{transform:rotate(-9deg)} 75%{transform:rotate(9deg)} 85%{transform:rotate(-6deg)} 100%{transform:rotate(0)} }
+.pg-t-catch { animation: pg-catch .3s ease; }
+@keyframes pg-catch { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-22px)} }
+.pg-actor-wrap.pg-run .pet { animation: trick-hop 0.22s ease infinite; }
+.pg-disc { position: absolute; width: 56px; height: 56px; transform: translate(-50%, -50%); pointer-events: none;
+  transition-property: left, top; transition-timing-function: linear; z-index: 7000; }
+.pg-disc .pg-disc-in, .pg-disc .drawing, .pg-held .drawing { display: block; width: 100%; height: 100%; }
+.pg-disc.fly .pg-disc-in { animation: pg-arc .5s ease-in-out; }
+@keyframes pg-arc { 0%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-90px) rotate(180deg)} 100%{transform:translateY(0) rotate(360deg)} }
+.pg-held { position: absolute; left: 58%; top: 46%; width: 44px; height: 44px; pointer-events: none; }
+.pg-piece.pg-away { opacity: 0; }
+/* rides (design §15.4): JS sets the tops from the feet line and the head (data rideFit); the vehicle sits behind the body */
+.pg-vehicle { position: absolute; left: 50%; top: 134px; width: 150px; height: 75px; transform: translateX(-50%); pointer-events: none; z-index: 0; }
+.pg-riding .pet { position: relative; z-index: 1; }
+.pg-actor-wrap.flip .pg-vehicle { transform: translateX(-50%) scaleX(-1); }
+.pg-vehicle .drawing, .pg-helmet .drawing, .pg-treat .drawing { display: block; width: 100%; height: 100%; }
+.pg-helmet { position: absolute; left: 50%; top: 4px; width: 56px; height: 56px; transform: translateX(-50%); pointer-events: none; z-index: 2; }
+.pg-ride-pedal .pet { animation: pg-pedal .5s ease-in-out infinite; }
+@keyframes pg-pedal { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+.pg-ride-pedal .pg-helmet { animation: pg-pedal-h .5s ease-in-out infinite; } /* the helmet bobs with the head */
+@keyframes pg-pedal-h { 0%,100%{transform:translate(-50%,0)} 50%{transform:translate(-50%,-4px)} }
+.pg-treat { position: absolute; left: 62%; top: 30%; width: 60px; height: 60px; pointer-events: none; animation: tn-pop .3s ease; }
+.pg-t-treat { animation: pg-happy .85s ease-in-out; }
+@keyframes pg-happy { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-6deg) translateY(-6px)} 40%{transform:rotate(6deg)} 60%{transform:rotate(-4deg) translateY(-4px)} 80%{transform:rotate(3deg)} }
+/* build mode (q6): a wordless build button on the scene, a tray of 96 px pieces, a bin and a big check */
+.pg-build-btn, .pg-done-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 8000; width: 96px; height: 96px; min-width: 96px; min-height: 96px;
+  border-radius: 18px; border: 3px solid #E8D9BE; background: #FFF9EE; padding: 10px; display: grid; place-items: center; cursor: pointer;
+}
+.pg-build-btn .drawing, .pg-done-btn .drawing, .pg-bin .drawing { width: 64px; height: 64px; pointer-events: none; }
+.pg-done-btn { display: none; border-color: #5DBB63; }
+.playground.building .pg-done-btn { display: grid; }
+.playground.building .pg-build-btn, .playground.building .pg-tricks, .playground.building .pg-gates, .playground.building .pg-animals { display: none; }
+.playground.building .pg-actor-wrap { pointer-events: none; } /* stands aside on open ground, fully drawn (§15.1) */
+.playground.building .pg-piece { outline: 3px dashed rgba(74, 52, 38, .35); outline-offset: -3px; cursor: move; }
+.pg-piece.to-bin { opacity: .45; }
+.pg-tray { display: none; }
+.playground.building .pg-tray { display: flex; gap: 10px; align-items: center; padding: 10px 12px 18px; }
+.pg-tray-tiles { display: flex; gap: 10px; flex: 1 1 auto; overflow-x: auto; touch-action: pan-x; padding-bottom: 4px; }
+.pg-tray-tile, .pg-bin {
+  flex: 0 0 96px; width: 96px; height: 96px; min-width: 96px; min-height: 96px;
+  border-radius: 18px; border: 3px solid #E8D9BE; background: #FFF9EE; padding: 8px; display: grid; place-items: center; cursor: pointer;
+}
+.pg-tray-tile .drawing { width: 100%; height: 100%; pointer-events: none; }
+.pg-tray-tile.picked { border-color: #B57EDC; box-shadow: 0 0 0 4px rgba(181, 126, 220, .35); }
+.pg-tray.full .pg-tray-tile { opacity: .35; }
+.pg-bin { background: #EEF1F4; }
+.pg-ghost { position: absolute; border-radius: 12px; border: 3px dashed #B57EDC; background: rgba(181, 126, 220, .18); pointer-events: none; }
+.pg-ghost.off { display: none; }
+.pg-fade { animation: pg-fade .6s ease; }
+@keyframes pg-fade { 0%,100%{opacity:1} 50%{opacity:.45} }
+.pg-drops { position: absolute; width: 120px; height: 80px; transform: translate(-50%, -120%); pointer-events: none; }
+.pg-drops .drop { position: absolute; top: 40%; width: 10px; height: 10px; border-radius: 50%; background: #6EC6E0;
+  animation: tn-pop 0.8s ease forwards; }
+.pg-drops .d0 { left:10%; } .pg-drops .d1 { left:30%; } .pg-drops .d2 { left:50%; } .pg-drops .d3 { left:70%; }
+.pg-drops .d4 { left:20%; top:10%; } .pg-drops .d5 { left:60%; top:10%; } .pg-drops .d6 { left:85%; top:20%; } .pg-drops .d7 { left:0; top:20%; }
+/* animal reactions (q3), under a second */
+.pg-r-loop .pg-animal-in { animation: pg-r-loop .9s ease-in-out; }
+@keyframes pg-r-loop { 0%{transform:translate(0,0)} 20%{transform:translate(0,-12px)} 50%{transform:translate(40px,-60px)} 80%{transform:translate(-20px,-30px)} 100%{transform:translate(0,0)} }
+.pg-r-peek .pg-animal-in { animation: pg-r-peek .9s ease; }
+@keyframes pg-r-peek { 0%,100%{transform:translateX(0)} 40%,70%{transform:translateX(18px) rotate(10deg)} }
+.pg-r-paddle .pg-animal-in { animation: pg-r-paddle .9s ease-in-out; }
+@keyframes pg-r-paddle { 0%,100%{transform:translateX(0) rotate(0)} 25%{transform:translateX(-10px) rotate(-6deg)} 75%{transform:translateX(10px) rotate(6deg)} }
+.pg-r-flutter .pg-animal-in { animation: pg-r-flutter .9s ease-in-out; }
+@keyframes pg-r-flutter { 0%,100%{transform:scaleY(1)} 25%,75%{transform:scaleY(.6)} 50%{transform:scaleY(1)} }
+.game-grid.n5 .game-tile { min-height: 132px; }

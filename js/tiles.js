@@ -32,6 +32,8 @@ export function tilePic(id) {
     case 'stories':
     case 'story':
       return [pic('bookOpen', 'story-pic')];
+    case 'playground':
+      return [pic('toyChest', 'story-pic')];
     // legacy act ids (tests / Dad fallback)
     case 'letters':
       return [h('span', { class: 'big-glyph letter-font', 'aria-hidden': 'true', text: 'a' }), pic('apple', 'big-pic apple-pic')];
