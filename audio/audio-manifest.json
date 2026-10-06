@@ -901,6 +901,14 @@
   "bytes": 14520,
   "checked": "machine"
  },
+ "s-ark-7": {
+  "kind": "text",
+  "input": "God made a promise to Noah: never again would rain cover the whole earth. Whenever we see a rainbow, we remember that God keeps his promises, and God loves us and takes care of us.",
+  "phonemes": "ɡˈɑd mˌAd ɐ pɹˈɑməs tə nˈOə: nˈɛvəɹ əɡˈɛn wʊd ɹˈAn kˈʌvəɹ ðə hˈOl ˈɜɹθ. wənˈɛvəɹ wi sˈi ɐ ɹˈAnbˌO, wi ɹəmˈɛmbəɹ ðæt ɡˈɑd kˈips hɪz pɹˈɑməsᵻz, ænd ɡˈɑd lˈʌvz ˌʌs ænd tˈAks kˈɛɹ ʌv ˌʌs.",
+  "seconds": 11.101,
+  "bytes": 55800,
+  "checked": "machine"
+ },
  "s-ark-q": {
   "kind": "text",
   "input": "Who came on the boat?",

@@ -5,6 +5,10 @@
 // Pure helpers (playable, planSequence, estimateMs) are importable from Node.
 
 export const MANIFEST_URL = './audio/audio-manifest.json';
+// The rainbow tone (see tone() below): about 150 ms, a 12 ms soft attack, peak 0.18 of full level.
+export const TONE_MS = 150;
+export const TONE_ATTACK_MS = 12;
+export const TONE_PEAK = 0.18;
 const DEFAULT_MS = { snd: 500, w: 650, n: 550, p: 1500, t: 900, c: 900, h: 900, fx: 600, q: 3200 };
 
 export function playable(manifest, id) {
@@ -175,8 +179,37 @@ export function createAudio({ enabled = true } = {}) {
     return true;
   }
 
+  // A soft tone made in code (Design ruling, pub4: the rainbow page's per-band chime): one sine
+  // OscillatorNode through one GainNode, a TONE_ATTACK_MS ramp up to TONE_PEAK (clips play at full
+  // gain 1, so the tone sits well under the voice) and an exponential fade to silence at TONE_MS.
+  // Sound Off: nothing at all, no context touched. It reuses the one AudioContext (unlock() makes it
+  // lazily inside the tap that calls this, or resumes it). Like fx(), it never cuts the voice off.
+  function tone(hz) {
+    if (!on || !(hz > 0)) return false;
+    if (!ac || ac.state === 'suspended') unlock();
+    if (!ac) return false;
+    try {
+      const t = ac.currentTime + 0.01;
+      const end = t + TONE_MS / 1000;
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(hz, t);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(TONE_PEAK, t + TONE_ATTACK_MS / 1000);
+      g.gain.exponentialRampToValueAtTime(0.0001, end);
+      o.connect(g);
+      g.connect(ac.destination);
+      o.start(t);
+      o.stop(end + 0.02);
+      sources.push(o);
+      return true;
+    } catch { return false; }
+  }
+
   return {
     init,
+    tone,
     unlock,
     play,
     fx,

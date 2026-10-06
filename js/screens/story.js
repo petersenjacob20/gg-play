@@ -9,7 +9,7 @@ import { activeProfile } from '../store.js';
 import { h, drawing } from '../dom.js';
 import { topBar, icon } from '../ui.js';
 import { storyPart } from '../story-art.js';
-import { storyById, storySticker, isRight } from '../story.js';
+import { storyById, storySticker, isRight, coloring, RAINBOW_TONES_HZ, CLIP_AFTER_CHIME_MS } from '../story.js';
 import { roundEnd } from '../reward.js';
 import { sceneView } from './stories.js';
 import * as shelfScreen from './stories.js';
@@ -26,6 +26,7 @@ export function render(ctx) {
   let misses = 0;
   let done = false;
   let swiped = false; // a swipe is not a tap
+  let shown = 0; // counts page shows, so a late clip never plays on a page she has left
   const artBox = h('div', { class: 'story-art', role: 'button', 'aria-label': 'Hear it again' });
   const line = h('p', { class: 'story-line' });
   const dots = h('div', { class: 'page-dots', 'aria-hidden': 'true' }, [...story.pages, story.question].map(() => h('span', { class: 'page-dot' })));
@@ -67,7 +68,39 @@ export function render(ctx) {
     main.replaceWith(roundEnd(ctx, { act: { id: 'stories' }, got, leveledUp: false, playAgain: () => ctx.refresh() }));
   }
 
+  // Amendment o2: a tap-to-color page (ark page 7). No clip on arrival: the grey rainbow and the glow on
+  // its next band invite the tap. The whole rainbow box is one button and is never wrong: each tap fills
+  // the next band from the top with one soft tone (a note higher each band, Design ruling). When the
+  // last band fills, the read-along line shows and the page clip plays once, after the tone. The line
+  // is there (hidden) from the start, at its smaller 18 px size, so nothing moves when it shows.
+  // Later taps do nothing; coming back to the page starts it grey again. Next and Back always work.
+  function colorPage(pg) {
+    const c = pg.color;
+    const me = shown;
+    if (ctx.audio) ctx.audio.stop();
+    line.textContent = pg.text;
+    line.classList.add('rainbow-line', 'line-wait');
+    line.setAttribute('aria-hidden', 'true');
+    const tapBtn = h('button', { type: 'button', class: 'rainbow-tap', 'aria-label': 'Color the rainbow', 'data-filled': '0' });
+    const stage = h('div', { class: 'rainbow-stage' }, tapBtn);
+    const paint = (n) => {
+      tapBtn.setAttribute('data-filled', String(n));
+      artBox.replaceChildren(sceneView(pg.art.map((x) => (x.p === c.part ? { ...x, o: n } : x)), 'page-art'), stage);
+    };
+    const run = coloring(c.bands.length, {
+      chime: (n) => { if (ctx.audio && ctx.audio.tone) ctx.audio.tone(RAINBOW_TONES_HZ[n - 1]); },
+      done: () => {
+        line.classList.remove('line-wait');
+        line.removeAttribute('aria-hidden');
+        setTimeout(() => { if (me === shown && main.isConnected !== false) say(pg.clip); }, CLIP_AFTER_CHIME_MS);
+      },
+    });
+    tapBtn.addEventListener('click', () => { if (!swiped && run.tap()) paint(run.filled); });
+    paint(0);
+  }
+
   function show() {
+    shown++;
     const isQ = at === last;
     main.dataset.page = isQ ? 'question' : String(at + 1);
     [...dots.children].forEach((d, i) => d.classList.toggle('on', i === at));
@@ -75,6 +108,8 @@ export function render(ctx) {
     next.classList.toggle('dim', isQ);
     if (isQ) {
       misses = 0;
+      line.classList.remove('rainbow-line', 'line-wait');
+      line.removeAttribute('aria-hidden');
       artBox.classList.add('question');
       artBox.replaceChildren(h('div', { class: 'cards story-cards' }, story.question.choices.map(card)));
       line.textContent = story.question.text;
@@ -83,6 +118,9 @@ export function render(ctx) {
     }
     const pg = story.pages[at];
     artBox.classList.remove('question');
+    line.classList.remove('rainbow-line', 'line-wait');
+    line.removeAttribute('aria-hidden');
+    if (pg.color) { colorPage(pg); return; }
     artBox.replaceChildren(sceneView(pg.art, 'page-art'));
     line.textContent = pg.text;
     say(pg.clip);
@@ -97,7 +135,7 @@ export function render(ctx) {
   // tap the picture to hear the page again (not on the question, where the cards are the taps)
   artBox.addEventListener('click', (e) => {
     if (swiped) { swiped = false; return; }
-    if (at === last || e.target.closest('.choice')) return;
+    if (at === last || e.target.closest('.choice') || story.pages[at].color) return; // the color page: only the rainbow taps
     say(story.pages[at].clip);
   });
   // swipe left / right

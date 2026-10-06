@@ -1,7 +1,7 @@
 // Offline: app shell cached first (build plan section 1).
 // Bump CACHE on every content or code change. Older gg- caches are deleted on activate;
 // caches of other apps on the same origin are never touched.
-const CACHE = 'gg-v1-20261005nc';
+const CACHE = 'gg-v1-20261005ne';
 const ASSETS = [
   './',
   './audio/audio-manifest.json',
@@ -75,6 +75,7 @@ const ASSETS = [
   './audio/s-ark-4.mp3',
   './audio/s-ark-5.mp3',
   './audio/s-ark-6.mp3',
+  './audio/s-ark-7.mp3',
   './audio/s-ark-q.mp3',
   './audio/s-ark-yes.mp3',
   './audio/s-children-1.mp3',

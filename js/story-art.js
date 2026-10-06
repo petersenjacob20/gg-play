@@ -81,6 +81,30 @@ const STAR = (cx, cy, R2, r, fill) => {
 
 // Parts: [draw(pose), kind]. kind 'bg' = full-scene background, 'sky' = anchored at its middle,
 // otherwise anchored at its feet. k is the size on a question card.
+// Amendment o2: the ark's tap-to-color rainbow. Six concentric bands, top (outside) to bottom
+// (inside): red, orange, yellow, green, blue, purple. o = how many are filled (0 to 6): filled bands
+// are drawn in colour, the rest as a light grey outline, and the next band to fill carries the
+// rb-next class (a soft glow in app.css). Local box: x -40..40, y -30..10 (centre of the arcs at 0 10).
+export const RAINBOW6 = {
+  bands: ['red', 'orange', 'yellow', 'green', 'blue', 'purple'],
+  colors: { red: '#E5484D', orange: '#F28C28', yellow: '#FFD54A', green: '#5DBB63', blue: '#4AA3DF', purple: '#8E5CC7' },
+  grey: '#B8B2A9',
+  outer: 40, band: 5, cy: 10,
+};
+export function rainbow6(o) {
+  const { bands, colors, grey, outer, band, cy } = RAINBOW6;
+  const n = Math.max(0, Math.min(bands.length, Math.floor(Number(o) || 0)));
+  return el('g', {}, ...bands.map((b, i) => {
+    const ro = outer - band * i;
+    const ri = ro - band;
+    const d = `M${-ro} ${cy}A${ro} ${ro} 0 0 1 ${ro} ${cy}H${ri}A${ri} ${ri} 0 0 0 ${-ri} ${cy}Z`;
+    const cls = `rb-band${i === n ? ' rb-next' : ''}`;
+    return i < n
+      ? el('path', { d, fill: colors[b], class: cls, 'data-band': b })
+      : el('path', { d, fill: 'none', stroke: grey, 'stroke-width': 0.9, class: cls, 'data-band': b });
+  }));
+}
+
 export const PARTS = {
   // backgrounds (scene units; drawn well past the box on every side)
   sky: [() => R(-60, -70, 220, 260, '#CFEFFF', NO), 'bg'],
@@ -99,6 +123,7 @@ export const PARTS = {
   cloud: [() => P('M-22 8C-30 8 -30 -4 -21 -4C-21 -14 -7 -16 -3 -8C1 -18 19 -16 18 -4C28 -4 28 8 19 8Z', '#FFFFFF'), 'sky', 1.5],
   rain: [() => el('g', {}, L('M-20 12l-3 7M-10 18l-3 7M0 12l-3 7M10 18l-3 7M20 12l-3 7M-15 28l-3 7M5 28l-3 7', '#4AA3DF'), P('M-22 8C-30 8 -30 -4 -21 -4C-21 -14 -7 -16 -3 -8C1 -18 19 -16 18 -4C28 -4 28 8 19 8Z', '#E9EEF3')), 'sky', 1.5],
   rainbow: [() => el('g', { fill: 'none' }, el('path', { d: 'M-40 20A40 40 0 0 1 40 20', stroke: '#E5484D', 'stroke-width': 7 }), el('path', { d: 'M-33 20A33 33 0 0 1 33 20', stroke: '#FFD54A', 'stroke-width': 7 }), el('path', { d: 'M-26 20A26 26 0 0 1 26 20', stroke: '#5DBB63', 'stroke-width': 7 }), el('path', { d: 'M-19 20A19 19 0 0 1 19 20', stroke: '#4AA3DF', 'stroke-width': 7 })), 'sky', 1],
+  rainbow6: [(o) => rainbow6(o), 'sky', 1],
   dove: [() => el('g', {}, E(0, 0, 9, 5, '#FFFFFF'), P('M-2 -2L-10 -14L4 -4Z', '#FFFFFF'), C(9, -3, 3.6, '#FFFFFF'), P('M12 -3l4 1l-4 1Z', '#F28C28'), dot(10, -4, 0.9)), 'sky', 2.6],
   bird: [() => el('g', {}, E(0, 0, 8, 5, '#4AA3DF'), P('M-2 -2L-8 -11L4 -3Z', '#7FC3EE'), C(8, -3, 3.4, '#4AA3DF'), P('M11 -3l4 1l-4 1Z', '#F2C230'), dot(9, -4, 0.9)), 'sky', 2.8],
   heart: [() => P('M0 14C-9 7 -16 1 -16 -7C-16 -13 -11 -16 -7 -16C-3 -16 -1 -14 0 -11C1 -14 3 -16 7 -16C11 -16 16 -13 16 -7C16 1 9 7 0 14Z', '#E5484D'), 'sky', 2.4],
