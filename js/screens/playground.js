@@ -2,8 +2,7 @@
 // Wordless for her. The park is bigger than the screen: her thumb on empty ground pans the camera
 // (a JS-set transform, clamped, a light ease on release; no pinch, no fling, no scroll bars); a press
 // on the character drags it (pointer capture) and the camera follows near the edge; dropping it on a
-// piece plays that piece's trick; tapping a piece walks there and plays it. Positions are set from JS
-// (element.style), never with style= in h(). Every trick is under 1 s and always works.
+// piece, or tapping it, uses it (y). Moved by transform.
 import { h, drawing } from '../dom.js';
 import { art, ART } from '../art.js';
 import { petView, icon } from '../ui.js';
@@ -122,7 +121,7 @@ function playScreen(ctx, who, zone) {
   const view = h('div', { class: 'pg-scene pg-view', 'data-zone': zone.id });
   const worldEl = h('div', { class: 'pg-world' });
   worldEl.style.width = px(world.w); worldEl.style.height = px(world.h);
-  if (zone.ground) worldEl.style.backgroundColor = zone.ground;
+  if (zone.ground) { worldEl.style.backgroundColor = zone.ground; view.style.backgroundColor = zone.ground; }
   const sky = h('div', { class: 'pg-sky', 'aria-hidden': 'true' });
   if (zone.sky) sky.style.backgroundColor = zone.sky;
   const piecesEl = h('div', { class: 'pg-pieces' });
@@ -141,13 +140,13 @@ function playScreen(ctx, who, zone) {
   };
   const toWorld = (ev) => {
     const r = view.getBoundingClientRect();
-    return { x: cam.x + (ev.clientX - r.left), y: cam.y + (ev.clientY - r.top) };
+    return { x: cam.x + (ev.clientX - r.left - (view.clientLeft || 0)), y: cam.y + (ev.clientY - r.top - (view.clientTop || 0)) };
   };
 
   // the character
   const actor = petView(data, who.id, 'idle');
   actor.classList.add('pg-actor');
-  const actorWrap = h('div', { class: 'pg-actor-wrap', 'data-who': who.id }, actor);
+  const actorWrap = h('div', { class: 'pg-actor-wrap', 'data-who': who.id, 'data-kind': who.kind || '' }, actor);
   let pos = PG.startSpot(layout, zone, data);
   let lift = 0; // in a ride car the rider sits up in the seat while the wheels stay on the track
   // Where she is DRAWN right now (Architect x2, 3:13 AM): a walk is one CSS transition from one placeActor
@@ -161,7 +160,7 @@ function playScreen(ctx, who, zone) {
     if (!(k < 1)) { glide = null; return { x: placedAt.x, y: placedAt.y }; }
     if (typeof globalThis.getComputedStyle === 'function' && actorWrap.isConnected) {
       const cs = globalThis.getComputedStyle(actorWrap);
-      const x = parseFloat(cs.left); const y = parseFloat(cs.top);
+      const [x, y] = String(cs.translate).split(' ').map(parseFloat);
       if (Number.isFinite(x) && Number.isFinite(y)) return { x, y: y + lift };
     }
     const e = PG.easeAt(glide.ease, Math.max(0, k));
@@ -174,7 +173,7 @@ function playScreen(ctx, who, zone) {
     glide = dur > 0 && (from.x !== pos.x || from.y !== pos.y)
       ? { from, to: placedAt, t0: Date.now(), ms: dur, ease: actorWrap.style.transitionTimingFunction || 'ease-in-out' } : null;
     actorWrap.style.transitionDuration = `${dur}ms`;
-    actorWrap.style.left = px(pos.x); actorWrap.style.top = px(pos.y - lift);
+    actorWrap.style.translate = `${px(pos.x)} ${px(pos.y - lift)}`;
     onPlace();
   };
   let onPlace = () => {}; // the water park: floaties, the lifeguard's look, the slide's tube row
@@ -207,17 +206,18 @@ function playScreen(ctx, who, zone) {
   };
 
   // tricks: a class on the character for under a second (a fade with reduced motion)
-  const runFx = (kind, clip) => {
+  const dropsAt = (cls, ms) => {
+    const d = h('div', { class: `pg-drops${cls}`, 'aria-hidden': 'true' }, ...Array.from({ length: 8 }, (_, i) => h('span', { class: `drop d${i}` })));
+    d.style.left = px(pos.x); d.style.top = px(pos.y); layer.appendChild(d); clock.later(ms, () => d.remove());
+  };
+  const runFx = (kind, clip, low = false) => {
     busy = true;
     flash(actor, PG.trickClass(kind, reduced));
     if ((kind === 'splash' || kind === 'swim') && !reduced) {
       // a splash sprays at once; a swimming dog paddles with its head up, then dries off with a spray of drops (q5)
       const at = kind === 'swim' ? 480 : 0;
       clock.later(at, () => {
-        const drops = h('div', { class: `pg-drops${kind === 'swim' ? ' dry' : ''}`, 'aria-hidden': 'true' }, ...Array.from({ length: 8 }, (_, i) => h('span', { class: `drop d${i}` })));
-        drops.style.left = px(pos.x); drops.style.top = px(pos.y);
-        layer.appendChild(drops);
-        clock.later(FX_MS - at, () => drops.remove());
+        dropsAt(`${kind === 'swim' ? ' dry' : ''}${low ? ' low' : ''}`, FX_MS - at);
       });
     }
     fx(clip);
@@ -255,7 +255,9 @@ function playScreen(ctx, who, zone) {
     if (!front && !p.ride.car && !p.ride.carFor) {
       // a bike or scooter (design §15.4): the vehicle hangs from the feet line, behind the body
       const vehicle = h('span', { class: `pg-vehicle pv-${p.id}`, 'aria-hidden': 'true' }, drawing(art(p.art), { box: '0 0 200 100' }));
-      vehicle.style.top = px(PG.rideAnchors(data, who.id).vehicleTop);
+      const sr = PG.smallRide(p, data, who, isPhoto());
+      if (sr) Object.assign(vehicle.style, { top: px(sr.top), width: px(sr.w), height: px(sr.h) });
+      else vehicle.style.top = px(PG.rideAnchors(data, who.id).vehicleTop);
       return vehicle;
     }
     const el = h('span', { class: `pg-car pv-${p.id}${front ? ' front' : ''}`, 'data-car': PG.rideCar(p, who.id), 'aria-hidden': 'true' },
@@ -360,7 +362,7 @@ function playScreen(ctx, who, zone) {
       const t = h('button', { type: 'button', class: 'pg-trick-btn pg-rider-tile', 'data-rider': id, 'aria-label': id }, petView(data, id, 'idle'));
       t.addEventListener('pointerdown', (ev) => {
         if (gesture || (ev.button != null && ev.button !== 0)) return;
-        gesture = { kind: 'rider', id, x0: ev.clientX, y0: ev.clientY, moved: false };
+        gesture = { kind: 'rider', pid: ev.pointerId, id, x0: ev.clientX, y0: ev.clientY, moved: false };
         try { t.setPointerCapture(ev.pointerId); } catch { /* ignore */ }
       });
       t.addEventListener('click', (ev) => { if (ev.detail === 0) pickRider(id); }); // keyboard only; taps are pointerup
@@ -370,6 +372,7 @@ function playScreen(ctx, who, zone) {
   };
   const hideRiders = () => { riderRow.hidden = true; pickedRider = null; if (trickRow && tubesAt < 0) trickRow.hidden = false; };
   function pickRider(id) {
+    if (use && use.two) { boardPartner(id); return; }
     pickedRider = pickedRider === id ? null : id;
     for (const t of riderRow.children || []) t.classList.toggle('picked', t.getAttribute('data-rider') === pickedRider);
   }
@@ -398,17 +401,17 @@ function playScreen(ctx, who, zone) {
     if (seated.hot) seated.hot.remove();
     if (seated.seat2) seated.seat2.el.remove();
     if (pieceEls[seated.i]) pieceEls[seated.i].classList.remove('pg-ride-on');
-    actorWrap.classList.remove('pg-seated', 'pg-two'); smile(false);
+    actorWrap.classList.remove('pg-seated', 'pg-two', 'pg-k1'); smile(false);
     lift = 0; placeActor(0);
     seated = null; hideRiders(); propBack(); updateGo();
   };
-  const seat = (i) => {
+  const seat = (i, k = 0) => {
     const e = layout[i]; const p = PG.pieceById(data, e[0]);
     if (seated || rideOn) return;
     walkToken++; walking = false;
     propAway();
-    lift = CAR_LIFT;
-    pos = PG.frontOf(e, data, zone); placeActor(0);
+    lift = CAR_LIFT; placeActor(0);
+    actorWrap.classList.toggle('pg-k1', k === 1);
     if (pieceEls[i]) pieceEls[i].classList.add('pg-ride-on');
     const car = carEl(p); const helmet = helmetEl();
     actorWrap.append(car, helmet);
@@ -421,10 +424,10 @@ function playScreen(ctx, who, zone) {
   };
   // a ride (q11, x1): on with its gear (always drawn while riding), slowly round the track with its beats,
   // off where it started (or at the ladder)
-  const startRide = (i, viaGo = false) => {
+  const startRide = (i, viaGo = false, k = 0) => {
     const e = layout[i]; const p = PG.pieceById(data, e[0]);
     if (rideOn || !PG.canRide(riding, i, data)) return;
-    if ((p.ride.go || PG.rideSeats(p) >= 2) && !viaGo) { seat(i); return; }
+    if ((p.ride.go || PG.rideSeats(p) >= 2) && !viaGo) { seat(i, k); return; }
     riding.add(i); rideOn = true; walkToken++; walking = false;
     const big = !!p.ride.go;
     const parked = pieceEls[i];
@@ -445,6 +448,8 @@ function playScreen(ctx, who, zone) {
       if (PG.rideGear(p) === 'floaties') { rideFloat = true; gear = null; syncFloaty(); }
       else { gear = helmetEl(); actorWrap.append(gear); }
     }
+    const sr = PG.smallRide(p, data, who, isPhoto());
+    if (sr) { actorWrap.style.scale = String(sr.k); actor.style.translate = `0 ${-sr.up}px`; if (gear) gear.style.translate = `0 ${-sr.up}px`; }
     root.classList.add('pg-on-ride'); if (big) root.classList.add('pg-big-ride');
     actorWrap.classList.add('pg-riding', `pg-ride-${p.ride.anim || 'pedal'}`);
     smile(true); updateGo();
@@ -454,6 +459,7 @@ function playScreen(ctx, who, zone) {
     const off = PG.rideOff(e, data, zone, start);
     const finish = () => {
       car.remove(); if (gear) gear.remove();
+      if (sr) { actorWrap.style.scale = ''; actor.style.translate = ''; }
       if (rider2) {
         // seat 2 hops off beside the station too, then goes on its way
         rider2.el.remove();
@@ -463,7 +469,7 @@ function playScreen(ctx, who, zone) {
         clock.later(FX_MS + 300, () => off2.remove());
       }
       rideFloat = false;
-      actorWrap.classList.remove('pg-riding', `pg-ride-${p.ride.anim || 'pedal'}`, 'flip', 'pg-two');
+      actorWrap.classList.remove('pg-riding', `pg-ride-${p.ride.anim || 'pedal'}`, 'flip', 'pg-two', 'pg-k1');
       root.classList.remove('pg-on-ride', 'pg-big-ride');
       if (parked) parked.classList.remove('pg-away', 'pg-ride-on');
       riding.delete(i); rideOn = false;
@@ -483,7 +489,7 @@ function playScreen(ctx, who, zone) {
       react(PG.reactionFor(data, who.id, p), 300);
       updateGo();
     };
-    const pts = PG.ridePath(e, data, zone);
+    const pts = PG.ridePath(e, data, zone, layout);
     if (reduced) {
       // no chase: a fade to the peek frame for a second, then back (about 2 s for the coaster)
       const peek = pts.find((q) => q.tag === 'peek' || q.tag === 'view');
@@ -513,7 +519,7 @@ function playScreen(ctx, who, zone) {
       applyCam(true);
       clock.later(L.ms, () => {
         if (L.tag) beat(L.tag);
-        clock.later(L.tag === 'view' ? 1000 : 0, () => step(k + 1));
+        if (L.tag === 'view') clock.later(1000, () => step(k + 1)); else step(k + 1);
       });
     };
     if (big) {
@@ -561,27 +567,151 @@ function playScreen(ctx, who, zone) {
     clock.later(FX_MS, () => treat.remove());
     runFx('treat', PG.pieceSounds(p, who));
   };
-  const playPiece = (i) => {
-    const e = layout[i]; const p = e && PG.pieceById(data, e[0]);
-    if (!p) return;
-    if (PG.isRide(p)) { startRide(i); return; }
-    if (PG.isPinned(e, zone)) { lifeguardWave(i); return; }
-    if (p.tubes) { showTubes(i, p); runFx('rest', []); return; }
-    if (p.pumps) { pump(i, p); return; }
-    if (p.sprayers) { spray(i, p); return; }
-    if (p.snacks) giveSnack(p);
-    else runFx(PG.pieceTrick(p, who), p.sounds ? p.sounds.filter(Boolean) : PG.pieceSounds(p, who));
-    react(PG.reactionFor(data, who.id, p), FX_MS);
-  };
   const tapPiece = (i) => {
     const e = layout[i];
-    if (!e || rideOn) return;
+    const pc = e && PG.pieceById(data, e[0]);
+    if (pc && (pc.pumps || pc.sprayers) && ((use && use.i === i) || (!walking && !use && PG.pieceAt(layout, data, pos.x, pos.y) === i))) { pc.pumps ? pump(i, pc) : spray(i, pc); return; }
+    if (!e || rideOn || (use && use.i === i)) return;
     if (seated) { if (seated.i === i) return; unseat(); }
-    // already standing at it: play at once (the bucket's pump taps, the sprayers)
-    const pc = PG.pieceById(data, e[0]);
-    if (!walking && (pc.pumps || pc.sprayers) && PG.pieceAt(layout, data, pos.x, pos.y) === i) { playPiece(i); return; }
-    walkTo(PG.frontOf(e, data, zone), () => playPiece(i));
+    stopUse();
+    const seats = PG.seatsOf(PG.useOf(data, e[0]));
+    const at = seats.map((_, k) => PG.useSteps(e, k, who, data, zone, true, isPhoto(), layout)[0]);
+    const k = at.length > 1 && Math.hypot(at[1].x - pos.x, at[1].y - pos.y) < Math.hypot(at[0].x - pos.x, at[0].y - pos.y) ? 1 : 0;
+    if (at[k]) walkTo(at[k], () => (pc.tubes ? showTubes(i, pc) : runUse(i, k)));
   };
+  // ---- the use runner (y3) ----
+  let use = null;
+  let phase = '';
+  let tubeTurn = 0;
+  const isPhoto = () => actor.getAttribute('data-photo') === '1';
+  const pose = (q) => { for (const x of ['sit', 'hold', 'climb', 'whee']) actorWrap.classList.toggle(`pg-p-${x}`, x === q); };
+  const fit = (s = 1, r = 0, zi = '') => { actorWrap.style.scale = s === 1 ? '' : String(s); actorWrap.style.rotate = r ? `${r}deg` : ''; actorWrap.style.zIndex = zi; };
+  const swingSeat = (i, k, s) => {
+    const g = pieceEls[i] && byClassIn(pieceEls[i], `s${k}`, 6).find((x) => x.classList.contains('pg-sw'));
+    if (!g) return;
+    const on = s && s.phase === 'using' && s.swing;
+    g.style.transitionDuration = `${reduced || !s ? 0 : s.ms}ms`; g.style.scale = on ? `1 ${Math.cos((s.swing * Math.PI) / 180).toFixed(3)}` : '';
+  };
+  const partnerTo = (P, s) => {
+    if (!P || !s) return;
+    if (use && use.two && P === use.partner && !P.a) swingSeat(use.i, 1 - use.k, s);
+    if (P.a) { P.a.x = s.x; P.a.y = s.y - P.a.size / 2; placeAnimal(P.a, s.ms); return; }
+    P.el.style.transitionDuration = `${reduced ? 0 : s.ms}ms`; P.el.style.translate = `${px(s.x)} ${px(s.y)}`; P.el.style.scale = String(s.scale);
+  };
+  const dropPartner = (U) => {
+    const P = U && U.partner; if (!P) return;
+    if (P.a) P.a.reacting = false; else clock.later(HOP_MS, () => P.el.remove());
+    U.partner = null;
+  };
+  function boardPartner(id) {
+    const U = use;
+    if (!U || !U.two || !PG.sanitizeSeat2(data, ctx.state, id, who.id)) return false;
+    if (U.partner && U.partner.a) dropPartner(U); else if (U.partner) return false;
+    const el = h('span', { class: 'pg-partner', 'data-partner': id, 'aria-hidden': 'true' }, petView(data, id, 'happy'));
+    U.partner = { el, steps: PG.useSteps(layout[U.i], 1 - U.k, castOf(id), data, zone, reduced, false, layout) };
+    layer.appendChild(el); partnerTo(U.partner, U.partner.steps[Math.max(0, U.n - 1)]);
+    hideRiders(); fx(['fx-pop']);
+    return true;
+  }
+  let deco = {};
+  const hidePeek = (s = {}) => {
+    actorWrap.classList.toggle('pg-hid', !!s.hide); actor.style.clipPath = s.clip ? `inset(0 0 ${160 - s.clip}px 0)` : '';
+    for (const [k, cls] of [['ripple', 'pg-ripple'], ['pole', 'pg-pole'], ['seat', `pg-seat${use && use.k ? ' k1' : ''}`]]) {
+      if (s[k] && !deco[k]) { deco[k] = h('span', { class: cls, 'aria-hidden': 'true' }); actorWrap.append(deco[k]); }
+      if (!s[k] && deco[k]) { deco[k].remove(); deco[k] = null; }
+    }
+    if (deco.ripple) deco.ripple.style.top = px(s.clip - 12);
+    if (deco.seat) deco.seat.style.top = px(s.seat - 6);
+    if (s.pole && !deco.top && use) { deco.top = h('span', { class: 'pg-canopy', 'aria-hidden': 'true' }, drawing(art('pgMerryTop'), { box: '0 0 200 200' })); placeBox(deco.top, PG.pieceBox(layout[use.i], data)); layer.append(deco.top); }
+    if (!s.pole && deco.top) { deco.top.remove(); deco.top = null; }
+  };
+  const endUse = (U, cancel) => {
+    if (use !== U) return;
+    use = null; phase = ''; rideFloat = false; hidePeek(); swingSeat(U.i, U.k, null); swingSeat(U.i, 1 - U.k, null);
+    pose(''); fit(); smile(false);
+    const cc = PG.clampCamera(cam, vsize(), world);
+    if (cc.x !== cam.x || cc.y !== cam.y) { cam = cc; applyCam(!reduced); }
+    actorWrap.classList.remove('pg-using'); root.classList.remove('pg-using');
+    if (U.tubeEl) U.tubeEl.remove();
+    if (cancel) { dropPartner(U); hideRiders(); propBack(); pos = drawnPos(); placeActor(0); return; }
+    if (U.partner && !U.partner.a) partnerTo(U.partner, U.partner.steps[U.steps.length - 1]);
+    dropPartner(U); hideRiders();
+    propBack();
+    react(PG.reactionFor(data, who.id, U.p), 0);
+    if (U.p.tubes) showTubes(U.i, U.p);
+  };
+  const stopUse = () => { if (use && !PG.isRide(use.p)) endUse(use, true); };
+  const beat = (U, tag) => {
+    const p = U.p; const at = { x: pos.x, y: pos.y - 150 };
+    if (tag === 'tube' || (tag === 'fun' && p.tubes && !U.tubeEl)) {
+      const c = U.tube || p.tubes[tubeTurn++ % p.tubes.length];
+      U.tubeEl = h('span', { class: 'pg-car front pg-tube-ride', 'data-tube': c, 'aria-hidden': 'true' }, h('span', { class: 'pg-car-in' }, drawing(art('pgTube', { fill: TUBE_FILL[c] }), { box: '0 0 100 100' })));
+      U.tubeEl.style.top = px(PG.rideFit(data, who.id).feet - 60);
+      actorWrap.append(U.tubeEl); fx([`pk-${c}`, { pause: 150 }, 'fx-zoom']);
+      if (tag === 'tube') return;
+    }
+    if (tag === 'splash' || (tag === 'puff' && !reduced)) {
+      dropsAt(tag === 'puff' ? ' dust' : '', FX_MS);
+      if (tag === 'splash') { fx(PG.pieceSounds({ sound: 'fx-splash', water: true }, who)); cheer(300); }
+      return;
+    }
+    if (tag !== 'fun') return;
+    if (p.snacks) giveSnack(p);
+    else if (PG.isPinned(layout[U.i], zone)) lifeguardWave(U.i);
+    else if (p.pumps) pump(U.i, p);
+    else if (p.sprayers) spray(U.i, p);
+    else if (p.water) runFx(PG.pieceTrick(p, who), PG.pieceSounds(p, who), !!deco.ripple);
+    else {
+      fx(p.sounds ? p.sounds.filter(Boolean) : PG.pieceSounds(p, who));
+      if (!reduced) sparkleAt(at, PG.useOf(data, p.id).type === 'hide' ? 'tunnel' : '');
+    }
+  };
+  const stepUse = (U) => {
+    if (use !== U) return;
+    const s = U.steps[U.n++];
+    if (!s) { endUse(U, false); return; }
+    phase = s.phase;
+    if (s.phase === 'hopOff') rideFloat = false;
+    pose(s.pose);
+    fit(s.scale, s.rot, s.layer === 'b' && pieceEls[U.i] ? String(Number(pieceEls[U.i].style.zIndex) - 1) : '');
+    hidePeek(s);
+    swingSeat(U.i, U.k, s);
+    pos = { x: s.x, y: s.y };
+    const c = U.cams[U.n - 1];
+    if (c && (c.x !== cam.x || c.y !== cam.y)) { cam = c; applyCam(!reduced); }
+    if (s.fade) flash(actor, 'pg-fade', 600);
+    placeActor(s.ms);
+    if (U.partner) partnerTo(U.partner, U.partner.steps[U.n - 1]);
+    if (s.tag) beat(U, s.tag);
+    if (s.fade) stepUse(U); else clock.later(s.ms, () => stepUse(U));
+  };
+  function runUse(i, k = 0, tube = null) {
+    const e = layout[i]; const p = e && PG.pieceById(data, e[0]); const u = p && PG.useOf(data, p.id);
+    if (!u || rideOn || building || (seated && seated.i === i)) return false;
+    if (seated) unseat();
+    stopUse(); hideTubes();
+    walkToken++; walking = false; actorWrap.classList.remove('walking', 'pg-trot');
+    const steps = PG.useSteps(e, k, who, data, zone, reduced, isPhoto(), layout);
+    const cams = PG.useCams(cam, PG.slotBox(e, k, data, zone), PG.isRide(p) ? [steps[0]] : steps, vsize(), world, gates.length, PG.rideFit(data, who.id).head);
+    cam = cams[0]; applyCam(!reduced);
+    if (PG.isRide(p)) {
+      use = { i, p, ride: true }; phase = 'boarding';
+      pos = steps[0]; placeActor(reduced ? 0 : PG.BOARD_MS);
+      clock.later(reduced ? 0 : PG.BOARD_MS, () => { if (use && use.p === p) { use = null; phase = ''; startRide(i, false, k); } });
+      return true;
+    }
+    const U = use = { i, k, p, steps, cams, n: 0, tube, two: PG.seatsOf(u).length === 2, partner: null };
+    if (u.type === 'water' && zone.floaties === true) rideFloat = true;
+    propAway(); smile(true);
+    actorWrap.classList.add('pg-using'); root.classList.add('pg-using');
+    if (U.two) {
+      showRiders();
+      const a = u.partner === 'animal' && (animals.find((x) => x.kind === 'squirrel' && !x.reacting) || animals.find((x) => x.kind === 'bird' && !x.reacting));
+      if (a) { a.reacting = true; U.partner = { a, steps: PG.useSteps(e, 1 - k, null, data, zone, reduced, false, layout) }; }
+    }
+    stepUse(U);
+    return true;
+  }
 
   // ---- the Water Park (Amendment x2, design §16.5) ----
   // floaties are drawn whenever she is in a water area (top layer, never over the face, reduced motion
@@ -640,7 +770,7 @@ function playScreen(ctx, who, zone) {
   function showTubes(i, p) {
     tubesAt = i;
     tubeRow.replaceChildren(...p.tubes.filter((c) => TUBE_FILL[c]).slice(0, 4).map((c) => h('button', {
-      type: 'button', class: 'pg-trick-btn pg-tube-btn', 'data-tube': c, 'aria-label': c, onclick: () => slideDown(c),
+      type: 'button', class: 'pg-trick-btn pg-tube-btn', 'data-tube': c, 'aria-label': c, onclick: () => runUse(tubesAt, 0, c),
     }, drawing(art('pgTube', { fill: TUBE_FILL[c] }), { box: '0 0 100 100' }))));
     tubeRow.hidden = false; if (trickRow) trickRow.hidden = true;
   }
@@ -657,18 +787,6 @@ function playScreen(ctx, who, zone) {
       sparkleAt({ x: pos.x, y: pos.y - 160 }, 'star');
       if (!(ctx.state && ctx.state.sound === false)) fx(cheerCfg.clip);
     });
-  }
-  let sliding = false;
-  function slideDown(c) {
-    if (sliding || tubesAt < 0 || rideOn) return;
-    sliding = true; busy = true;
-    const tube = h('span', { class: 'pg-car front pg-tube-ride', 'data-tube': c, 'aria-hidden': 'true' }, h('span', { class: 'pg-car-in' }, drawing(art('pgTube', { fill: TUBE_FILL[c] }), { box: '0 0 100 100' })));
-    tube.style.top = px(PG.rideFit(data, who.id).feet - 60);
-    actorWrap.append(tube);
-    fx([`pk-${c}`, { pause: 150 }, 'fx-zoom']);
-    flash(actor, PG.trickClass('whoosh', reduced));
-    clock.later(500, () => { runFx('splash', PG.pieceSounds({ sound: 'fx-splash', water: true }, who)); cheer(500); });
-    clock.later(FX_MS + 300, () => { tube.remove(); sliding = false; });
   }
   // the giant bucket: pump taps count 1 to 10, then it tips. Dogs dry off, friendSilly hic-giggles,
   // everyone else giggles
@@ -719,20 +837,20 @@ function playScreen(ctx, who, zone) {
     piecesEl.replaceChildren(); pieceEls.length = 0;
     layout.forEach((e, i) => {
       const p = PG.pieceById(data, e[0]);
-      const el = h('button', { type: 'button', class: `pg-piece pc-${p.id}`, 'data-piece': p.id, 'aria-label': p.id },
+      const el = h('button', { type: 'button', class: `pg-piece pc-${p.id}`, 'data-piece': p.id, 'data-slots': PG.seatsOf(PG.useOf(data, p.id)).length, 'aria-label': p.id },
         drawing(art(p.art), { box: `0 0 ${p.w * 100} ${p.h * 100}` }));
       const b = PG.pieceBox(e, data);
       placeBox(el, b);
       el.style.zIndex = String(Math.round(b.y + b.h));
       el.addEventListener('pointerdown', (ev) => {
-        if (gesture || (ev.button != null && ev.button !== 0)) return;
+        if (gesture || (ev.button != null && ev.button !== 0) || onActor(ev)) return;
         if (building) {
           if (PG.isPinned(e, zone)) return; // the lifeguard stays put: never moved or binned
           gesture = { kind: 'move', piece: i, x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false };
           try { el.setPointerCapture(ev.pointerId); } catch { /* ignore */ }
           return;
         }
-        gesture = { kind: 'press', piece: i, x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false };
+        gesture = { kind: 'press', pid: ev.pointerId, piece: i, x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false };
       });
       el.addEventListener('click', (ev) => { if (ev.detail === 0 && !building) tapPiece(i); }); // keyboard only; taps are pointerup
       piecesEl.appendChild(el); pieceEls.push(el);
@@ -755,8 +873,8 @@ function playScreen(ctx, who, zone) {
     el.style.width = px(a.size); el.style.height = px(a.size);
     const st = { ...a, k, el, dist: (k * 137) % Math.max(1, PG.loopLength(a.pts)), x: a.pts[0].x, y: a.pts[0].y, dir: 1, reacting: false };
     el.addEventListener('pointerdown', (ev) => {
-      if (gesture || (ev.button != null && ev.button !== 0)) return;
-      gesture = { kind: 'pressAnimal', animal: k, x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false };
+      if (gesture || (ev.button != null && ev.button !== 0) || onActor(ev)) return;
+      gesture = { kind: 'pressAnimal', pid: ev.pointerId, animal: k, x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false };
     });
     el.addEventListener('click', (ev) => { if (ev.detail === 0) reactAnimal(st); });
     animalsEl.appendChild(el);
@@ -803,7 +921,8 @@ function playScreen(ctx, who, zone) {
   const othersFloaty = () => {
     const figs = [...byClassIn(actorWrap, 'pg-rider2').map((el) => ({ el, id: el.getAttribute('data-rider2'), size: 160, inW: rideFloat || PG.inWater(layout, data, zone, drawnPos()) })),
       ...byClassIn(layer, 'pg-hopoff').map((el) => ({ el, id: el.getAttribute('data-hopoff'), size: 128 })),
-      ...byClassIn(layer, 'pg-offer-who').map((el) => ({ el, id: el.getAttribute('data-who'), size: 96 }))];
+      ...byClassIn(layer, 'pg-offer-who').map((el) => ({ el, id: el.getAttribute('data-who'), size: 96 })),
+      ...byClassIn(layer, 'pg-partner').map((el) => { const [x, y] = String(el.style.translate).split(' ').map(parseFloat); return { el, id: el.getAttribute('data-partner'), size: 160, inW: PG.inWater(layout, data, zone, { x, y }) }; })];
     for (const f of figs) {
       const inW = f.inW != null ? f.inW : PG.inWater(layout, data, zone, { x: parseFloat(f.el.style.left), y: parseFloat(f.el.style.top) });
       const on = byClassIn(f.el, 'pg-floaty')[0];
@@ -833,9 +952,7 @@ function playScreen(ctx, who, zone) {
   clock.frame(tick);
 
   // dogs trot after a bird or squirrel for a moment, then stop (no catching, no barking)
-  // ambient behaviour never moves her while she is boarding (walking to a ride, the slide's tube row),
-  // seated (rider 1 and seat 2, before Go), riding (the tube too), hopping off, or beside a live offer
-  const ambientHeld = () => busy || !!gesture || walking || building || rideOn || !!seated || sliding || tubesAt >= 0 || Date.now() < stillUntil;
+  const ambientHeld = () => busy || !!gesture || walking || building || rideOn || !!seated || !!use || !!phase || tubesAt >= 0 || Date.now() < stillUntil;
   if (who.kind === 'dog' && animals.length) {
     const chase = () => {
       if (!ambientHeld()) {
@@ -848,24 +965,31 @@ function playScreen(ctx, who, zone) {
   }
 
   // one gesture at a time: character drag, press on a piece or animal (a tap unless it moves), or pan
-  actorWrap.addEventListener('pointerdown', (ev) => {
-    if (gesture || rideOn || building || (ev.button != null && ev.button !== 0)) return;
-    unseat();
-    gesture = { kind: 'drag', x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false };
-    try { actorWrap.setPointerCapture(ev.pointerId); } catch { /* ignore */ }
-    actorWrap.classList.add('dragging');
-    walkToken++; walking = false;
-    if (ev.preventDefault) ev.preventDefault();
-  });
+  function onActor(ev) {
+    if (building || rideOn || (use && use.ride)) return false;
+    const w = toWorld(ev); const b = PG.bodyBox(drawnPos());
+    return w.x >= b.x - 16 && w.x <= b.x + b.w + 16 && w.y >= b.y - 16 && w.y <= b.y + b.h + 16;
+  }
   view.addEventListener('pointerdown', (ev) => {
     if (ev.button != null && ev.button !== 0) return;
     if (root.classList.contains('pg-big-ride')) return; // the camera follows the train: no panning away mid-ride
-    if (!gesture) gesture = { kind: 'pan', x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false };
+    if (!gesture && onActor(ev)) {
+      stopUse(); unseat();
+      const w = toWorld(ev);
+      gesture = { kind: 'drag', pid: ev.pointerId, x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false, off: { x: pos.x - w.x, y: pos.y - w.y } };
+      try { actorWrap.setPointerCapture(ev.pointerId); } catch { /* ignore */ }
+      actorWrap.classList.add('dragging');
+      walkToken++; walking = false;
+      if (ev.preventDefault) ev.preventDefault();
+      return;
+    }
+    if (!gesture) gesture = { kind: 'pan', pid: ev.pointerId, x0: ev.clientX, y0: ev.clientY, cam0: { ...cam }, moved: false };
     if (gesture.kind !== 'drag') { try { view.setPointerCapture(ev.pointerId); } catch { /* ignore */ } }
   });
+  const other = (g, ev) => g.pid != null && ev.pointerId != null && ev.pointerId !== g.pid;
   view.addEventListener('pointermove', (ev) => {
     const g = gesture;
-    if (!g) return;
+    if (!g || other(g, ev)) return;
     const dx = ev.clientX - g.x0; const dy = ev.clientY - g.y0;
     if (!g.moved && Math.hypot(dx, dy) > PG.TAP_SLOP) g.moved = true;
     if ((g.kind === 'press' || g.kind === 'pressAnimal') && g.moved) g.kind = 'pan';
@@ -873,7 +997,8 @@ function playScreen(ctx, who, zone) {
       cam = PG.softClamp({ x: g.cam0.x - dx, y: g.cam0.y - dy }, vsize(), world);
       applyCam(false);
     } else if (g.kind === 'drag' && g.moved) {
-      pos = PG.clampToWorld(toWorld(ev), zone);
+      const w = toWorld(ev);
+      pos = PG.clampToWorld({ x: w.x + g.off.x, y: w.y + g.off.y }, zone);
       placeActor(0);
       cam = PG.followEdge(cam, pos, vsize(), world);
       applyCam(false);
@@ -882,7 +1007,7 @@ function playScreen(ctx, who, zone) {
   });
   const end = (ev) => {
     const g = gesture;
-    if (!g || g.kind === 'tray' || g.kind === 'move') return; // build gestures end at the screen root
+    if (!g || g.kind === 'tray' || g.kind === 'move' || other(g, ev)) return;
     gesture = null;
     try { view.releasePointerCapture(ev.pointerId); } catch { /* ignore */ }
     const up = ev.type === 'pointerup';
@@ -897,10 +1022,10 @@ function playScreen(ctx, who, zone) {
     } else if (g.kind === 'drag') {
       actorWrap.classList.remove('dragging');
       try { actorWrap.releasePointerCapture(ev.pointerId); } catch { /* ignore */ }
-      const i = PG.pieceAt(layout, data, pos.x, pos.y);
-      if (g.moved && i >= 0) playPiece(i);
+      const hit = PG.dropTarget(layout, data, zone, PG.bodyBox(pos), g.moved ? toWorld(ev) : null);
       cam = PG.clampCamera(cam, vsize(), world);
       applyCam(true);
+      if (hit && (g.moved || up)) runUse(hit.i, hit.seat);
     }
   };
   view.addEventListener('pointerup', end);
@@ -1132,12 +1257,13 @@ function playScreen(ctx, who, zone) {
   });
   const riderEnd = (ev) => {
     const g = gesture;
-    if (!g || g.kind !== 'rider') return;
+    if (!g || g.kind !== 'rider' || (g.pid != null && ev.pointerId != null && ev.pointerId !== g.pid)) return;
     gesture = null; riderGhost.remove();
     if (seated && seated.hot) seated.hot.classList.remove('to-seat');
     const up = ev.type === 'pointerup';
     if (!g.moved) { if (up) pickRider(g.id); return; }
     if (up && seated && seated.hot && over(seated.hot, ev)) board2(g.id);
+    else if (up && use && use.two && over(view, ev)) boardPartner(g.id);
   };
   root.addEventListener('pointerup', riderEnd);
   root.addEventListener('pointercancel', riderEnd);

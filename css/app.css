@@ -927,7 +927,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 
 /* Playground (design.md §13.4–13.5, Amendment q: the Big Playground) */
 .playground.pick, .playground.play { min-height: 100dvh; background: #FBF4E6; display: flex; flex-direction: column; }
-.playground.play { height: 100dvh; overflow: hidden; }
+.playground.play { height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); min-height: 0; overflow: hidden; }
 .playground .topbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; min-height: 64px; }
 .playground .topbar .grow { flex: 1; }
 .pg-pick-grid {
@@ -953,7 +953,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   background-size: 100px 100px;
 }
 .pg-world.pg-ease { transition: transform .22s ease-out; }
-.pg-sky { position: absolute; left: 0; top: 0; right: 0; height: 60px; }
+.pg-sky{position:absolute;left:-96px;top:-96px;right:-96px;height:156px}
 .pg-pieces, .pg-animals { position: absolute; inset: 0; }
 .pg-piece {
   position: absolute; display: block; padding: 0; border: 0; background: transparent; cursor: pointer;
@@ -967,11 +967,34 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .pg-animal::before { content: ""; position: absolute; inset: -20px; } /* a bigger tap area than the drawing */
 .pg-animal .pg-animal-in, .pg-animal .drawing { display: block; width: 100%; height: 100%; pointer-events: none; }
 .pg-animal.flip .pg-animal-in { transform: scaleX(-1); }
-.pg-actor-wrap {
-  position: absolute; z-index: 5000; width: 160px; height: 160px;
-  transform: translate(-50%, -88%); cursor: grab;
-  transition-property: left, top; transition-timing-function: ease-in-out;
+.pg-actor-wrap, .pg-partner {
+  position: absolute; z-index: 5000; left: -80px; top: -141px; width: 160px; height: 160px; transform-origin: 80px 141px;
+  pointer-events: none; transition-property: translate, scale, rotate; transition-timing-function: ease-in-out;
 }
+.pg-partner .pet{width:160px;height:160px}
+/* poses (§18.5) */
+.pg-actor-wrap > .pet{transform-origin:50% 88%;transition:transform .2s ease,opacity .25s ease}
+.pg-actor-wrap.pg-hid > *{opacity:0}
+.pg-ripple{position:absolute;left:14px;width:132px;height:24px;border:3px solid rgba(255,255,255,.75);border-radius:50%;pointer-events:none;z-index:1;animation:pg-ripple 1.2s ease-out infinite}
+@keyframes pg-ripple{from{transform:scale(.8);opacity:.9}to{transform:scale(1.15);opacity:.3}}
+.pg-canopy{position:absolute;z-index:5001;pointer-events:none}.pg-canopy .drawing{width:100%;height:100%;display:block}.pg-vehicle .pg-hang{display:none}
+.pg-pole { position: absolute; left: 122px; top: 30px; width: 6px; height: 116px; border-radius: 3px; background: #8C96A0; pointer-events: none; z-index: 3; }
+.pg-drops.low{width:220px;transform:translate(-50%,-55%)}.pg-drops.low .d2{left:96%}.pg-drops.low .d4{left:4%;top:30%}.pg-drops.low .d5{left:90%;top:30%}.pg-drops.low .d1{left:14%}.pg-drops.low .d3{left:86%}
+.pg-sw{transition-property:scale;transition-timing-function:ease-in-out}.pg-sw.s0{transform-origin:70px 30px}.pg-sw.s1{transform-origin:130px 30px}
+.pg-seat{position:absolute;left:38px;width:84px;height:18px;border-radius:8px;border:3px solid #4A3426;background:#4AA3DF;z-index:3;pointer-events:none}.pg-seat.k1{background:#F2C230}
+.pg-p-sit > .pet{transform:translateY(6px) scaleY(.95)}
+.pg-p-hold .pet .ear.l{transform:rotate(25deg)}.pg-p-hold .pet .ear.r{transform:rotate(-25deg)}
+.pg-p-hold > .photo-pet { transform: rotate(-8deg); }
+.pg-p-climb > .pet{animation:pg-climbs .4s ease-in-out infinite alternate}
+.pg-p-climb > .photo-pet { animation-name: pg-climbp; }
+.pg-p-whee .pet .ear.l{transform:rotate(70deg)}.pg-p-whee .pet .ear.r{transform:rotate(-70deg)}
+.pg-p-whee > .pet{transform:rotate(-8deg)}
+.pg-p-whee[data-kind=dog] > .pet{transform:rotate(12deg) translateY(4px)}
+.pg-p-whee > .pet.photo-pet { transform: rotate(-12deg) scale(1.06); }
+@keyframes pg-climbs { from { transform: rotate(-6deg); } to { transform: rotate(6deg) translateY(-5px); } }
+@keyframes pg-climbp { from { transform: rotate(-10deg); } to { transform: rotate(10deg) translateY(-5px); } }
+.pg-two.pg-k1 > .pet,.pg-two.pg-k1 > .pg-actor{left:-26px}.pg-two.pg-k1 > .pg-helmet{left:calc(50% - 26px)}.pg-k1 > .pg-rider2{left:40px}.pg-k1 > .pg-seat2{left:auto;right:-8px}
+.pg-drops.dust .drop{background:#C9B59A}
 .pg-actor-wrap.dragging { cursor: grabbing; }
 .pg-actor-wrap .pet { width: 160px; height: 160px; pointer-events: none; }
 .pg-actor-wrap.walking .pet, .pg-actor-wrap.pg-trot .pet { animation: trick-hop 0.3s ease infinite; }
@@ -1117,6 +1140,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 @keyframes pg-hopoff { 0% { transform: translate(-50%, -100%) translateY(-30px); } 40% { transform: translate(-50%, -100%) translateY(-50px); } 100% { transform: translate(-50%, -100%); opacity: 0; } }
 @keyframes pg-fadeout { to { opacity: 0; } }
 .pg-hopoff .pet { width: 100%; height: 100%; }
+.pg-riders{touch-action:none}
 .pg-riders .pg-rider-tile { padding: 4px; } /* sized like the trick buttons (§15.2 floors), one row, no scrolling */
 .pg-riders .pg-rider-tile.picked { outline: 4px solid #F2C230; box-shadow: 0 0 10px #FFE27A; }
 .pg-riders .pg-rider-tile .pet { width: 100%; height: 100%; }

@@ -1199,6 +1199,8 @@
         "sound": "fx-chime",
         "ride": {
           "anim": "pedal",
+          "roam": true,
+          "fit": {"rider": 0.75, "w": 190},
           "seats": 1,
           "speed": 240,
           "ms": 3800,
@@ -1235,6 +1237,7 @@
         "sound": "fx-chime",
         "ride": {
           "anim": "glide",
+          "roam": true,
           "seats": 1,
           "speed": 240,
           "ms": 3829,
@@ -1505,7 +1508,8 @@
         "sounds": [
           "fx-boing",
           "fx-giggle"
-        ]
+        ],
+        "ride": {"anim": "bump", "seats": 1, "gear": "helmet", "car": "", "front": true, "speed": 140, "ms": 2600, "path": [[-50, 40], [50, 40, "bump"], [50, -20], [-50, -20]], "hide": false}
       },
       {
         "id": "balloonTower",
@@ -1591,7 +1595,8 @@
         "h": 3,
         "trick": "wave",
         "sound": "fx-chime",
-        "still": true
+        "still": true,
+        "ride": {"anim": "float", "seats": 1, "gear": "helmet", "car": "pgBasket", "front": true, "speed": 230, "ms": 4000, "path": [[0, 122], [-79, 89], [-112, 10], [-79, -69], [0, -102, "view"], [79, -69], [112, 10], [79, 89]], "hide": false}
       },
       {
         "id": "ticketBooth",
@@ -1848,11 +1853,13 @@
       {
         "id": "park",
         "ready": true,
+        "floaties": true,
         "gate": "pgGatePark",
         "world": {
           "w": 1200,
-          "h": 1100
+          "h": 1230
         },
+        "pad": 130,
         "sky": "#BFE6F7",
         "ground": "#B9E08F",
         "pieces": [
@@ -1885,8 +1892,8 @@
           ],
           [
             "sandbox",
-            5,
-            7
+            3,
+            6
           ],
           [
             "splash",
@@ -1920,7 +1927,7 @@
           ],
           [
             "pond",
-            4,
+            2,
             9
           ],
           [
@@ -1931,7 +1938,7 @@
           [
             "scooter",
             7,
-            9
+            10
           ],
           [
             "snacks",
@@ -2083,8 +2090,9 @@
         "gate": "pgGateCoaster",
         "world": {
           "w": 1500,
-          "h": 1100
+          "h": 1230
         },
+        "pad": 130,
         "sky": "#FBE3C8",
         "ground": "#B9E08F",
         "pieces": [
@@ -2143,7 +2151,7 @@
           ],
           [
             "ticketBooth",
-            5,
+            4,
             7
           ],
           [
@@ -2153,8 +2161,8 @@
           ],
           [
             "fountain",
-            7,
-            8
+            9,
+            5
           ],
           [
             "tents",
@@ -2173,7 +2181,7 @@
           ],
           [
             "snacks",
-            5,
+            4,
             9
           ],
           [
@@ -2313,12 +2321,14 @@
         "gate": "pgGateWater",
         "world": {
           "w": 1500,
-          "h": 1100
+          "h": 1230
         },
+        "pad": 130,
         "sky": "#DDF3FB",
         "ground": "#F2DDB0",
         "floaties": true,
-        "startBeside": "splash",
+        "startBeside": "lifeguard",
+        "startSee": [["lazyPool", 60], ["sprayers", 44, 1]],
         "pinned": [
           [
             "lifeguard",
@@ -2355,7 +2365,7 @@
           [
             "splash",
             4,
-            5
+            4
           ],
           [
             "curlySlide",
@@ -2370,7 +2380,7 @@
           [
             "sprayers",
             6,
-            8
+            3
           ],
           [
             "dumpCups",
@@ -2384,8 +2394,8 @@
           ],
           [
             "umbrellas",
-            3,
-            3
+            1,
+            5
           ],
           [
             "lifeRings",
@@ -2499,8 +2509,8 @@
           }
         ],
         "startAt": [
-          200,
-          -120
+          110,
+          100
         ],
         "cheer": {
           "clip": "c-yay1",
@@ -2528,7 +2538,53 @@
       "fruitPop": "pgFruitPop",
       "orangeSlices": "pgOrangeSlices"
     },
+    "use": {
+      "types": {"slide":{"rm":"whee"},"pivot":{"rm":"hold"},"spinner":{"rm":"hold"},"climb":{"rm":"climb"},"vehicle":{"rm":"sit","scale":{"S":1,"M":1,"L":1},"feet":true},"water":{"rm":"sit"},"sit":{"rm":"sit"},"hide":{"rm":"hold"},"spot":{"rm":""}},
+      "pieces": {
+        "slide": {"type":"slide","seats":[{"at":[40,188],"hands":[37,150]}],"path":[[57,40,900,"climb"],[90,40,300,"sit"],[150,100,500,"whee","","fun"],[196,175,500,"whee"],[196,175,300,"","","puff"]],"exit":[215,190]},
+        "swings": {"type":"pivot","scale":{"S":0.62,"M":0.62,"L":0.62},"seats":[{"at":[70,137],"hands":[70,70],"exit":[70,198]},{"at":[130,127],"hands":[130,70],"exit":[130,198]}],"pivot":{"y":30,"deg":30,"cycles":3,"ms":3000,"tilt":1}},
+        "seesaw": {"type":"pivot","seats":[{"at":[28,52],"exit":[20,105]},{"at":[172,30],"exit":[180,105]}],"pivot":{"at":[100,56],"deg":12,"cycles":3,"ms":2400},"partner":"animal"},
+        "merry": {"type":"spinner","seats":[{"at":[100,170],"hands":[100,120]}],"orbit":{"c":[100,140],"rx":70,"ry":26,"turns":2,"ms":1600},"exit":[100,198]},
+        "climber": {"type":"climb","seats":[{"at":[28,186]}],"path":[[40,130,400,"climb"],[70,80,400,"climb"],[100,30,400,"climb"],[100,30,500,"hold","","fun"],[140,100,500,"climb"],[172,186,500,"climb"]],"exit":[195,196]},
+        "tunnel": {"type":"hide","seats":[{"at":[30,98]}],"path":[[100,96,400,"sit","b","",{"hide":1}],[100,96,700,"sit","b","",{"hide":1}],[100,96,1200,"hold","","fun",{"peek":1}]],"exit":[215,98]},
+        "sandbox": {"type":"sit","seats":[{"at":[80,70]}],"path":[[80,70,2100,"sit","","fun"]],"exit":[100,112]},
+        "bench": {"type":"sit","seats":[{"at":[100,46]}],"path":[[100,46,2000,"sit","","fun"]],"exit":[100,108]},
+        "bike": {"type":"vehicle","seats":[{"at":[100,80]}]},
+        "scooter": {"type":"vehicle","seats":[{"at":[100,80]}]},
+        "tree": {"type":"hide","seats":[{"at":[50,180]}],"path":[[50,180,300,"sit","b"],[18,176,900,"hold","","fun"]],"exit":[50,212]},
+        "flowers": {"type":"spot","seats":[{"at":[50,92]}],"path":[[50,92,1000,"","","fun"]]},
+        "pond": {"type":"water","seats":[{"at":[40,150]}],"path":[[100,120,500,"sit","","",{"wade":1}],[100,120,1500,"sit","","fun",{"wade":1}]],"exit":[100,196]},
+        "splash": {"type":"water","seats":[{"at":[40,170]}],"path":[[100,140,300,""],[100,140,900,"","","fun"]],"exit":[100,196]},
+        "snacks": {"type":"spot","seats":[{"at":[100,190]}],"path":[[100,190,1000,"","","fun"]]},
+        "dragonCoaster": {"type":"vehicle","seats":[{"at":[226,240]},{"at":[160,240]}]},
+        "teapots": {"type":"spinner","seats":[{"at":[176,160]},{"at":[110,160]}]},
+        "carousel": {"type":"spinner","seats":[{"at":[150,240]}]},
+        "bumpers": {"type":"vehicle","seats":[{"at":[100,160]}]},
+        "balloonTower": {"type":"vehicle","seats":[{"at":[100,240]}]},
+        "kiddieTrain": {"type":"vehicle","seats":[{"at":[150,80]}]},
+        "ferris": {"type":"vehicle","seats":[{"at":[150,272]}]},
+        "ticketBooth": {"type":"spot","seats":[{"at":[100,186]}],"path":[[100,186,1000,"","","fun"]]},
+        "balloonArch": {"type":"spot","seats":[{"at":[30,92]}],"path":[[100,92,500,""],[100,92,1000,"","","fun"]],"exit":[175,96]},
+        "fountain": {"type":"water","seats":[{"at":[100,194]}],"path":[[100,194,1000,"","","fun"]]},
+        "tents": {"type":"hide","seats":[{"at":[100,94]}],"path":[[100,84,300,"sit","b"],[100,84,1200,"hold","","fun"]],"exit":[100,108]},
+        "hills": {"type":"spot","seats":[{"at":[40,96]}],"path":[[150,40,600,"climb"],[150,40,600,"","","fun"]],"exit":[262,96]},
+        "target": {"type":"spot","seats":[{"at":[50,96]}],"path":[[50,96,1000,"","","fun"]]},
+        "lifeguard": {"type":"spot","seats":[{"at":[190,194]}],"path":[[190,194,1000,"","","fun"]]},
+        "lazyPool": {"type":"water","seats":[{"at":[340,110]}],"path":[[300,120,500,"sit"],[200,104,800,"sit","","fun"],[300,150,700,"sit"]],"exit":[362,196]},
+        "lazyRing": {"type":"vehicle","seats":[{"at":[50,80]}]},
+        "curlySlide": {"type":"slide","seats":[{"at":[172,292]}],"path":[[172,40,900,"climb"],[150,44,0,"sit","","tube"],[150,140,600,"whee","","fun"],[110,262,500,"whee"],[110,262,400,"","","splash"]],"exit":[110,292]},
+        "bucket": {"type":"water","seats":[{"at":[100,280]}],"path":[[100,280,1500,"","","fun"]],"exit":[100,312]},
+        "sprayers": {"type":"water","seats":[{"at":[100,150]}],"path":[[100,150,2000,"","","fun"]]},
+        "dumpCups": {"type":"water","seats":[{"at":[100,160]}],"path":[[100,160,1200,"","","fun"]]},
+        "floatTargets": {"type":"spot","seats":[{"at":[100,96]}],"path":[[100,96,1000,"","","fun"]]},
+        "umbrellas": {"type":"sit","seats":[{"at":[100,172]}],"path":[[100,172,1500,"sit","","fun"]]},
+        "lifeRings": {"type":"spot","seats":[{"at":[50,96]}],"path":[[50,96,1000,"","","fun"]]},
+        "towels": {"type":"sit","seats":[{"at":[100,80]}],"path":[[100,80,1200,"sit","","fun"]]},
+        "cooler": {"type":"spot","seats":[{"at":[100,190]}],"path":[[100,190,1000,"","","fun"]]}
+      }
+    },
     "rideFit": {
+      "size": {"S": {"scale": 0.8, "bottom": [80, 134], "paws": [80, 100]}, "M": {"scale": 0.85, "bottom": [80, 130], "paws": [80, 102]}, "L": {"scale": 0.72, "bottom": [80, 136], "paws": [80, 96]}, "P": {"scale": 0.85, "bottom": [80, 158], "paws": [80, 120]}},
       "default": {
         "head": 22,
         "eyes": 48,
@@ -2537,6 +2593,7 @@
         "helmetX": 0
       },
       "friendSilly": {
+        "size": "L",
         "head": 28,
         "eyes": 62,
         "helmet": 64,
@@ -2548,6 +2605,7 @@
         }
       },
       "friendBerry": {
+        "size": "S",
         "head": 9,
         "eyes": 30,
         "helmet": 48,
@@ -2559,6 +2617,7 @@
         }
       },
       "friendCounter": {
+        "size": "L",
         "head": 20,
         "eyes": 42,
         "helmet": 38,
@@ -2589,6 +2648,7 @@
         ]
       },
       "friendDino": {
+        "size": "L",
         "head": 34,
         "eyes": 57,
         "helmet": 54,
@@ -2600,6 +2660,7 @@
         }
       },
       "friendSea": {
+        "size": "S",
         "head": 3,
         "eyes": 30,
         "helmet": 54,
@@ -2611,6 +2672,7 @@
         }
       },
       "yellowDog": {
+        "size": "M",
         "head": 22,
         "eyes": 48,
         "floaty": {
@@ -2621,6 +2683,7 @@
         }
       },
       "chocolateDog": {
+        "size": "M",
         "head": 22,
         "eyes": 48,
         "floaty": {
@@ -2631,6 +2694,7 @@
         }
       },
       "gingerDog": {
+        "size": "M",
         "head": 22,
         "eyes": 47,
         "floaty": {
@@ -2641,6 +2705,7 @@
         }
       },
       "blackDog": {
+        "size": "M",
         "head": 22,
         "eyes": 47,
         "floaty": {
@@ -2651,6 +2716,7 @@
         }
       },
       "puppy": {
+        "size": "S",
         "head": 20,
         "eyes": 49,
         "helmet": 58,
@@ -2662,6 +2728,7 @@
         }
       },
       "kitty": {
+        "size": "S",
         "head": 24,
         "eyes": 49,
         "floaty": {
@@ -2672,6 +2739,7 @@
         }
       },
       "bunny": {
+        "size": "S",
         "head": 39,
         "eyes": 61,
         "helmet": 52,
@@ -2683,6 +2751,7 @@
         }
       },
       "bunny2": {
+        "size": "S",
         "head": 39,
         "eyes": 61,
         "helmet": 52,

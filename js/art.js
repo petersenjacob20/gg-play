@@ -345,20 +345,14 @@ export const ART = {
     P('M12 32H88V48H12Z', '#6DB8EA'),
     el('path', { d: 'M44 32H56V48H44Z', fill: gold ? '#F2C230' : '#5DBB63', stroke: INK, 'stroke-width': 3 })),
   // A closed book with a star on the cover (the Sticker book button).
-  // Playground tile (design.md §13.3, q0): an open toy chest, lilac lid tipped back, a red ball and a
-  // gold star peeking over the rim. Original drawing, no licensed look.
-  toyChest: () => g(
-    P('M20 46L27 13H73L80 46Z', '#B57EDC'),
-    P('M27 20H73', 'none', { stroke: '#D9B8F0', 'stroke-width': 4 }),
-    P('M16 46H84V56H16Z', '#5B3A29'),
-    C(38, 44, 14, '#E5484D'),
-    L('M25 40q13 7 26 0', '#FFFFFF', 3),
-    star(64, 38, 15, 6.5, '#F2C230'),
-    el('rect', { x: 14, y: 52, width: 72, height: 36, rx: 6, fill: '#C98A4B', ...O }),
-    L('M16 65H84', '#9C6532', 2.5),
-    L('M16 77H84', '#9C6532', 2.5),
-    el('rect', { x: 11, y: 48, width: 78, height: 9, rx: 4, fill: '#B57EDC', ...O }),
-    el('rect', { x: 44, y: 55, width: 12, height: 11, rx: 2, fill: '#F2C230', ...O })),
+  // Playground tile (design §19, §18 style): a small yellow slide, a ladder (metal rails, three rungs) and a soft
+  // ground shadow; light from the top-left (a lighter stripe down the bed). Original drawing.
+  pgTile: () => g(
+    E(54, 88, 42, 6, INK, { stroke: 'none', opacity: 0.18 }),
+    ...[[20, 30], [37, 47]].map(([a, b]) => P(`M${a - 3} 86L${b - 3} 22H${b + 3}L${a + 3} 86Z`, '#5FB8C8', { 'stroke-width': 2.5 })),
+    ...[36, 52, 68].map((y) => L(`M${23 + (86 - y) * 0.15} ${y}H${40 + (86 - y) * 0.15}`, INK, 3)),
+    P('M30 18H52Q60 18 64 28L88 76Q90 84 82 84H78Q73 84 71 79L49 32Q47 28 41 28H30Z', '#F2C230'),
+    L('M56 26L80 76', '#FFE27A', 3.5)),
   bookClosed: () => g(
     P('M20 14H78a6 6 0 0 1 6 6V86a6 6 0 0 1-6 6H20Z', '#8E5CC7'),
     P('M20 14H30V92H20Z', '#6E45A8'),
@@ -429,11 +423,11 @@ export const ART = {
     L('M98 42Q134 52 148 104', '#FFE27A', 4),
     P('M40 12H80L86 30H34Z', '#4AA3DF')),
   pgSwings: () => g(
-    P('M14 190L48 18H58L28 190Z', '#5DBB63'), P('M186 190L152 18H142L172 190Z', '#5DBB63'),
-    P('M40 12H160V30H40Z', '#E5484D'),
-    L('M70 30V138M98 30V138', '#8C96A0', 3), L('M118 30V128M146 30V128', '#8C96A0', 3),
-    el('rect', { x: 62, y: 136, width: 44, height: 12, rx: 5, fill: '#4AA3DF', ...O }),
-    el('rect', { x: 110, y: 126, width: 44, height: 12, rx: 5, fill: '#F2C230', ...O })),
+    P('M14 190L34 18H44L28 190Z', '#5DBB63'), P('M186 190L166 18H156L172 190Z', '#5DBB63'),
+    P('M30 12H170V30H30Z', '#E5484D'),
+    // each seat and its chains swing together round the top bar (§20 fix 2)
+    el('g', { class: 'pg-sw s0' }, L('M45 30V138M95 30V138', '#8C96A0', 3), el('rect', { x: 44, y: 136, width: 52, height: 12, rx: 5, fill: '#4AA3DF', ...O })),
+    el('g', { class: 'pg-sw s1' }, L('M105 30V128M155 30V128', '#8C96A0', 3), el('rect', { x: 104, y: 126, width: 52, height: 12, rx: 5, fill: '#F2C230', ...O }))),
   pgSandbox: () => g(
     el('rect', { x: 6, y: 14, width: 188, height: 76, rx: 10, fill: '#B07A4A', ...O }),
     el('rect', { x: 18, y: 24, width: 164, height: 56, rx: 6, fill: '#F1D9A0', ...O }),
@@ -455,10 +449,11 @@ export const ART = {
     P('M86 92L100 58L114 92Z', '#E5484D'),
     el('rect', { x: 10, y: 50, width: 180, height: 12, rx: 6, fill: '#F2C230', ...O, transform: 'rotate(-10 100 56)' }),
     L('M28 52V36M24 36H34', INK, 4), L('M172 30V16M168 16H178', INK, 4)),
+  pgMerryTop: () => P('M40 52Q100 6 160 52Z', '#E5484D'),
   pgMerry: () => g(
     E(100, 150, 90, 34, '#4AA3DF'), E(100, 140, 90, 34, '#F2C230'),
     ...[[0, '#E5484D'], [1, '#5DBB63'], [2, '#E86FA8'], [3, '#4AA3DF']].map(([i, c]) => P(`M100 140L${100 + 88 * Math.cos(i * Math.PI / 2 + 0.4)} ${140 + 33 * Math.sin(i * Math.PI / 2 + 0.4)}`, 'none', { stroke: c, 'stroke-width': 6 })),
-    L('M100 140V40', '#8C96A0', 6), P('M40 52Q100 6 160 52Z', '#E5484D'),
+    L('M100 140V40', '#8C96A0', 6), ART.pgMerryTop(),
     L('M60 140V70M140 140V70', '#8C96A0', 4)),
   pgTunnel: () => g(
     P('M10 92Q10 10 100 10Q190 10 190 92H150Q150 44 100 44Q50 44 50 92Z', '#E86FA8'),
@@ -508,16 +503,16 @@ export const ART = {
   // rides (q11): a little bike and scooter (200 x 100), each with its helmet hanging on it; the helmet
   // a rider always wears (0 0 100 100)
   pgBike: () => g(
-    C(46, 70, 24, '#FFFFFF', { 'stroke-width': 5 }), C(150, 70, 24, '#FFFFFF', { 'stroke-width': 5 }),
-    C(46, 70, 4, INK), C(150, 70, 4, INK),
-    L('M46 70L82 34H128L150 70M82 34L100 70H46M100 70L128 34', '#4AA3DF', 7),
-    P('M70 24H96L92 32H74Z', INK, { 'stroke-width': 2 }), L('M128 34L134 14H150', INK, 5),
-    P('M138 14Q150 2 164 14V20H138Z', '#F2C230', { 'stroke-width': 2.5 })),
+    C(48, 70, 24, '#FFFFFF', { 'stroke-width': 5 }), C(152, 70, 24, '#FFFFFF', { 'stroke-width': 5 }),
+    C(48, 70, 4, INK), C(152, 70, 4, INK),
+    L('M48 70L100 34H130L152 70M100 34V70H48M100 70L130 34', '#4AA3DF', 7), // the saddle over the middle (§20 fix 3)
+    P('M86 24H114L110 32H90Z', INK, { 'stroke-width': 2 }), L('M130 34L136 14H152', INK, 5),
+    P('M140 14Q152 2 166 14V20H140Z', '#F2C230', { 'stroke-width': 2.5, class: 'pg-hang' })),
   pgScooter: () => g(
     el('rect', { x: 28, y: 66, width: 120, height: 12, rx: 6, fill: '#5DBB63', ...O }),
     C(40, 84, 12, '#FFFFFF', { 'stroke-width': 4 }), C(150, 84, 12, '#FFFFFF', { 'stroke-width': 4 }),
     L('M148 72L162 10M148 10H178', '#E5484D', 7),
-    P('M52 46Q66 30 82 46V56H52Z', '#B57EDC', { 'stroke-width': 2.5 })),
+    P('M52 46Q66 30 82 46V56H52Z', '#B57EDC', { 'stroke-width': 2.5, class: 'pg-hang' })),
   pgHelmet: () => g(
     P('M10 66Q10 14 50 12Q90 14 90 66Z', '#F2C230'),
     P('M10 66H96Q98 74 90 74H10Z', '#E5484D', { 'stroke-width': 2.5 }),

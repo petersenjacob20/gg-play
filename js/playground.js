@@ -74,7 +74,7 @@ export function worldOf(zone) {
 }
 export function gridOf(zone, data) {
   const c = cellOf(data); const w = worldOf(zone);
-  return { cell: c, cols: Math.floor(w.w / c), rows: Math.floor(w.h / c) };
+  return { cell: c, cols: Math.floor(w.w / c), rows: Math.floor((w.h - num(zone && zone.pad)) / c) };
 }
 
 // Design's n1 fix ("hide the Playground toggle until the tile ships"): the Playground ships only when
@@ -399,16 +399,49 @@ export const walkSpeedOf = (data) => Math.max(100, num(pg(data) && pg(data).walk
 export function rideSpeed(piece, data) {
   return Math.min(walkSpeedOf(data) * 1.5, Math.max(60, num(piece && piece.ride && piece.ride.speed, 240)));
 }
-export function ridePath(entry, data, zone) {
+export function ridePath(entry, data, zone, layout = null) {
   const p = pieceById(data, entry && entry[0]);
   if (!isRide(p)) return [];
   const b = pieceBox(entry, data); const w = worldOf(zone);
   const cx = b.x + b.w / 2; const cy = b.y + b.h / 2;
-  return p.ride.path.map(([x, y, tag]) => {
-    const q = { x: Math.min(w.w - 40, Math.max(40, cx + num(x))), y: Math.min(w.h - 10, Math.max(120, cy + num(y))) };
+  const make = (k = 1, dx = 0, sy = 1) => p.ride.path.map(([x, y, tag]) => {
+    const q = { x: Math.min(w.w - 40, Math.max(40, cx + dx + num(x) * k)), y: Math.min(w.h - 10, Math.max(120, cy + num(y) * k * sy)) };
     if (typeof tag === 'string') q.tag = tag; // a ride beat at this point: peek, whoosh, tunnel (Amendment x1)
     return q;
   });
+  if (!p.ride.roam || !Array.isArray(layout)) return make();
+  const a = seatsOf(useOf(data, p.id))[0].at; const o = clampToWorld({ x: b.x + a[0], y: b.y + a[1] }, zone);
+  for (const k of [1, 0.85, 0.7, 0.55, 0.4]) for (const dx of [0, -100, 100, -200, 200]) for (const sy of [1, -1]) {
+    const pts = make(k, dx, sy);
+    if (roamClear(o, pts, entry, layout, data, w)) return pts;
+  }
+  return [{ x: o.x + 12, y: o.y }, { x: o.x - 12, y: o.y }];
+}
+export const ROAM_FOOT = { w: 160, up: 44, down: 8 };
+const same = (a, b) => a === b || (a[0] === b[0] && a[1] === b[1] && a[2] === b[2]);
+export function roamClear(start, pts, entry, layout, data, world = null) {
+  const F = ROAM_FOOT; const S = [start, ...pts, pts[0], start];
+  const foot = (x, y, w = 0, h = 0) => ({ x: x - F.w / 2, y: y - F.up, w: F.w + w, h: F.up + F.down + h });
+  const X = S.map((q) => q.x); const Y = S.map((q) => q.y); const x0 = Math.min(...X); const y0 = Math.min(...Y);
+  const all = foot(x0, y0, Math.max(...X) - x0, Math.max(...Y) - y0);
+  const others = layout.filter((o) => !same(o, entry)).map((o) => pieceBox(o, data)).filter((o) => overlap(all, o));
+  for (let i = 1; i < S.length; i++) {
+    const a = S[i - 1]; const c = S[i]; const n = Math.ceil(Math.hypot(c.x - a.x, c.y - a.y) / 8) || 1;
+    for (let j = 0; j <= n; j++) {
+      const f = foot(a.x + ((c.x - a.x) * j) / n, a.y + ((c.y - a.y) * j) / n);
+      if (others.some((o) => overlap(f, o)) || (world && (f.x < 0 || f.x + f.w > world.w || f.y + f.h > world.h))) return false;
+    }
+  }
+  return true;
+}
+export const BIKE = { saddle: 28, wheels: 97, span: [21, 179] };
+const r1 = (v) => Math.round(v * 10) / 10;
+export function smallRide(p, data, who, photo = false) {
+  const f = p && p.ride && isObj(p.ride.fit) ? p.ride.fit : null;
+  if (!f) return null;
+  const k = num(f.rider, 1); const w = num(f.w, 150); const s = w / 200; const c = sizeRow(data, photo ? 'P' : sizeOf(data, who));
+  const bottom = Array.isArray(c.bottom) ? num(c.bottom[1], 130) : 130;
+  return { k, w: w / k, h: w / 2 / k, top: r1(FOOT[1] - (BIKE.wheels * s) / k), up: r1(((BIKE.wheels - BIKE.saddle) * s) / k + bottom - FOOT[1]), span: (BIKE.span[1] - BIKE.span[0]) * s, riderW: 160 * k };
 }
 // Where a ride lets the rider off: where it started, or (lazy ring) at the ladder, an offset in data.
 export function rideOff(entry, data, zone, start) {
@@ -477,7 +510,7 @@ export function rideFit(data, id) {
   const keepClear = Array.isArray(o.keepClear) ? o.keepClear.filter((q) => Array.isArray(q) && q.length === 2).map(([x, y]) => [num(x), num(y)]) : [];
   // `over`: a part of the drawing (a group class) drawn again on top of the helmet, e.g. friendCounter's antennae
   const over = typeof o.over === 'string' && /^[a-z]+$/.test(o.over) ? o.over : null;
-  return { head: num(o.head, 22), eyes: num(o.eyes, 48), feet: num(o.feet, 160), helmet: num(o.helmet, 54), helmetX: num(o.helmetX, 0), keepClear, over };
+  return { head: num(o.head, 22), eyes: num(o.eyes, 48), feet: num(o.feet, 160), helmet: num(o.helmet, 54), helmetX: num(o.helmetX, 0), keepClear, over, size: o.size };
 }
 // Is a point (px in the 160 box) under the helmet? The dome is two curves from the pgHelmet art
 // (M10 66 Q10 14 50 12 Q90 14 90 66, in a 100 box), then the brim band down to 74.
@@ -595,7 +628,48 @@ export function startCamera(pt, layout, zone, data, view, world) {
     const c = clampCamera({ x, y }, view, world);
     if (actorInView(c, pt, view)) cam = c;
   }
+  if (startOk(cam, pt, layout, zone, data, view)) return cam;
+  const W = Math.max(0, world.w - view.w); const H = Math.max(0, world.h - view.h);
+  const near = (st, x0, y0, strict, r = W + H) => {
+    let best = null;
+    for (let y = Math.max(0, y0 - r); y <= Math.min(H, y0 + r); y += st) for (let x = Math.max(0, x0 - r); x <= Math.min(W, x0 + r); x += st) {
+      const c = clampCamera({ x, y }, view, world); const d = Math.hypot(c.x - cam.x, c.y - cam.y);
+      if ((!best || d < best.d) && startOk(c, pt, layout, zone, data, view, strict)) best = { x: c.x, y: c.y, d };
+    }
+    return best;
+  };
+  for (const strict of [true, false]) {
+    const b = near(8, 0, 0, strict);
+    if (b) { const f = near(1, b.x, b.y, strict, 8) || b; return { x: f.x, y: f.y }; }
+  }
   return cam;
+}
+export const buildRect = (view) => ({ x: view.w - 104, y: 8, w: 96, h: 96 });
+export function drawnRect(s, cam, head = 22) {
+  const k = num(s.scale, 1); const r = (num(s.rot) * Math.PI) / 180; const C = Math.cos(r) * k; const S = Math.sin(r) * k;
+  const P = [[-80, head - 141], [80, head - 141], [-80, 19], [80, 19]]; const X = P.map(([x, y]) => x * C - y * S); const Y = P.map(([x, y]) => x * S + y * C);
+  const x = Math.min(...X); const y = Math.min(...Y);
+  return { x: s.x - cam.x + x, y: s.y - cam.y + y, w: Math.max(...X) - x, h: Math.max(...Y) - y };
+}
+export function freeSide(r, ov) {
+  const o = ov.find((q) => overlap(r, q)); if (!o) return Math.min(r.w, r.h);
+  const P = [{ ...r, w: o.x - r.x }, { ...r, x: o.x + o.w, w: r.x + r.w - o.x - o.w }, { ...r, h: o.y - r.y }, { ...r, y: o.y + o.h, h: r.y + r.h - o.y - o.h }];
+  return Math.max(0, ...P.filter((q) => q.w > 0 && q.h > 0).map((q) => freeSide(q, ov)));
+}
+export function startOk(cam, pt, layout, zone, data, view, strict = false) {
+  if (!actorInView(cam, pt, view)) return false;
+  const lay = Array.isArray(layout) ? layout : []; const g = gateRects(view, otherGates(data, zone && zone.id).length); const ov = [...g, buildRect(view)];
+  for (const e of lay.filter((x) => isPinned(x, zone))) {
+    const b = pieceBox(e, data); const v = { x: b.x - cam.x, y: b.y - cam.y, w: b.w, h: b.h };
+    if (v.x < 0 || v.y < 0 || v.x + v.w > view.w || v.y + v.h > view.h || ov.some((q) => overlap(v, q))) return false;
+  }
+  for (const [id, n, tap] of (zone && zone.startSee) || []) {
+    const e = lay.find((x) => x[0] === id); if (!e) continue;
+    const v = seenPart(cam, tap ? slotBox(e, 0, data, zone) : pieceBox(e, data), view);
+    if (!(v.w > 0 && v.h > 0) || freeSide(v, ov) < n || (tap && g.some((q) => overlap({ x: v.x - 8, y: v.y - 8, w: v.w + 16, h: v.h + 16 }, q)))) return false;
+  }
+  if (strict && ov.some((q) => overlap(drawnRect({ x: pt.x, y: pt.y }, cam), q))) return false;
+  return blockedTargets(cam, lay, data, zone, view, g).length === 0;
 }
 // Design fix 4 / §16.10: friendBerry's offer stands BESIDE the rider on the same ground line, never on top:
 // the rider's body (the middle half of the 160 px drawing), a gap, friendBerry's body (a 96 px drawing),
@@ -712,4 +786,191 @@ export function frisbeeTarget(from, layout, zone, data, dir = 1) {
     }
   }
   return clampToWorld({ x: from.x + s * 120, y: from.y }, zone);
+}
+
+// ---- the use engine (y3) ----
+export const SLOP = 24;
+export const TARGET_MIN = 148;
+export const HOP_MS = 400;
+export const BOARD_MS = 300;
+export const FOOT = Object.freeze([80, 141]);
+const useT = (data) => (pg(data) && isObj(pg(data).use) ? pg(data).use : {});
+const typeOf = (data, t) => (isObj(useT(data).types) && isObj(useT(data).types[t]) ? useT(data).types[t] : {});
+export function useOf(data, id) {
+  const t = useT(data).pieces; const p = pieceById(data, id);
+  return p && isObj(t) && Object.hasOwn(t, p.id) && isObj(t[p.id]) ? t[p.id] : null;
+}
+export const seatsOf = (u) => (u && Array.isArray(u.seats) ? u.seats.slice(0, 2) : []);
+const seatOf = (u, k) => seatsOf(u)[k] || seatsOf(u)[0];
+export function sizeOf(data, who, photo = false) {
+  const s = rideFit(data, who && who.id).size;
+  return photo || !['S', 'M', 'L'].includes(s) ? 'M' : s;
+}
+export function useFit(data, who, type, photo = false, u = null) {
+  const k = sizeOf(data, who, photo); const c = sizeRow(data, photo ? 'P' : k);
+  const T = typeOf(data, type);
+  const scale = num(u && isObj(u.scale) ? u.scale[k] : isObj(T.scale) ? T.scale[k] : c.scale, 1);
+  const b = !T.feet && Array.isArray(c.bottom) ? c.bottom : FOOT;
+  return { size: k, scale, dx: (num(b[0]) - FOOT[0]) * scale, dy: (num(b[1]) - FOOT[1]) * scale };
+}
+export function slotBox(entry, k, data, zone) {
+  const b = pieceBox(entry, data); const s = seatsOf(useOf(data, entry[0]));
+  let r = { ...b };
+  if (s.length === 2) {
+    const [a, c] = s.map((q) => q.at);
+    const vx = Math.abs(a[0] - c[0]) >= Math.abs(a[1] - c[1]); const ax = vx ? 0 : 1; const len = vx ? b.w : b.h;
+    const cut = Math.min(len - 100, Math.max(100, (a[ax] + c[ax]) / 2));
+    const P = vx ? 'x' : 'y'; const L = vx ? 'w' : 'h';
+    if (s[k ? 1 : 0].at[ax] <= s[k ? 0 : 1].at[ax]) r[L] = cut; else { r[P] += cut; r[L] = len - cut; }
+  }
+  const w = worldOf(zone);
+  const grow = (lo, size, max) => {
+    let a = lo - SLOP; let z = lo + size + SLOP;
+    if (a < 0) { z = Math.min(max, z - a); a = 0; }
+    if (z > max) { a = Math.max(0, a - (z - max)); z = max; }
+    return [a, z - a];
+  };
+  const [x, ww] = grow(r.x, r.w, w.w); const [y, hh] = grow(r.y, r.h, w.h);
+  return { x, y, w: ww, h: hh };
+}
+export const bodyBox = (pt) => ({ x: pt.x - 40, y: pt.y - 116, w: 80, h: 110 });
+const area = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+const inBox = (p, b) => !!p && p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h;
+export function dropTarget(layout, data, zone, body, finger = null) {
+  let best = null;
+  layout.forEach((e, i) => seatsOf(useOf(data, e[0])).forEach((_, seat) => {
+    const t = slotBox(e, seat, data, zone);
+    const score = area(t, body) || (inBox(finger, t) ? 0.5 : 0);
+    if (!score) return;
+    const d = Math.hypot(t.x + t.w / 2 - body.x - body.w / 2, t.y + t.h / 2 - body.y - body.h / 2);
+    if (!best || score > best.score || (score === best.score && d < best.d)) best = { i, seat, score, d };
+  }));
+  return best && { i: best.i, seat: best.seat };
+}
+export function useExit(entry, k, data, zone, layout = []) {
+  const u = useOf(data, entry[0]); const b = pieceBox(entry, data); const s = seatOf(u, k);
+  const at = clampToWorld({ x: b.x + s.at[0], y: b.y + s.at[1] }, zone);
+  if (isRide(pieceById(data, entry[0]))) return rideOff(entry, data, zone, at);
+  const q = s.exit || u.exit;
+  const pt = q ? clampToWorld({ x: b.x + q[0], y: b.y + q[1] }, zone) : at;
+  const on = pieceAt(layout, data, pt.x, pt.y);
+  return on >= 0 && !same(layout[on], entry) ? openSpotNear(pt, layout, data, zone) || pt : pt;
+}
+export function useSteps(entry, k, who, data, zone, reduced = false, photo = false, layout = []) {
+  const u = useOf(data, entry[0]); if (!u) return [];
+  const p = pieceById(data, entry[0]); const b = pieceBox(entry, data); const s = seatOf(u, k);
+  const ride = isRide(p); const f = useFit(data, who, u.type, photo, u); const T = typeOf(data, u.type);
+  const st = (q, ms, pose = '', layer = '', tag = '', phase = 'using', rot = 0) => ({ x: Math.round(q.x), y: Math.round(q.y), ms: Math.max(0, Math.round(num(ms))), pose, layer, scale: ride ? 1 : f.scale, tag, phase, rot: photo ? 0 : Math.round(rot) });
+  const loc = (q) => ({ x: b.x + num(q[0]) - f.dx, y: b.y + num(q[1]) - f.dy });
+  const ex = useExit(entry, k, data, zone, layout);
+  const board = st(ride ? clampToWorld({ x: b.x + s.at[0], y: b.y + s.at[1] }, zone) : loc(s.at), BOARD_MS, s.hands ? 'hold' : 'sit', '', '', 'boarding');
+  const hop = { ...st(ex, HOP_MS, '', '', '', 'hopOff'), scale: 1 };
+  if (ride) {
+    const pts = ridePath(entry, data, zone, layout);
+    if (reduced) {
+      const pk = pts.find((q) => q.tag === 'peek' || q.tag === 'view');
+      const mid = p.ride.go || pk ? [st(pk || board, 1000, 'sit', '', 'fun'), st(board, 1000, 'sit')] : [st(board, 600, 'sit', '', 'fun')];
+      return [{ ...board, ms: 0 }, ...mid, { ...hop, ms: 0, fade: true }];
+    }
+    return [board, ...rideLegs(board, pts, rideSpeed(p, data)).map((L) => st(L, L.ms + (L.tag === 'view' ? 1000 : 0), 'sit', '', L.tag || '')), hop];
+  }
+  if (reduced) return [{ ...board, ms: 0, fade: true }, { ...board, ms: 600, pose: T.rm || '', tag: 'fun', phase: 'using' }, { ...hop, ms: 0, fade: true }];
+  const out = [board];
+  if (isObj(u.orbit)) {
+    const o = u.orbit; const [cx, cy] = o.c; const n = 8;
+    const a0 = Math.atan2((s.at[1] - cy) / o.ry, (s.at[0] - cx) / o.rx);
+    for (let i = 1; i <= n * num(o.turns, 1); i++) {
+      const a = a0 + (i * 2 * Math.PI) / n; const q = [cx + o.rx * Math.cos(a), cy + o.ry * Math.sin(a)];
+      const far = q[1] < cy - 1;
+      out.push({ ...st(loc(q), num(o.ms, 1600) / n, 'hold', '', i === 1 ? 'fun' : ''), pole: true, scale: far ? Math.round(f.scale * 90) / 100 : f.scale });
+    }
+  }
+  if (isObj(u.pivot)) {
+    const v = u.pivot; const pv = Array.isArray(v.at) ? v.at : [s.at[0], num(v.y)]; const n = num(v.cycles, 3) * 4;
+    const dx = s.at[0] - pv[0]; const dy = s.at[1] - pv[1];
+    for (let i = 0; i < n; i++) {
+      const a = [1, 0, -1, 0][i % 4] * num(v.deg, 12); const r = (a * Math.PI) / 180;
+      if (v.tilt) {
+        const m = 1 + 0.1 * Math.sin(r);
+        out.push({ ...st({ x: b.x + s.at[0] - f.dx * m, y: b.y + pv[1] + dy * Math.cos(r) - f.dy * m }, num(v.ms, 2400) / n, 'hold', '', i ? '' : 'fun'), scale: Math.round(f.scale * m * 1000) / 1000, swing: a, seat: Math.round(FOOT[1] + f.dy / f.scale) });
+        continue;
+      }
+      const q = loc([pv[0] + dx * Math.cos(r) - dy * Math.sin(r), pv[1] + dx * Math.sin(r) + dy * Math.cos(r)]);
+      out.push(st(q, num(v.ms, 2400) / n, 'hold', '', i ? '' : 'fun'));
+    }
+  }
+  for (const q of (Array.isArray(u.path) ? u.path : [])) {
+    const o = isObj(q[6]) ? q[6] : {}; const cl = o.peek ? peekLine(data, who, photo) : 0;
+    const t = st(cl ? { x: b.x + num(q[0]) - f.dx, y: b.y + num(q[1]) + (FOOT[1] - cl) * f.scale } : loc(q), q[2], q[3] || '', q[4] || '', q[5] || '');
+    out.push(cl ? { ...t, clip: cl } : o.wade ? { ...t, clip: waterLine(data, who), ripple: true } : o.hide ? { ...t, hide: true } : t);
+  }
+  out.push(hop);
+  return out;
+}
+const sizeRow = (data, k) => { const z = pg(data).rideFit.size; return isObj(z) && isObj(z[k]) ? z[k] : {}; };
+export function peekLine(data, who, photo = false) {
+  const c = sizeRow(data, photo ? 'P' : sizeOf(data, who)); const head = rideFit(data, who && who.id).head;
+  return Math.min(160, Math.max((Array.isArray(c.paws) ? num(c.paws[1], 100) : 100) + 10, Math.ceil(head + (160 - head) / 2)));
+}
+export const FLOATY_H = { vest: 60, armbands: 40, ring: 44 };
+export const waterLine = (data, who) => { const f = floatyFit(data, who); return Math.round(Math.min(150, f.top + (f.w * (FLOATY_H[f.kind] || 50)) / 200)); };
+export const GATE = { inset: 8, size: 96, gap: 10 };
+export const gateRects = (view, n) => Array.from({ length: n }, (_, i) => ({ x: GATE.inset + i * (GATE.size + GATE.gap), y: view.h - GATE.inset - GATE.size, w: GATE.size, h: GATE.size }));
+export function seenPart(cam, t, view) {
+  const x = Math.max(0, t.x - cam.x); const y = Math.max(0, t.y - cam.y);
+  return { x, y, w: Math.min(view.w, t.x - cam.x + t.w) - x, h: Math.min(view.h, t.y - cam.y + t.h) - y };
+}
+export function targetClear(cam, t, view, blocks) {
+  const s = seenPart(cam, t, view);
+  return s.w >= TARGET_MIN && s.h >= TARGET_MIN && !blocks.some((g) => overlap(s, g));
+}
+export function useCam(cam, t, view, world, blocks, feet = null) {
+  const base = feet ? fitInView(cam, feet, view, world) : clampCamera(cam, view, world);
+  if (targetClear(base, t, view, blocks)) return base;
+  const gy = Math.min(view.h, ...blocks.map((g) => g.y)) - 1;
+  const ys = [base.y, t.y + t.h - gy, t.y - 8]; const xs = [base.x, t.x + t.w / 2 - view.w / 2, t.x - 8];
+  const score = (c) => (feet && !actorInView(c, feet, view) ? 1e6 : 0) + Math.hypot(c.x - base.x, c.y - base.y);
+  const ok = ys.flatMap((y) => xs.map((x) => clampCamera({ x, y }, view, world))).filter((c) => targetClear(c, t, view, blocks));
+  return ok.sort((a, c) => score(a) - score(c))[0] || base;
+}
+export function boxClear(cam, s, view, ov, head = 22, m = VIEW_MARGIN) {
+  const d = drawnRect(s, cam, head);
+  if (d.x < m - 0.5 || d.y < m - 0.5 || d.x + d.w > view.w - m + 0.5 || d.y + d.h > view.h - m + 0.5) return false;
+  const g = { x: d.x - m + 0.5, y: d.y - m + 0.5, w: d.w + 2 * m - 1, h: d.h + 2 * m - 1 };
+  return !ov.some((q) => overlap(g, q));
+}
+const camCands = (s, view, ov, head, m = VIEW_MARGIN) => {
+  const d = drawnRect(s, O, head);
+  const xs = [d.x - m, d.x + d.w + m - view.w]; const ys = [d.y - m, d.y + d.h + m - view.h];
+  for (const q of ov) { xs.push(d.x - m - q.x - q.w, d.x + d.w + m - q.x); ys.push(d.y - m - q.y - q.h, d.y + d.h + m - q.y); }
+  return { xs, ys };
+};
+export const USE_ROOM = 96; const O = { x: 0, y: 0 };
+const lim = (v, hi) => Math.min(hi + USE_ROOM, Math.max(-USE_ROOM, num(v)));
+export const clampUse = (c, view, world) => ({ x: lim(c.x, world.w - view.w), y: lim(c.y, world.h - view.h) });
+export function keepCam(cam, s, view, world, ov, head = 22, ok = () => true) {
+  if (boxClear(cam, s, view, ov, head) && ok(cam)) return cam;
+  const { xs, ys } = camCands(s, view, ov, head);
+  const all = [cam.x, ...xs].flatMap((x) => [cam.y, ...ys].map((y) => clampUse({ x, y }, view, world)));
+  const by = (a, b) => Math.hypot(a.x - cam.x, a.y - cam.y) - Math.hypot(b.x - cam.x, b.y - cam.y);
+  const pick = (o) => all.filter((c) => boxClear(c, s, view, o, head) && ok(c)).sort(by)[0];
+  return pick(ov) || pick([]) || cam;
+}
+export function useCams(cam, t, steps, view, world, nGates, head = 22) {
+  const gates = gateRects(view, nGates); const ov = [...gates, buildRect(view)];
+  const c0 = useCam(cam, t, view, world, gates, steps[0]);
+  const tOk = (c) => targetClear(c, t, view, gates);
+  if (steps.every((s) => boxClear(c0, s, view, ov, head))) return steps.map(() => c0);
+  const out = []; let c = keepCam(c0, steps[0], view, world, ov, head, tOk);
+  if (c === c0 && !boxClear(c0, steps[0], view, ov, head)) c = keepCam(c0, steps[0], view, world, ov, head);
+  for (const s of steps) { c = keepCam(c, s, view, world, ov, head); out.push(c); }
+  return out;
+}
+export function blockedTargets(cam, layout, data, zone, view, blocks) {
+  const out = [];
+  layout.forEach((e, i) => seatsOf(useOf(data, e[0])).forEach((_, seat) => {
+    const s = seenPart(cam, slotBox(e, seat, data, zone), view);
+    if (s.w > 0 && s.h > 0 && blocks.some((g) => overlap(s, g))) out.push({ i, id: e[0], seat });
+  }));
+  return out;
 }
