@@ -2,7 +2,7 @@
 // shapes built from shared parts). Plain data trees, viewBox 0 0 100 100 unless noted.
 // Food pictures are fruit and veg only (the always-on food guards check every id).
 import { drawChar, strawberry } from './pets.js';
-import { PARK_ART } from './art-parks.js';
+import { PARK_ART, U, HL, SH, bolts, grain, ring, CHAIN, RIP } from './art-parks.js';
 
 const INK = '#4A3426';
 const O = { stroke: INK, 'stroke-width': 3, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' };
@@ -351,8 +351,9 @@ export const ART = {
     E(54, 88, 42, 6, INK, { stroke: 'none', opacity: 0.18 }),
     ...[[20, 30], [37, 47]].map(([a, b]) => P(`M${a - 3} 86L${b - 3} 22H${b + 3}L${a + 3} 86Z`, '#5FB8C8', { 'stroke-width': 2.5 })),
     ...[36, 52, 68].map((y) => L(`M${23 + (86 - y) * 0.15} ${y}H${40 + (86 - y) * 0.15}`, INK, 3)),
-    P('M30 18H52Q60 18 64 28L88 76Q90 84 82 84H78Q73 84 71 79L49 32Q47 28 41 28H30Z', '#F2C230'),
-    L('M56 26L80 76', '#FFE27A', 3.5)),
+    el('defs', {}, el('linearGradient', { id: 'pgt' }, ...['#F2C230', '#FFE27A', '#E0AE1E'].map((c, i) => el('stop', { offset: i / 2, 'stop-color': c })))),
+    P('M30 18H52Q60 18 64 28L88 76Q90 84 82 84H78Q73 84 71 79L49 32Q47 28 41 28H30Z', 'url(#pgt) #F2C230'),
+    L('M56 26L80 76', '#FFE27A', 3.5), HL('M34 22H50Q56 22 59 29', 3)),
   bookClosed: () => g(
     P('M20 14H78a6 6 0 0 1 6 6V86a6 6 0 0 1-6 6H20Z', '#8E5CC7'),
     P('M20 14H30V92H20Z', '#6E45A8'),
@@ -416,56 +417,73 @@ export const ART = {
   // ---- Playground park (Amendment q2/q3): original vector parts, no brands. Each piece is drawn in a
   // box of 100 units per grid cell (a 2x2 piece is 0 0 200 200); animals are 0 0 100 100.
   pgSlide: () => g(
-    P('M30 40H44V188H30Z', '#C9CFD6'), P('M70 40H84V188H70Z', '#C9CFD6'),
-    L('M30 70H84M30 100H84M30 130H84M30 160H84', '#8C96A0', 5),
-    P('M24 30H96V46H24Z', '#E5484D'),
-    P('M90 34Q130 40 150 100Q164 150 196 168V190Q156 180 138 124Q120 64 90 52Z', '#F2C230'),
-    L('M98 42Q134 52 148 104', '#FFE27A', 4),
-    P('M40 12H80L86 30H34Z', '#4AA3DF')),
+    ring(37, 189, 13), ring(77, 189, 13),
+    P('M30 40H44V188H30Z', U('teal', '#5FB8C8')), P('M70 40H84V188H70Z', U('teal', '#5FB8C8')), HL('M34 48V182', 2.5), HL('M74 48V182', 2.5),
+    L('M30 70H84M30 100H84M30 130H84M30 160H84', '#8C96A0', 5), L('M31 68H83M31 98H83M31 128H83M31 158H83', '#DDE3E8', 1.5),
+    bolts([[37, 70], [77, 70], [37, 160], [77, 160]]),
+    P('M24 30H96V46H24Z', U('red', '#E5484D')), HL('M30 35H88', 3),
+    P('M90 34Q130 40 150 100Q164 150 196 168V190Q156 180 138 124Q120 64 90 52Z', U('plastic', '#F2C230')),
+    L('M92 47Q125 58 142 116Q158 166 194 182', '#D99A12', 4), L('M98 42Q134 52 148 104', '#FFE27A', 4), HL('M152 112Q162 148 190 166', 4),
+    P('M40 12H80L86 30H34Z', '#4AA3DF'), HL('M45 17H77', 3)),
+  pgSlideFront: () => g(P('M90 46Q123 57 141 117Q158 171 196 182V190Q156 180 138 124Q120 64 90 52Z', U('plastic', '#F2C230'), { stroke: 'none' }),
+    L('M90 52Q120 64 138 124Q156 180 196 190', INK, 3), L('M92 47Q125 58 142 116Q158 166 194 182', '#D99A12', 4)),
   pgSwings: () => g(
-    P('M14 190L34 18H44L28 190Z', '#5DBB63'), P('M186 190L166 18H156L172 190Z', '#5DBB63'),
-    P('M30 12H170V30H30Z', '#E5484D'),
-    // each seat and its chains swing together round the top bar (§20 fix 2)
-    el('g', { class: 'pg-sw s0' }, L('M45 30V138M95 30V138', '#8C96A0', 3), el('rect', { x: 44, y: 136, width: 52, height: 12, rx: 5, fill: '#4AA3DF', ...O })),
-    el('g', { class: 'pg-sw s1' }, L('M105 30V128M155 30V128', '#8C96A0', 3), el('rect', { x: 104, y: 126, width: 52, height: 12, rx: 5, fill: '#F2C230', ...O }))),
+    P('M14 190L34 18H44L28 190Z', U('teal', '#5FB8C8')), P('M186 190L166 18H156L172 190Z', U('teal', '#5FB8C8')), HL('M37 30L22 180', 2.5), HL('M161 30L175 180', 2.5),
+    P('M30 12H170V30H30Z', U('red', '#E5484D')), HL('M36 17H164', 3), bolts([[39, 21], [161, 21]]),
+    // each seat and its chains swing together round the top bar (§20 fix 2); the chains are dashed links
+    el('g', { class: 'pg-sw s0' }, el('g', CHAIN, L('M45 30V138M95 30V138', '#8C96A0', 3)), el('rect', { x: 44, y: 136, width: 52, height: 12, rx: 5, fill: '#4AA3DF', ...O }), HL('M50 140H90', 2.5)),
+    el('g', { class: 'pg-sw s1' }, el('g', CHAIN, L('M105 30V128M155 30V128', '#8C96A0', 3)), el('rect', { x: 104, y: 126, width: 52, height: 12, rx: 5, fill: '#F2C230', ...O }), HL('M110 130H150', 2.5))),
+  pgSwingsFront: () => g(...ART.pgSwings().slice(2).filter((n) => /pg-sw/.test(n[1].class || ''))),
+  pgSandboxFront: () => g(P('M6 80H194Q194 90 184 90H16Q6 90 6 80Z', U('wood', '#B07A4A'), { stroke: 'none' }), L('M6 80Q6 90 16 90H184Q194 90 194 80', INK, 3), L('M22 85H178', '#8A5A32', 1.5), grain([[12, 85], [188, 85]])),
   pgSandbox: () => g(
-    el('rect', { x: 6, y: 14, width: 188, height: 76, rx: 10, fill: '#B07A4A', ...O }),
-    el('rect', { x: 18, y: 24, width: 164, height: 56, rx: 6, fill: '#F1D9A0', ...O }),
+    el('rect', { x: 6, y: 14, width: 188, height: 76, rx: 10, fill: U('wood', '#B07A4A'), ...O }),
+    L('M22 19H178M22 85H178', '#8A5A32', 1.5), grain([[12, 19], [188, 19], [12, 85], [188, 85]]), HL('M14 18H70', 2.5),
+    el('rect', { x: 18, y: 24, width: 164, height: 56, rx: 6, fill: U('sand', '#F1D9A0'), ...O }), SH('M168 26H176Q180 26 180 30V74Q180 78 176 78H168Z'),
     E(70, 56, 18, 9, '#E8C783', { stroke: 'none' }),
     P('M120 40H144L140 70H124Z', '#E5484D'), L('M122 40Q132 26 142 40', INK, 3),
     P('M150 66L170 44', 'none', { stroke: '#4AA3DF', 'stroke-width': 5 }), E(150, 68, 7, 5, '#4AA3DF')),
   pgSplash: () => g(
-    E(100, 130, 92, 58, '#9FDCF0'), E(100, 130, 60, 36, '#C9EEF8', { 'stroke-width': 2 }),
+    E(100, 130, 92, 58, U('mat', '#9FDCF0')), E(100, 130, 60, 36, U('water', '#C9EEF8'), { 'stroke-width': 2 }),
+    HL('M22 116Q40 82 92 74', 4), RIP('M66 144Q78 139 90 144T114 144M96 156Q106 151 116 156T136 156', 2),
     ...[[60, 1], [100, 0], [140, -1]].map(([x, k]) => L(`M${x} 126Q${x - 22 * k} 50 ${x - 40 * k - (k === 0 ? 0 : 0)} 30`, '#4AA3DF', 6)),
     C(100, 26, 7, '#C9EEF8', { 'stroke-width': 2 }), C(20 + 40, 34, 6, '#C9EEF8', { 'stroke-width': 2 }), C(180 - 40, 34, 6, '#C9EEF8', { 'stroke-width': 2 }),
     C(60, 126, 8, '#4AA3DF'), C(100, 126, 8, '#4AA3DF'), C(140, 126, 8, '#4AA3DF')),
   pgClimber: () => g(
-    P('M20 186Q20 30 100 30Q180 30 180 186', 'none', { stroke: '#E86FA8', 'stroke-width': 8 }),
-    P('M56 186Q56 56 100 56Q144 56 144 186', 'none', { stroke: '#4AA3DF', 'stroke-width': 8 }),
-    L('M100 30V186', '#F2C230', 8),
-    L('M28 120H172M44 76H156', '#5DBB63', 7),
+    ring(22, 188), ring(56, 188), ring(100, 188), ring(144, 188), ring(178, 188),
+    P('M20 186Q20 30 100 30Q180 30 180 186', 'none', { stroke: '#E86FA8', 'stroke-width': 8 }), HL('M22 150Q24 50 86 34', 2.5),
+    P('M56 186Q56 56 100 56Q144 56 144 186', 'none', { stroke: U('teal', '#4AA3DF'), 'stroke-width': 8 }),
+    L('M100 30V186', U('yel', '#F2C230'), 8),
+    L('M28 120H172M44 76H156', '#5DBB63', 7), L('M30 118H170M46 74H154', '#9BD89F', 1.5),
+    bolts([[100, 76], [100, 120], [62, 76], [138, 76]]),
     L('M14 188H186', INK, 4)),
   pgSeesaw: () => g(
-    P('M86 92L100 58L114 92Z', '#E5484D'),
-    el('rect', { x: 10, y: 50, width: 180, height: 12, rx: 6, fill: '#F2C230', ...O, transform: 'rotate(-10 100 56)' }),
+    P('M86 92L100 58L114 92Z', U('red', '#E5484D')), SH('M100 62L111 89H104Z'),
+    el('rect', { x: 10, y: 50, width: 180, height: 12, rx: 6, fill: U('yel', '#F2C230'), ...O, transform: 'rotate(-10 100 56)' }),
+    el('path', { d: 'M18 53H120', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0.4, transform: 'rotate(-10 100 56)' }), bolts([[100, 56]]),
     L('M28 52V36M24 36H34', INK, 4), L('M172 30V16M168 16H178', INK, 4)),
-  pgMerryTop: () => P('M40 52Q100 6 160 52Z', '#E5484D'),
+  pgMerryTop: () => g(P('M40 52Q100 6 160 52Z', U('red', '#E5484D')), HL('M58 44Q80 26 100 24', 3)),
+  pgMerryFront: () => g(el('g', { class: 'pg-post' }, L('M100 140V40', '#8C96A0', 6), L('M99 136V46', '#DDE3E8', 1.5)), ART.pgMerryTop()),
   pgMerry: () => g(
-    E(100, 150, 90, 34, '#4AA3DF'), E(100, 140, 90, 34, '#F2C230'),
+    E(100, 150, 90, 34, '#4AA3DF'), E(100, 140, 90, 34, U('yel', '#F2C230')), HL('M28 128Q52 112 96 108', 4),
     ...[[0, '#E5484D'], [1, '#5DBB63'], [2, '#E86FA8'], [3, '#4AA3DF']].map(([i, c]) => P(`M100 140L${100 + 88 * Math.cos(i * Math.PI / 2 + 0.4)} ${140 + 33 * Math.sin(i * Math.PI / 2 + 0.4)}`, 'none', { stroke: c, 'stroke-width': 6 })),
-    L('M100 140V40', '#8C96A0', 6), ART.pgMerryTop(),
-    L('M60 140V70M140 140V70', '#8C96A0', 4)),
-  pgTunnel: () => g(
-    P('M10 92Q10 10 100 10Q190 10 190 92H150Q150 44 100 44Q50 44 50 92Z', '#E86FA8'),
-    P('M30 92Q30 26 100 26Q170 26 170 92', 'none', { stroke: '#FFD54A', 'stroke-width': 7 }),
-    E(100, 92, 50, 6, '#5B3A29', { stroke: 'none' })),
+    ...ART.pgMerryFront().slice(2),
+    L('M60 140V70M140 140V70', '#8C96A0', 4), bolts([[100, 140], [60, 140], [140, 140]])),
+  pgTunnel: () => g(...ART.pgTunnelFront().slice(2), E(100, 92, 50, 6, '#5B3A29', { stroke: 'none' })),
+  // §18.5 splits (y-b S3): the part of a piece drawn over her while she uses it, in the piece's own box
+  // and viewBox; the piece itself still draws whole (the back), so no box or anchor moves
+  pgTunnelFront: () => g(
+    P('M10 92Q10 10 100 10Q190 10 190 92H150Q150 44 100 44Q50 44 50 92Z', '#E86FA8'), SH('M128 13Q188 26 189 91H151Q150 54 120 46Z'),
+    L('M54 90Q54 48 100 48Q146 48 146 90', '#B84E80', 5),
+    P('M30 92Q30 26 100 26Q170 26 170 92', 'none', { stroke: '#FFD54A', 'stroke-width': 7 }), HL('M18 78Q20 24 78 15', 4)),
   pgBench: () => g(
-    el('rect', { x: 14, y: 20, width: 172, height: 16, rx: 5, fill: '#B07A4A', ...O }),
-    el('rect', { x: 14, y: 46, width: 172, height: 16, rx: 5, fill: '#C98A4B', ...O }),
+    el('rect', { x: 14, y: 20, width: 172, height: 16, rx: 5, fill: U('wood', '#B07A4A'), ...O }),
+    el('rect', { x: 14, y: 46, width: 172, height: 16, rx: 5, fill: U('wood', '#C98A4B'), ...O }),
+    L('M30 28H170M30 54H170', '#8A5A32', 1.5), grain([[21, 28], [179, 28], [21, 54], [179, 54]]), HL('M22 24H96', 2.5), HL('M22 50H96', 2.5),
     L('M34 62V90M166 62V90M34 36V46M166 36V46', INK, 6)),
   pgTree: () => g(
-    P('M42 120H58V190H42Z', '#8B5E3C'),
-    C(50, 70, 44, '#5DBB63'), C(26, 92, 22, '#4FA856'), C(74, 92, 22, '#4FA856'),
+    P('M42 120H58V190H42Z', U('wood', '#8B5E3C')),
+    C(50, 70, 44, '#5DBB63'), SH('M64 28A44 44 0 0 1 70 109A52 52 0 0 0 64 28Z'), C(26, 92, 22, '#4FA856'), C(74, 92, 22, '#4FA856'),
+    el('circle', { cx: 34, cy: 50, r: 14, fill: '#FFFFFF', opacity: 0.2 }),
     C(36, 58, 5, '#E5484D', { 'stroke-width': 2 }), C(66, 78, 5, '#E5484D', { 'stroke-width': 2 }),
     E(50, 192, 30, 6, '#7FB86A', { stroke: 'none' })),
   pgFlowers: () => g(
@@ -473,7 +491,8 @@ export const ART = {
     el('g', { transform: 'translate(20 14) scale(0.56)' }, ART.flower()),
     el('g', { transform: 'translate(46 4) scale(0.6)' }, ART.flower())),
   pgPond: () => g(
-    P('M20 110Q12 40 90 34Q180 26 186 104Q192 176 104 180Q24 182 20 110Z', '#6DB8EA'),
+    P('M20 110Q12 40 90 34Q180 26 186 104Q192 176 104 180Q24 182 20 110Z', U('water', '#6DB8EA')),
+    RIP('M64 128Q78 122 92 128T120 128M100 152Q112 146 124 152T148 152'),
     P('M44 104Q46 66 92 62', 'none', { stroke: '#BFE6F7', 'stroke-width': 5, 'stroke-linecap': 'round' }),
     E(136, 136, 18, 9, '#5DBB63'), L('M168 60V20M176 64V30M160 64V36', '#3E8E46', 4),
     E(168, 22, 4, 9, '#8B5E3C', { 'stroke-width': 2 })),
@@ -504,12 +523,12 @@ export const ART = {
   // a rider always wears (0 0 100 100)
   pgBike: () => g(
     C(48, 70, 24, '#FFFFFF', { 'stroke-width': 5 }), C(152, 70, 24, '#FFFFFF', { 'stroke-width': 5 }),
-    C(48, 70, 4, INK), C(152, 70, 4, INK),
-    L('M48 70L100 34H130L152 70M100 34V70H48M100 70L130 34', '#4AA3DF', 7), // the saddle over the middle (§20 fix 3)
+    L('M48 50V90M28 70H68M152 50V90M132 70H172', '#C9CFD6', 1.5), C(48, 70, 4, INK), C(152, 70, 4, INK),
+    L('M48 70L100 34H130L152 70M100 34V70H48M100 70L130 34', '#4AA3DF', 7), HL('M102 32H128', 2), // the saddle over the middle (§20 fix 3)
     P('M86 24H114L110 32H90Z', INK, { 'stroke-width': 2 }), L('M130 34L136 14H152', INK, 5),
     P('M140 14Q152 2 166 14V20H140Z', '#F2C230', { 'stroke-width': 2.5, class: 'pg-hang' })),
   pgScooter: () => g(
-    el('rect', { x: 28, y: 66, width: 120, height: 12, rx: 6, fill: '#5DBB63', ...O }),
+    el('rect', { x: 28, y: 66, width: 120, height: 12, rx: 6, fill: '#5DBB63', ...O }), HL('M36 70H100', 2.5),
     C(40, 84, 12, '#FFFFFF', { 'stroke-width': 4 }), C(150, 84, 12, '#FFFFFF', { 'stroke-width': 4 }),
     L('M148 72L162 10M148 10H178', '#E5484D', 7),
     P('M52 46Q66 30 82 46V56H52Z', '#B57EDC', { 'stroke-width': 2.5, class: 'pg-hang' })),
@@ -522,8 +541,9 @@ export const ART = {
     P('M14 70L30 20H170L186 70Z', '#FFFFFF'),
     P('M30 20H58L50 70H14Z', '#E5484D', { 'stroke-width': 2 }), P('M86 20H114L118 70H82Z', '#E5484D', { 'stroke-width': 2 }),
     P('M142 20H170L186 70H150Z', '#E5484D', { 'stroke-width': 2 }),
-    el('rect', { x: 24, y: 70, width: 152, height: 18, rx: 4, fill: '#F2C230', ...O }),
-    el('rect', { x: 32, y: 88, width: 136, height: 98, rx: 6, fill: '#C98A4B', ...O }),
+    el('rect', { x: 24, y: 70, width: 152, height: 18, rx: 4, fill: U('yel', '#F2C230'), ...O }), HL('M30 75H110', 2.5),
+    el('rect', { x: 32, y: 88, width: 136, height: 98, rx: 6, fill: U('wood', '#C98A4B'), ...O }),
+    L('M36 120H164M36 152H164', '#8A5A32', 1.5), SH('M150 90H162Q166 90 166 94V180Q166 184 162 184H150Z'),
     el('g', { transform: 'translate(38 96) scale(0.4)' }, ART.pgPopcorn()),
     el('g', { transform: 'translate(80 96) scale(0.4)' }, ART.pgCottonCandy()),
     el('g', { transform: 'translate(122 96) scale(0.4)' }, ART.pgIceCreamCup())),

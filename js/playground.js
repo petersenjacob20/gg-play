@@ -882,7 +882,7 @@ export function useSteps(entry, k, who, data, zone, reduced = false, photo = fal
     for (let i = 1; i <= n * num(o.turns, 1); i++) {
       const a = a0 + (i * 2 * Math.PI) / n; const q = [cx + o.rx * Math.cos(a), cy + o.ry * Math.sin(a)];
       const far = q[1] < cy - 1;
-      out.push({ ...st(loc(q), num(o.ms, 1600) / n, 'hold', '', i === 1 ? 'fun' : ''), pole: true, scale: far ? Math.round(f.scale * 90) / 100 : f.scale });
+      out.push({ ...st(loc(q), num(o.ms, 1600) / n, 'hold', '', i === 1 ? 'fun' : ''), pole: true, ...(far ? { far: true } : {}), scale: far ? Math.round(f.scale * 90) / 100 : f.scale }); // far half: behind the post
     }
   }
   if (isObj(u.pivot)) {

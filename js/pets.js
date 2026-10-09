@@ -60,8 +60,8 @@ function dog(c) {
       ell(60, body.cy, body.rx, body.ry, c.coat),
       c.belly ? el('ellipse', { cx: 60, cy: body.cy + 4, rx: body.rx * 0.5, ry: body.ry * 0.62, fill: c.belly }) : null,
       c.shine ? el('ellipse', { cx: 50, cy: body.cy - 13, rx: 10, ry: 3.5, fill: c.shine, opacity: 0.9 }) : null,
-      ell(49, 111, p ? 11 : 9, p ? 7 : 6, c.coat),
-      ell(71, 111, p ? 11 : 9, p ? 7 : 6, c.coat),
+      g('pa l', ell(49, 111, p ? 11 : 9, p ? 7 : 6, c.coat)),
+      g('pa r', ell(71, 111, p ? 11 : 9, p ? 7 : 6, c.coat)),
       el('rect', { x: 41, y: p ? 70 : 64, width: 38, height: 7, rx: 3.5, fill: c.collar, ...O2 }),
       circ(60, p ? 80 : 74, 3.5, '#FFD54A', { 'stroke-width': 2 })),
     g('head',
@@ -163,8 +163,8 @@ function friendSilly() {
     g('body',
       ell(47, 109, 9, 7, T),
       ell(73, 109, 9, 7, T),
-      ell(20, 72, 6, 9, T, { transform: 'rotate(20 20 72)' }),
-      ell(100, 72, 6, 9, T, { transform: 'rotate(-20 100 72)' })),
+      g('pa l arm', ell(20, 72, 6, 9, T, { transform: 'rotate(20 20 72)' })),
+      g('pa r arm', ell(100, 72, 6, 9, T, { transform: 'rotate(-20 100 72)' }))),
     g('head',
       circ(44, 25, 6, '#FFE0B5'),
       circ(76, 25, 6, '#FFE0B5'),
@@ -222,8 +222,8 @@ function friendCounter() {
   const dots = (x0, x1) => [0, 1, 2, 3, 4].map((i) => el('circle', { class: 'wing-dot', cx: r1(x0 + (x1 - x0) * i / 4), cy: r1(48 + i * 10), r: 3.6, fill: DOT }));
   return g('char',
     g('wings',
-      g('wing l', ell(32, 66, 25, 31, WING, { transform: 'rotate(-10 32 66)' }), ...dots(27, 31)),
-      g('wing r', ell(88, 66, 25, 31, WING, { transform: 'rotate(10 88 66)' }), ...dots(93, 89))),
+      g('pa l wg', g('wing l', ell(32, 66, 25, 31, WING, { transform: 'rotate(-10 32 66)' }), ...dots(27, 31))),
+      g('pa r wg', g('wing r', ell(88, 66, 25, 31, WING, { transform: 'rotate(10 88 66)' }), ...dots(93, 89)))),
     g('body',
       ell(52, 111, 6, 4, MINT),
       ell(68, 111, 6, 4, MINT),
@@ -253,8 +253,8 @@ function friendDino() {
       ell(42, 108, 8, 5, G), ell(78, 108, 8, 5, G),
       circ(60, 78, 32, G),
       el('ellipse', { cx: 60, cy: 88, rx: 18, ry: 14, fill: TUM }),
-      ell(38, 70, 5, 8, G, { transform: 'rotate(25 38 70)' }),
-      ell(82, 70, 5, 8, G, { transform: 'rotate(-25 82 70)' })),
+      g('pa l arm', ell(38, 70, 5, 8, G, { transform: 'rotate(25 38 70)' })),
+      g('pa r arm', ell(82, 70, 5, 8, G, { transform: 'rotate(-25 82 70)' }))),
     g('spikes',
       circ(48, 48, 7, SPIKE), circ(60, 42, 8, SPIKE), circ(72, 48, 7, SPIKE)),
     g('head',
@@ -289,7 +289,7 @@ function friendSea() {
       smile(60, 32, 4),
       eye(54, 26), eye(66, 26)),
     g('poms',
-      circ(32, 58, 7, '#B8E0F0'), circ(88, 58, 7, '#B8E0F0')));
+      g('pa l', circ(32, 58, 7, '#B8E0F0')), g('pa r', circ(88, 58, 7, '#B8E0F0'))));
 }
 
 export const DRAW = {
@@ -313,3 +313,6 @@ export function drawChar(id, opts = {}) {
   const f = DRAW[id] || DRAW.yellowDog;
   return ['g', { class: `who who-${DRAW[id] ? id : 'yellowDog'}` }, f(opts)];
 }
+// y-b S4: the drawing has arm hooks (.pa), so its poses move arms and ears only. Whole-body poses: Berry, and the kitty and
+// bunnies, whose only paws are their feet (Design §18.7e); photo pets too.
+export const hasArmHooks = (id) => !!DRAW[id] && JSON.stringify(DRAW[id]()).includes('"pa ');

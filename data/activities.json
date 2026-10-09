@@ -1094,7 +1094,7 @@
     "pieces": [
       {
         "id": "slide",
-        "art": "pgSlide",
+        "art": "pgSlide", "front": "pgSlideFront",
         "w": 2,
         "h": 2,
         "trick": "whoosh",
@@ -1102,7 +1102,7 @@
       },
       {
         "id": "swings",
-        "art": "pgSwings",
+        "art": "pgSwings", "front": "pgSwingsFront",
         "w": 2,
         "h": 2,
         "trick": "swing",
@@ -1110,7 +1110,7 @@
       },
       {
         "id": "sandbox",
-        "art": "pgSandbox",
+        "art": "pgSandbox", "front": "pgSandboxFront",
         "w": 2,
         "h": 1,
         "trick": "digRoll",
@@ -1143,7 +1143,7 @@
       },
       {
         "id": "merry",
-        "art": "pgMerry",
+        "art": "pgMerry", "front": "pgMerryFront",
         "w": 2,
         "h": 2,
         "trick": "slowTurn",
@@ -1151,7 +1151,7 @@
       },
       {
         "id": "tunnel",
-        "art": "pgTunnel",
+        "art": "pgTunnel", "front": "pgTunnelFront",
         "w": 2,
         "h": 1,
         "trick": "peekaboo",
@@ -1290,7 +1290,7 @@
           "anim": "coaster",
           "seats": 2,
           "gear": "helmet",
-          "car": "pgDragonCar",
+          "car": "pgDragonCar", "carFront": "pgDragonCarFront",
           "front": true,
           "go": true,
           "inversion": false,
@@ -1358,7 +1358,7 @@
           "anim": "teapot",
           "seats": 2,
           "gear": "helmet",
-          "car": "pgTeapotCar",
+          "car": "pgTeapotCar", "carFront": "pgTeapotCarFront",
           "front": true,
           "turns": 2,
           "speed": 170,
@@ -1441,7 +1441,7 @@
       },
       {
         "id": "carousel",
-        "art": "pgCarousel",
+        "art": "pgCarousel", "front": "pgCarouselFront",
         "w": 3,
         "h": 3,
         "trick": "ride",
@@ -1509,7 +1509,7 @@
           "fx-boing",
           "fx-giggle"
         ],
-        "ride": {"anim": "bump", "seats": 1, "gear": "helmet", "car": "", "front": true, "speed": 140, "ms": 2600, "path": [[-50, 40], [50, 40, "bump"], [50, -20], [-50, -20]], "hide": false}
+        "ride": {"anim": "bump", "seats": 1, "gear": "helmet", "car": "pgBumperCar", "carFront": "pgBumperCarFront", "front": true, "speed": 140, "ms": 2600, "path": [[-50, 40], [50, 40, "bump"], [50, -20], [-50, -20]], "hide": false}
       },
       {
         "id": "balloonTower",
@@ -1523,7 +1523,7 @@
           "anim": "float",
           "seats": 1,
           "gear": "helmet",
-          "car": "pgBasket",
+          "car": "pgBasket", "carFront": "pgBasketFront",
           "front": true,
           "speed": 110,
           "ms": 3818,
@@ -1596,7 +1596,7 @@
         "trick": "wave",
         "sound": "fx-chime",
         "still": true,
-        "ride": {"anim": "float", "seats": 1, "gear": "helmet", "car": "pgBasket", "front": true, "speed": 230, "ms": 4000, "path": [[0, 122], [-79, 89], [-112, 10], [-79, -69], [0, -102, "view"], [79, -69], [112, 10], [79, 89]], "hide": false}
+        "ride": {"anim": "float", "seats": 1, "gear": "helmet", "car": "pgBasket", "carFront": "pgBasketFront", "front": true, "speed": 230, "ms": 4000, "path": [[0, 122], [-79, 89], [-112, 10], [-79, -69], [0, -102, "view"], [79, -69], [112, 10], [79, 89]], "hide": false}
       },
       {
         "id": "ticketBooth",
@@ -1661,7 +1661,7 @@
       },
       {
         "id": "lazyPool",
-        "art": "pgLazyPool",
+        "art": "pgLazyPool", "front": "pgLazyPoolFront",
         "w": 4,
         "h": 2,
         "trick": "splash",
@@ -2554,7 +2554,7 @@
         "tree": {"type":"hide","seats":[{"at":[50,180]}],"path":[[50,180,300,"sit","b"],[18,176,900,"hold","","fun"]],"exit":[50,212]},
         "flowers": {"type":"spot","seats":[{"at":[50,92]}],"path":[[50,92,1000,"","","fun"]]},
         "pond": {"type":"water","seats":[{"at":[40,150]}],"path":[[100,120,500,"sit","","",{"wade":1}],[100,120,1500,"sit","","fun",{"wade":1}]],"exit":[100,196]},
-        "splash": {"type":"water","seats":[{"at":[40,170]}],"path":[[100,140,300,""],[100,140,900,"","","fun"]],"exit":[100,196]},
+        "splash": {"type":"water","seats":[{"at":[40,170]}],"path":[[100,140,300,"","","",{"wade":1}],[100,140,900,"","","fun",{"wade":1}]],"exit":[100,196]},
         "snacks": {"type":"spot","seats":[{"at":[100,190]}],"path":[[100,190,1000,"","","fun"]]},
         "dragonCoaster": {"type":"vehicle","seats":[{"at":[226,240]},{"at":[160,240]}]},
         "teapots": {"type":"spinner","seats":[{"at":[176,160]},{"at":[110,160]}]},
@@ -2570,7 +2570,7 @@
         "hills": {"type":"spot","seats":[{"at":[40,96]}],"path":[[150,40,600,"climb"],[150,40,600,"","","fun"]],"exit":[262,96]},
         "target": {"type":"spot","seats":[{"at":[50,96]}],"path":[[50,96,1000,"","","fun"]]},
         "lifeguard": {"type":"spot","seats":[{"at":[190,194]}],"path":[[190,194,1000,"","","fun"]]},
-        "lazyPool": {"type":"water","seats":[{"at":[340,110]}],"path":[[300,120,500,"sit"],[200,104,800,"sit","","fun"],[300,150,700,"sit"]],"exit":[362,196]},
+        "lazyPool": {"type":"water","seats":[{"at":[340,110]}],"path":[[300,120,500,"sit","","",{"wade":1}],[200,104,800,"sit","","fun",{"wade":1}],[300,150,700,"sit","","",{"wade":1}]],"exit":[362,196]},
         "lazyRing": {"type":"vehicle","seats":[{"at":[50,80]}]},
         "curlySlide": {"type":"slide","seats":[{"at":[172,292]}],"path":[[172,40,900,"climb"],[150,44,0,"sit","","tube"],[150,140,600,"whee","","fun"],[110,262,500,"whee"],[110,262,400,"","","splash"]],"exit":[110,292]},
         "bucket": {"type":"water","seats":[{"at":[100,280]}],"path":[[100,280,1500,"","","fun"]],"exit":[100,312]},

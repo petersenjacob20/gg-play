@@ -8,7 +8,30 @@ import { art, ART } from '../art.js';
 import { petView, icon } from '../ui.js';
 import { playHello, characterById } from '../character.js';
 import { playTrick, trickClip, confetti, reducedMotion } from '../fun.js';
+import { hasArmHooks } from '../pets.js';
 import { activeProfile } from '../store.js';
+// §18.3 (y-b): a piece's soft shadow sits on its foot line (a share of its height); the slide, swings and
+// climber stand on a mulch patch and the merry-go-round on a rubber mat
+const FOOT = { sandbox: 0.9, bench: 0.9, pond: 0.9, flowers: 0.74, umbrellas: 0.9, lifeguard: 0.88, cooler: 0.85, lazyRing: 0.78 };
+for (const id of ['dragonCoaster', 'teapots', 'carousel', 'balloonTower', 'kiddieTrain', 'curlySlide', 'bucket']) FOOT[id] = 0.97;
+for (const id of ['ferris', 'target', 'tents', 'floatTargets', 'lifeRings', 'towels', 'dumpCups']) FOOT[id] = 0.96;
+// the slide, swings and climber stand on mulch; the merry-go-round on a rubber mat; the water pieces on a wet deck (the same mat)
+const PATCH = { slide: 'mulch', swings: 'mulch', climber: 'mulch', merry: 'mat', splash: 'mat', lazyPool: 'mat', curlySlide: 'mat', bucket: 'mat', sprayers: 'mat', dumpCups: 'mat' };
+const NO_SHADE = new Set(['hills']); // far scenery: no contact shadow
+const RIPPLES = new Set(['pond', 'splash', 'lazyPool', 'fountain', 'curlySlide', 'floatTargets']);
+const AIR_RIDE = new Set(['dragonCoaster', 'balloonTower', 'ferris']); // her shadow stays on the ground under the track or basket
+const shade = (cls = '', fill = 'url(#pg-shade) rgba(74,52,38,.12)') => {
+  const d = drawing(['ellipse', { cx: 50, cy: 50, rx: 50, ry: 50, fill }], { cls: `pg-sh ${cls}`, box: '0 0 100 100' });
+  d.setAttribute('preserveAspectRatio', 'none'); return d;
+};
+const shadeIn = (el, b, id) => {
+  if (NO_SHADE.has(id)) return;
+  const f = b.h * (FOOT[id] || 0.94); const add = (s, w, hh, k) => {
+    Object.assign(s.style, { left: px((b.w - w) / 2), top: px(f - hh * k), width: px(w), height: px(hh) }); el.appendChild(s);
+  };
+  if (PATCH[id]) add(shade('pg-patch', PATCH[id] === 'mat' ? 'url(#pg-mat) #7FB0C3' : 'url(#pg-mulch) #B08458'), b.w, b.w * 0.34, 0.62);
+  add(shade(), b.w * 0.85, b.w * 0.187, 0.5);
+};
 const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 import * as PG from '../playground.js';
 
@@ -124,6 +147,11 @@ function playScreen(ctx, who, zone) {
   if (zone.ground) { worldEl.style.backgroundColor = zone.ground; view.style.backgroundColor = zone.ground; }
   const sky = h('div', { class: 'pg-sky', 'aria-hidden': 'true' });
   if (zone.sky) sky.style.backgroundColor = zone.sky;
+  // §18 (y-b): the shared gradients once per scene, the drawn sky band and the ground with its scatter
+  sky.append(drawing(art('pgSky', { w: world.w + 192, sky: zone.sky, flat: zone.id === 'coaster' }), { box: `0 0 ${world.w + 192} 156` }));
+  const ground = drawing(art('pgGround', { w: world.w, h: world.h, kind: zone.id === 'water' ? 'sand' : 'grass' }), { cls: 'pg-ground', box: `-200 0 ${world.w + 400} ${world.h + 200}` });
+  view.append(drawing(art('pgDefs'), { cls: 'pg-defs', box: '0 0 1 1' }));
+  view.append(drawing(art('pgTufts'), { cls: 'pg-fg', box: '0 0 92 24' }));
   const piecesEl = h('div', { class: 'pg-pieces' });
   const animalsEl = h('div', { class: 'pg-animals' });
   const layer = h('div', { class: 'fx-layer pg-fx', 'aria-hidden': 'true' });
@@ -133,10 +161,11 @@ function playScreen(ctx, who, zone) {
   // camera
   let cam = { x: 0, y: 0 };
   let onCam = () => {};
+  let liveRipples = () => {}; // set once the pieces are drawn
   const applyCam = (ease = false) => {
     worldEl.classList.toggle('pg-ease', !!ease && !reduced);
     worldEl.style.transform = `translate(${-Math.round(cam.x)}px, ${-Math.round(cam.y)}px)`;
-    onCam();
+    liveRipples(); onCam();
   };
   const toWorld = (ev) => {
     const r = view.getBoundingClientRect();
@@ -147,7 +176,12 @@ function playScreen(ctx, who, zone) {
   const actor = petView(data, who.id, 'idle');
   actor.classList.add('pg-actor');
   const actorWrap = h('div', { class: 'pg-actor-wrap', 'data-who': who.id, 'data-kind': who.kind || '' }, actor);
+  actorWrap.classList.toggle('pg-hk', hasArmHooks(who.id)); // her drawing has arm hooks: poses move arms and ears only (§18.5, y-b S4)
   let pos = PG.startSpot(layout, zone, data);
+  // her ground shadow (§18.3): on the ground under her feet; while she is up on a slide, swing or climber
+  // it stays on the piece's foot line, smaller and fainter the higher she is
+  const actorSh = shade('pg-ash');
+  let shGround = null;
   let lift = 0; // in a ride car the rider sits up in the seat while the wheels stay on the track
   // Where she is DRAWN right now (Architect x2, 3:13 AM): a walk is one CSS transition from one placeActor
   // call, so mid-walk her drawn spot is between where she was and `pos` (the destination). In a browser the
@@ -174,8 +208,28 @@ function playScreen(ctx, who, zone) {
       ? { from, to: placedAt, t0: Date.now(), ms: dur, ease: actorWrap.style.transitionTimingFunction || 'ease-in-out' } : null;
     actorWrap.style.transitionDuration = `${dur}ms`;
     actorWrap.style.translate = `${px(pos.x)} ${px(pos.y - lift)}`;
+    sortZ(Math.max(from.y, pos.y));
+    const gy = shGround != null && pos.y < shGround ? shGround : pos.y; const t = Math.min(1, (gy - pos.y) / 200);
+    Object.assign(actorSh.style, { transitionDuration: `${dur}ms`, transitionTimingFunction: actorWrap.style.transitionTimingFunction, translate: `${px(pos.x)} ${px(gy)}`, scale: String(1 - 0.3 * t), opacity: String(1 - 0.45 * t), zIndex: String(Math.round(gy)) });
     onPlace();
   };
+  // §18.2 (y-b S3): her z is her foot line, so a piece whose foot line is nearer draws over her; standing on
+  // a piece's own base (between its foot line and its box bottom) she draws over it. In a use, a ride or a
+  // car seat she keeps the top layer (the use's own steps set it: fit()). zIndex writes only when it changes.
+  let sortOn = false; // on once the pieces and the use state exist
+  function sortZ(y = pos.y) {
+    if (!sortOn || (use && !use.ride)) return;
+    let z = '';
+    if (!use && !rideOn && !seated) {
+      let n = Math.round(y);
+      layout.forEach((e, i) => {
+        const b = PG.pieceBox(e, data); const el = pieceEls[i];
+        if (el && pos.x >= b.x && pos.x <= b.x + b.w && y >= b.y + b.h * (FOOT[e[0]] || 0.94) && y <= b.y + b.h + 8) n = Math.max(n, Number(el.style.zIndex) + 1);
+      });
+      z = String(n);
+    }
+    if (actorWrap.style.zIndex !== z) actorWrap.style.zIndex = z;
+  }
   let onPlace = () => {}; // the water park: floaties, the lifeguard's look, the slide's tube row
   placeActor(0);
 
@@ -260,11 +314,33 @@ function playScreen(ctx, who, zone) {
       else vehicle.style.top = px(PG.rideAnchors(data, who.id).vehicleTop);
       return vehicle;
     }
-    const el = h('span', { class: `pg-car pv-${p.id}${front ? ' front' : ''}`, 'data-car': PG.rideCar(p, who.id), 'aria-hidden': 'true' },
+    const split = front && typeof p.ride.carFront === 'string' && ART[p.ride.carFront] ? p.ride.carFront : '';
+    // §18.5 (y-b S3): a split car draws whole behind her, and its front part over her legs (same box and anchor)
+    const el = h('span', { class: `pg-car pv-${p.id}${front && !split ? ' front' : ''}`, 'data-car': PG.rideCar(p, who.id), 'aria-hidden': 'true' },
       h('span', { class: 'pg-car-in' }, drawing(art(PG.rideCar(p, who.id)), { box: '0 0 200 100' })));
     const fit = PG.rideFit(data, who.id);
     el.style.top = px(fit.feet - (front ? 80 : 74));
+    if (split) {
+      el.pgFront = h('span', { class: `pg-carf pv-${p.id}`, 'data-car-front': split, 'aria-hidden': 'true' }, h('span', { class: 'pg-car-in' }, drawing(art(split), { box: '0 0 200 100' })));
+      el.pgFront.style.top = el.style.top;
+    }
     return el;
+  };
+  const putCar = (car, front) => { if (car.pgFront) { actorWrap.prepend(car); actorWrap.append(car.pgFront); } else if (front) actorWrap.append(car); else actorWrap.prepend(car); };
+  const dropCar = (car) => { car.remove(); if (car.pgFront) car.pgFront.remove(); };
+  // §18.5 (y-b S3): a piece's front part (slide lip, swing seat and chains, merry post and canopy, tunnel face,
+  // sandbox frame, carousel canopy and pole, lazy pool rim) draws over her while she uses it: the same box
+  // and viewBox as the piece, which still draws whole underneath, so no box, anchor or tap target moves
+  let frontEl = null; let frontAt = -1;
+  const showFront = (i, cls = '') => {
+    const e = layout[i]; const p = i >= 0 && e ? PG.pieceById(data, e[0]) : null;
+    if (!p || typeof p.front !== 'string' || !ART[p.front]) { if (frontEl) frontEl.remove(); frontEl = null; frontAt = -1; return; }
+    if (!frontEl || frontAt !== i) {
+      if (frontEl) frontEl.remove();
+      frontEl = h('span', { class: 'pg-front', 'data-front': p.front, 'aria-hidden': 'true' }, drawing(art(p.front), { box: `0 0 ${p.w * 100} ${p.h * 100}` }));
+      placeBox(frontEl, PG.pieceBox(e, data)); worldEl.append(frontEl); frontAt = i;
+    }
+    frontEl.setAttribute('class', `pg-front${cls ? ` ${cls}` : ''}`);
   };
   let rideFloat = false;
   const smile = (on) => { actor.classList.toggle('pose-happy', on); actor.classList.toggle('pose-idle', !on); };
@@ -397,13 +473,13 @@ function playScreen(ctx, who, zone) {
   }
   const unseat = () => {
     if (!seated) return;
-    seated.car.remove(); seated.helmet.remove();
+    dropCar(seated.car); seated.helmet.remove();
     if (seated.hot) seated.hot.remove();
     if (seated.seat2) seated.seat2.el.remove();
     if (pieceEls[seated.i]) pieceEls[seated.i].classList.remove('pg-ride-on');
     actorWrap.classList.remove('pg-seated', 'pg-two', 'pg-k1'); smile(false);
     lift = 0; placeActor(0);
-    seated = null; hideRiders(); propBack(); updateGo();
+    seated = null; sortZ(); hideRiders(); propBack(); updateGo();
   };
   const seat = (i, k = 0) => {
     const e = layout[i]; const p = PG.pieceById(data, e[0]);
@@ -414,9 +490,9 @@ function playScreen(ctx, who, zone) {
     actorWrap.classList.toggle('pg-k1', k === 1);
     if (pieceEls[i]) pieceEls[i].classList.add('pg-ride-on');
     const car = carEl(p); const helmet = helmetEl();
-    actorWrap.append(car, helmet);
+    putCar(car, true); actorWrap.append(helmet);
     actorWrap.classList.add('pg-seated'); smile(true);
-    seated = { i, p, car, helmet, seat2: null, hot: null };
+    seated = { i, p, car, helmet, seat2: null, hot: null }; sortZ();
     if (PG.rideSeats(p) >= 2) { actorWrap.classList.add('pg-two'); seated.hot = seat2Hot(); actorWrap.append(seated.hot); hideTubes(); showRiders(); }
     fx(['fx-pop']);
     cam = PG.fitInView(PG.followEdge(cam, { x: pos.x, y: pos.y - 60 }, vsize(), world, 140), { x: pos.x, y: pos.y - lift }, vsize(), world); applyCam(true);
@@ -433,6 +509,7 @@ function playScreen(ctx, who, zone) {
     const parked = pieceEls[i];
     if (parked && !big && p.ride.hide !== false) parked.classList.add('pg-away'); // the carousel and tower stay drawn
     if (parked && big) parked.classList.add('pg-ride-on'); // the track stays; the parked car hides
+    if (AIR_RIDE.has(p.id)) { const b = PG.pieceBox(e, data); shGround = b.y + b.h * FOOT[p.id]; }
     if (p.ride.front) { lift = CAR_LIFT; placeActor(0); }
     let car; let gear; let rider2 = null;
     if (seated) {
@@ -442,7 +519,7 @@ function playScreen(ctx, who, zone) {
     } else {
       propAway();
       car = carEl(p);
-      if (p.ride.front) actorWrap.append(car); else actorWrap.prepend(car); // a seat sits behind the body; a car in front of the legs
+      putCar(car, !!p.ride.front); // a seat sits behind the body; a car in front of the legs (a split car: behind, with its front over the legs)
       // the floaties go on (or stay on) now: with reduced motion the ride is a fade with no path steps, so
       // nothing else places her until the hop-off (QA npfloat: boarding from the deck had none)
       if (PG.rideGear(p) === 'floaties') { rideFloat = true; gear = null; syncFloaty(); }
@@ -458,12 +535,12 @@ function playScreen(ctx, who, zone) {
     const start = { ...pos };
     const off = PG.rideOff(e, data, zone, start);
     const finish = () => {
-      car.remove(); if (gear) gear.remove();
+      dropCar(car); if (gear) gear.remove(); showFront(-1);
       if (sr) { actorWrap.style.scale = ''; actor.style.translate = ''; }
       if (rider2) {
         // seat 2 hops off beside the station too, then goes on its way
         rider2.el.remove();
-        const off2 = h('span', { class: 'pg-hopoff', 'data-hopoff': rider2.id, 'aria-hidden': 'true' }, petView(data, rider2.id, 'happy'));
+        const off2 = h('span', { class: 'pg-hopoff', 'data-hopoff': rider2.id, 'aria-hidden': 'true' }, petView(data, rider2.id, 'happy'), shade());
         off2.style.left = px(off.x - 120); off2.style.top = px(off.y);
         layer.appendChild(off2);
         clock.later(FX_MS + 300, () => off2.remove());
@@ -475,7 +552,7 @@ function playScreen(ctx, who, zone) {
       riding.delete(i); rideOn = false;
       // the hop off (beside the teapots, by the station) comes first; only then the held prop comes back
       // and the offer appears (§16.10)
-      lift = 0; pos = off; placeActor(reduced ? 0 : HOP_MS);
+      lift = 0; shGround = null; pos = off; placeActor(reduced ? 0 : HOP_MS);
       holdStill(HOP_MS + (p.ride.after && p.ride.after.treat ? OFFER_MS : 0)); // every ride's hop-off, then any offer
       if (!PG.actorInView(cam, pos, vsize())) { cam = PG.fitInView(cam, pos, vsize(), world); applyCam(!reduced); } // she stays fully in view as she hops off
       smile(false);
@@ -502,6 +579,8 @@ function playScreen(ctx, who, zone) {
       return;
     }
     const legs = PG.rideLegs(start, pts, PG.rideSpeed(p, data));
+    const midY = pts.reduce((a, q) => a + q.y, 0) / Math.max(1, pts.length);
+    showFront(p.front ? i : -1, 'pg-near');
     const beat = (tag) => {
       if (tag === 'peek') { flash(car, 'pg-flap', FX_MS); sparkleAt({ x: pos.x + 70, y: pos.y - 120 }); }
       else if (tag === 'whoosh') { fx('fx-zoom'); flash(actorWrap, 'pg-whoosh', FX_MS); }
@@ -514,6 +593,7 @@ function playScreen(ctx, who, zone) {
       const L = legs[k];
       pos = { x: L.x, y: L.y };
       actorWrap.classList.toggle('flip', L.dir < 0);
+      if (frontAt === i) showFront(i, L.y < midY - 1 ? '' : 'pg-near'); // far half: behind the pole
       placeActor(L.ms);
       cam = big ? PG.centerOn({ x: pos.x, y: pos.y - 60 }, vsize(), world) : PG.followEdge(cam, pos, vsize(), world, 110);
       applyCam(true);
@@ -587,16 +667,19 @@ function playScreen(ctx, who, zone) {
   const pose = (q) => { for (const x of ['sit', 'hold', 'climb', 'whee']) actorWrap.classList.toggle(`pg-p-${x}`, x === q); };
   const fit = (s = 1, r = 0, zi = '') => { actorWrap.style.scale = s === 1 ? '' : String(s); actorWrap.style.rotate = r ? `${r}deg` : ''; actorWrap.style.zIndex = zi; };
   const swingSeat = (i, k, s) => {
-    const g = pieceEls[i] && byClassIn(pieceEls[i], `s${k}`, 6).find((x) => x.classList.contains('pg-sw'));
-    if (!g) return;
     const on = s && s.phase === 'using' && s.swing;
-    g.style.transitionDuration = `${reduced || !s ? 0 : s.ms}ms`; g.style.scale = on ? `1 ${Math.cos((s.swing * Math.PI) / 180).toFixed(3)}` : '';
+    for (const box of [pieceEls[i], frontAt === i ? frontEl : null]) {
+      const g = box && byClassIn(box, `s${k}`, 6).find((x) => x.classList.contains('pg-sw'));
+      if (!g) continue;
+      g.style.transitionDuration = `${reduced || !s ? 0 : s.ms}ms`; g.style.scale = on ? `1 ${Math.cos((s.swing * Math.PI) / 180).toFixed(3)}` : '';
+    }
   };
   const partnerTo = (P, s) => {
     if (!P || !s) return;
     if (use && use.two && P === use.partner && !P.a) swingSeat(use.i, 1 - use.k, s);
     if (P.a) { P.a.x = s.x; P.a.y = s.y - P.a.size / 2; placeAnimal(P.a, s.ms); return; }
     P.el.style.transitionDuration = `${reduced ? 0 : s.ms}ms`; P.el.style.translate = `${px(s.x)} ${px(s.y)}`; P.el.style.scale = String(s.scale);
+    P.el.classList.toggle('pg-down', s.phase === 'hopOff');
   };
   const dropPartner = (U) => {
     const P = U && U.partner; if (!P) return;
@@ -607,7 +690,7 @@ function playScreen(ctx, who, zone) {
     const U = use;
     if (!U || !U.two || !PG.sanitizeSeat2(data, ctx.state, id, who.id)) return false;
     if (U.partner && U.partner.a) dropPartner(U); else if (U.partner) return false;
-    const el = h('span', { class: 'pg-partner', 'data-partner': id, 'aria-hidden': 'true' }, petView(data, id, 'happy'));
+    const el = h('span', { class: 'pg-partner', 'data-partner': id, 'aria-hidden': 'true' }, petView(data, id, 'happy'), shade()); // the shadow shows once off the seat
     U.partner = { el, steps: PG.useSteps(layout[U.i], 1 - U.k, castOf(id), data, zone, reduced, false, layout) };
     layer.appendChild(el); partnerTo(U.partner, U.partner.steps[Math.max(0, U.n - 1)]);
     hideRiders(); fx(['fx-pop']);
@@ -616,19 +699,20 @@ function playScreen(ctx, who, zone) {
   let deco = {};
   const hidePeek = (s = {}) => {
     actorWrap.classList.toggle('pg-hid', !!s.hide); actor.style.clipPath = s.clip ? `inset(0 0 ${160 - s.clip}px 0)` : '';
-    for (const [k, cls] of [['ripple', 'pg-ripple'], ['pole', 'pg-pole'], ['seat', `pg-seat${use && use.k ? ' k1' : ''}`]]) {
-      if (s[k] && !deco[k]) { deco[k] = h('span', { class: cls, 'aria-hidden': 'true' }); actorWrap.append(deco[k]); }
-      if (!s[k] && deco[k]) { deco[k].remove(); deco[k] = null; }
+    actorSh.classList.toggle('pg-off', !!(s.hide || s.clip)); // inside the tunnel or in the water: no shadow on the grass
+    // wading (§18.7d): a level cut at the water surface (no tilt or dip on her), a pale wave line over the cut
+    const wade = !!(s.clip && s.ripple); actorWrap.classList.toggle('pg-wade', wade);
+    for (const [k, cls, on] of [['ripple', 'pg-ripple', wade], ['wave', 'pg-wave', wade], ['pole', 'pg-pole', !!s.pole]]) {
+      if (on && !deco[k]) { deco[k] = h('span', { class: cls, 'aria-hidden': 'true' }); actorWrap.append(deco[k]); }
+      if (!on && deco[k]) { deco[k].remove(); deco[k] = null; }
     }
     if (deco.ripple) deco.ripple.style.top = px(s.clip - 12);
-    if (deco.seat) deco.seat.style.top = px(s.seat - 6);
-    if (s.pole && !deco.top && use) { deco.top = h('span', { class: 'pg-canopy', 'aria-hidden': 'true' }, drawing(art('pgMerryTop'), { box: '0 0 200 200' })); placeBox(deco.top, PG.pieceBox(layout[use.i], data)); layer.append(deco.top); }
-    if (!s.pole && deco.top) { deco.top.remove(); deco.top = null; }
+    if (deco.wave) deco.wave.style.top = px(s.clip - 5);
   };
   const endUse = (U, cancel) => {
     if (use !== U) return;
-    use = null; phase = ''; rideFloat = false; hidePeek(); swingSeat(U.i, U.k, null); swingSeat(U.i, 1 - U.k, null);
-    pose(''); fit(); smile(false);
+    use = null; phase = ''; shGround = null; rideFloat = false; hidePeek(); swingSeat(U.i, U.k, null); swingSeat(U.i, 1 - U.k, null); showFront(-1);
+    pose(''); fit(); smile(false); sortZ();
     const cc = PG.clampCamera(cam, vsize(), world);
     if (cc.x !== cam.x || cc.y !== cam.y) { cam = cc; applyCam(!reduced); }
     actorWrap.classList.remove('pg-using'); root.classList.remove('pg-using');
@@ -675,8 +759,10 @@ function playScreen(ctx, who, zone) {
     pose(s.pose);
     fit(s.scale, s.rot, s.layer === 'b' && pieceEls[U.i] ? String(Number(pieceEls[U.i].style.zIndex) - 1) : '');
     hidePeek(s);
+    // the front part over her, except on the hop-off and at a peek (her face shows at the tunnel window)
+    showFront(s.phase === 'hopOff' || (s.clip && !s.ripple) ? -1 : U.i, [s.swing != null ? `k${U.k}` : '', s.pole && !s.far ? 'pg-near' : ''].filter(Boolean).join(' '));
     swingSeat(U.i, U.k, s);
-    pos = { x: s.x, y: s.y };
+    pos = { x: s.x, y: s.y }; shGround = U.air;
     const c = U.cams[U.n - 1];
     if (c && (c.x !== cam.x || c.y !== cam.y)) { cam = c; applyCam(!reduced); }
     if (s.fade) flash(actor, 'pg-fade', 600);
@@ -700,7 +786,8 @@ function playScreen(ctx, who, zone) {
       clock.later(reduced ? 0 : PG.BOARD_MS, () => { if (use && use.p === p) { use = null; phase = ''; startRide(i, false, k); } });
       return true;
     }
-    const U = use = { i, k, p, steps, cams, n: 0, tube, two: PG.seatsOf(u).length === 2, partner: null };
+    const b = PG.pieceBox(e, data);
+    const U = use = { i, k, p, steps, cams, n: 0, tube, two: PG.seatsOf(u).length === 2, partner: null, air: /^(slide|pivot|climb)$/.test(u.type) ? b.y + b.h * (FOOT[p.id] || 0.94) : null };
     if (u.type === 'water' && zone.floaties === true) rideFloat = true;
     propAway(); smile(true);
     actorWrap.classList.add('pg-using'); root.classList.add('pg-using');
@@ -840,7 +927,7 @@ function playScreen(ctx, who, zone) {
       const el = h('button', { type: 'button', class: `pg-piece pc-${p.id}`, 'data-piece': p.id, 'data-slots': PG.seatsOf(PG.useOf(data, p.id)).length, 'aria-label': p.id },
         drawing(art(p.art), { box: `0 0 ${p.w * 100} ${p.h * 100}` }));
       const b = PG.pieceBox(e, data);
-      placeBox(el, b);
+      placeBox(el, b); shadeIn(el, b, p.id);
       el.style.zIndex = String(Math.round(b.y + b.h));
       el.addEventListener('pointerdown', (ev) => {
         if (gesture || (ev.button != null && ev.button !== 0) || onActor(ev)) return;
@@ -855,8 +942,19 @@ function playScreen(ctx, who, zone) {
       el.addEventListener('click', (ev) => { if (ev.detail === 0 && !building) tapPiece(i); }); // keyboard only; taps are pointerup
       piecesEl.appendChild(el); pieceEls.push(el);
     });
+    liveRipples();
+  };
+  // the ripple lines drift only on water pieces the camera can see (§18.4)
+  liveRipples = () => {
+    const v = vsize();
+    layout.forEach((e, i) => {
+      if (!RIPPLES.has(e[0]) || !pieceEls[i]) return;
+      const b = PG.pieceBox(e, data);
+      pieceEls[i].classList.toggle('pg-live', b.x < cam.x + v.w && b.x + b.w > cam.x && b.y < cam.y + v.h && b.y + b.h > cam.y);
+    });
   };
   renderPieces();
+  sortOn = true; sortZ();
   if (zone.floaties === true || (zone.pinned || []).length) {
     onPlace = () => {
       syncFloaty(); lookAt();
@@ -869,7 +967,7 @@ function playScreen(ctx, who, zone) {
   let animals = [];
   const makeAnimals = () => PG.zoneAnimals(zone, layout, data).map((a, k) => {
     const el = h('button', { type: 'button', class: `pg-animal an-${a.kind}`, 'data-animal': a.kind, 'aria-label': a.kind },
-      h('span', { class: 'pg-animal-in' }, drawing(art(a.art), { box: '0 0 100 100' })));
+      h('span', { class: 'pg-animal-in' }, drawing(art(a.art), { box: '0 0 100 100' })), shade());
     el.style.width = px(a.size); el.style.height = px(a.size);
     const st = { ...a, k, el, dist: (k * 137) % Math.max(1, PG.loopLength(a.pts)), x: a.pts[0].x, y: a.pts[0].y, dir: 1, reacting: false };
     el.addEventListener('pointerdown', (ev) => {
@@ -883,7 +981,7 @@ function playScreen(ctx, who, zone) {
   const placeAnimal = (a, ms = 0) => {
     a.el.style.transitionDuration = `${reduced ? 0 : Math.round(ms)}ms`;
     a.el.style.transform = `translate(${Math.round(a.x - a.size / 2)}px, ${Math.round(a.y - a.size / 2)}px)`;
-    a.el.classList.toggle('flip', a.dir < 0);
+    a.el.classList.toggle('flip', a.dir < 0); a.el.classList.toggle('pg-up', !!a.reacting);
   };
   const startAnimals = () => {
     animalsEl.replaceChildren();
@@ -1031,7 +1129,7 @@ function playScreen(ctx, who, zone) {
   view.addEventListener('pointerup', end);
   view.addEventListener('pointercancel', end);
 
-  worldEl.append(sky, piecesEl, animalsEl, layer, actorWrap);
+  worldEl.append(ground, sky, piecesEl, animalsEl, layer, actorSh, actorWrap);
 
   // start centred on the character beside the slide (again once the view has its real size)
   // zone start and gate arrival (Design fix 3): centred on her, then clamped so her whole drawing is in view
