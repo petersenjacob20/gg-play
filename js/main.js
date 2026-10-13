@@ -10,6 +10,7 @@ import * as story from './screens/story.js';
 import * as pets from './screens/family.js';
 import * as says from './screens/says.js';
 import * as playground from './screens/playground.js';
+import * as pizza from './screens/pizza.js';
 import { closeDadPanel } from './dad.js';
 import { createGate } from './lock.js';
 import { createUpdater, safeUpdate } from './update.js';
@@ -22,8 +23,8 @@ import { ACTS, SCREENS, PLAYABLE } from './acts/index.js';
 import { loadPhotos, setPhotos, revokePhotoURLs, forgetAllPhotos } from './photos.js';
 
 // the routes that are a kid's game screen (with its round end); the Playground scene is added in render()
-const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says']);
-const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, says, playground, letters: play, count: play };
+const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'pizza']);
+const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, says, pizza, playground, letters: play, count: play };
 
 function paramFor(name, hash) {
   if (name === 'letters' || name === 'count') return name;

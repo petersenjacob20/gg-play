@@ -6,6 +6,7 @@
 // Each game level is {lv,top,good,at,topAt}; at/topAt are step keys (act[:mode]:lv) so ladder inserts keep her place (m8).
 // A broken or unknown save starts fresh. Pure helpers are importable from Node.
 
+import { pizzaPrefs } from './kitchen.js';
 import { GAME_IDS, PROFILE_IDS, mapOldLevel, primaryAct, ladderMax, resolveLevel, keysForLevel } from './games.js';
 import { LOCK_ALG, LOCK_ITER } from './lock.js';
 import { normalizeParks } from './playground.js';
@@ -30,7 +31,8 @@ let catalog = [];
 export function setBook(ids) {
   catalog = Array.isArray(ids) ? [...new Set(ids.filter((x) => typeof x === 'string' && /^sk-[a-zA-Z0-9]+$/.test(x)))] : [];
 }
-export function getBook() { return [...catalog]; }
+// Box stickers come from pages 1-4; the page-5 pizza sticker is earned only in Pizza Kitchen.
+export function getBook() { return catalog.filter((x) => x !== 'sk-pizza'); }
 
 // games.json list, set once at boot so migration and normalize know the ladders.
 let gamesList = [];
@@ -221,6 +223,7 @@ export function normalize(obj, { letters = enabledLetters, book = catalog } = {}
   if (typeof obj.sayNames === 'boolean') s.sayNames = obj.sayNames;
   if (typeof obj.saysShort === 'boolean') s.saysShort = obj.saysShort;
   if (typeof obj.playground === 'boolean') s.playground = obj.playground;
+  if (isObj(obj.pizza)) s.pizza = pizzaPrefs(obj.pizza); // Pizza Kitchen: Dad's settings
   s.lock = normalizeLock(obj.lock);
 
   const profiles = {};

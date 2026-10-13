@@ -116,6 +116,7 @@
         { "act": "says", "lv": 4 }
       ]
     },
+    { "id": "pizza", "title": "Pizza Kitchen", "titleDefault": "Pizza Kitchen", "host": "friendDino", "theme": "park", "tile": "tl-pizza", "label": "h-pizza", "edge": "#E5484D", "ladder": [{ "act": "pizza", "lv": 1 }, { "act": "pizza", "lv": 2 }, { "act": "pizza", "lv": 3 }] },
     {
       "id": "stories",
       "title": "Story Time",

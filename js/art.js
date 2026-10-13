@@ -1,6 +1,7 @@
 // Picture-word drawings, treats, the sticker book (sk-*) and the fun-layer pictures (original, simple
 // shapes built from shared parts). Plain data trees, viewBox 0 0 100 100 unless noted.
 // Food pictures are fruit and veg only (the always-on food guards check every id).
+import { tileArt } from './kitchen.js';
 import { drawChar, strawberry } from './pets.js';
 import { PARK_ART, U, HL, SH, bolts, grain, ring, CHAIN, RIP } from './art-parks.js';
 
@@ -590,11 +591,12 @@ const CHAR_STICKERS = ['yellowDog', 'chocolateDog', 'gingerDog', 'blackDog', 'pu
 export function stickerArt(skId) {
   const id = String(skId).replace(/^sk-/, '');
   if (CHAR_STICKERS.includes(id)) return el('g', { transform: 'translate(1 0) scale(0.82)' }, drawChar(id));
+  if (id === 'pizza') return tileArt(); // page 5 (Design §22.r2)
   return ART[id] ? ART[id]() : ART.star();
 }
 export const hasStickerArt = (skId) => {
   const id = String(skId).replace(/^sk-/, '');
-  return CHAR_STICKERS.includes(id) || Object.hasOwn(ART, id);
+  return CHAR_STICKERS.includes(id) || id === 'pizza' || Object.hasOwn(ART, id);
 };
 
 // A pattern item (piece 4): a pet drawing (the same drawings as the stickers) or a picture above.

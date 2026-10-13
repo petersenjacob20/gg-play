@@ -6,6 +6,7 @@ import { deleteAll, defaults, activeProfile, resetProfileProgress, resetParks, f
 import { setLevel } from './engine.js';
 import { PLAYABLE } from './acts/index.js';
 import { tilePic } from './tiles.js';
+import { pizzaPrefs, TOPPINGS, EATERS } from './kitchen.js';
 import { builtGames, gameTitleFixed, ladderMax, stepAt, displayName, PROFILE_MAX, PROFILE_IDS, keysForLevel } from './games.js';
 import { playgroundShips } from './playground.js';
 import { canLock, makeLock, checkLock, validPassword, createGate, PASS_MIN } from './lock.js';
@@ -389,6 +390,7 @@ function openReset(ctx) {
 export const LEVEL_LINES = {
   letters: ['m s a t p b', '+ n d f o i', '+ h l r g c', '+ e u w j k', '+ v y z q x'],
   count: ['1 to 5', '3 to 10', '8 to 20'],
+  pizza: ['One topping, 1 to 3', 'Two toppings', 'Half and half, up to the max'],
   add: ['Up to 5', '6 to 10'],
   pattern: ['AB', 'AAB, ABB', 'ABC'],
   says: ['Puppy says one move', 'Count the moves (2 to 5)', 'Two moves in a row', 'Listen for "Puppy says"'],
@@ -575,6 +577,17 @@ export function openDadPanel(ctx, view = 'menu') {
       } else {
         body.push(sheetBtn('Puppy Says settings', () => withUnlock(ctx, () => openDadPanel(ctx, 'menu'))));
       }
+    }
+    // Pizza Kitchen: max count, toppings shown, who orders (behind the lock like Puppy Says)
+    if (q && q.pizza) {
+      if (!locked || gate(ctx).isUnlocked()) {
+        const z = pizzaPrefs(ctx.state.pizza), w = ['', ...EATERS];
+        const set = (f) => () => withUnlock(ctx, () => { f(); ctx.state.pizza = pizzaPrefs(z); ctx.save(); openDadPanel(ctx, 'menu'); });
+        const who = (ctx.data.friends.find((f) => f.id === z.who) || { label: 'Anyone' }).label;
+        body.push(sheetBtn(`Max count: ${z.max}`, set(() => { z.max = z.max > 4 ? 3 : z.max + 1; })),
+          sheetBtn(`Who orders: ${who}`, set(() => { z.who = w[(w.indexOf(z.who) + 1) % 4]; })),
+          ...TOPPINGS.map(({ id }) => { const on = !z.off.includes(id); return sheetBtn(`${id}: ${on ? 'On' : 'Off'}`, set(() => { z.off = on ? [...z.off, id] : z.off.filter((x) => x !== id); }), '', { 'aria-pressed': String(on) }); }));
+      } else body.push(sheetBtn('Pizza Kitchen settings', () => withUnlock(ctx, () => openDadPanel(ctx, 'menu'))));
     }
     // Playground (design.md §13.6, Amendment q): only when the Playground ships (Design's fix: no toggle
     // before the tile exists). Behind the lock like Puppy Says: locked, one button asks for the password.
