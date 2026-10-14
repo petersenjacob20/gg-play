@@ -32,6 +32,11 @@ export function tilePic(id) {
       return [who('puppy', 'tile-who leap'), h('span', { class: 'mini-pic paw-pic', 'aria-hidden': 'true' }, drawing(ICONS.paw('#B0703C'), { box: '0 0 64 64' }))];
     case 'pizza':
       return [who('friendDino', 'tile-who tiny'), h('span', { class: 'mini-pic', 'aria-hidden': 'true' }, drawing(tileArt(), { box: '0 0 100 100' }))];
+    case 'hide':
+      // Puppy, and a bush with the bunny's ears poking out
+      return [who('puppy'), h('span', { class: 'hide-pic', 'aria-hidden': 'true' },
+        h('span', { class: 'tile-ears' }, drawing(drawChar('bunny'), { box: '0 0 120 120' })),
+        h('span', { class: 'tile-bush' }, drawing(art('hsBush'), { box: '0 0 120 100' })))];
     case 'stories':
     case 'story':
       return [pic('bookOpen', 'story-pic')];

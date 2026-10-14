@@ -38,6 +38,8 @@ function shape(kind, fill) {
 const PURPLE = '#8E5CC7';
 
 export const ART = {
+  // Hide and Seek's tile bush (its other art is in the pack)
+  hsBush: () => g(C(34, 66, 26, '#5DBB63'), C(86, 66, 26, '#5DBB63'), C(60, 50, 30, '#5DBB63'), el('rect', { x: 14, y: 70, width: 92, height: 26, rx: 13, fill: '#5DBB63', ...O }), C(44, 52, 3, '#E5484D', { 'stroke-width': 1 }), C(78, 60, 3, '#E5484D', { 'stroke-width': 1 })),
   moon: () => g(
     P('M58 12A40 40 0 1 0 88 72A32 32 0 1 1 58 12Z', '#FFE27A'),
     star(80, 22, 7, 3, '#FFF1B0'),

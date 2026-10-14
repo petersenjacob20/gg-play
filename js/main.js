@@ -26,8 +26,11 @@ import { loadVoices, setVoices, setVoiceData, forgetAllVoices, familyClip, creat
 const cuer = createCuer();
 
 // the routes that are a kid's game screen (with its round end); the Playground scene is added in render()
-const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'pizza']);
+const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'hide', 'pizza']);
 const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, voices, says, pizza, playground, letters: play, count: play };
+
+let hidePack = null; // the Hide pack, loaded on first open
+const loadHide = () => (hidePack ||= import('./screens/hide.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.hide = m; }, (e) => { hidePack = null; throw e; }));
 
 function paramFor(name, hash) {
   if (name === 'letters' || name === 'count') return name;
@@ -111,6 +114,7 @@ function render() {
     }
   }
   if (name === 'story' && !storyById(ctx.data.stories, ctx.param)) { name = 'stories'; ctx.param = null; }
+  if (name === 'hide' && !ROUTES.hide) { loadHide().then(render, () => ctx.go('#home')); return; }
   const mod = ROUTES[name];
   // Family voices: Ready to play leads a game's first line (or plays at once on the Playground);
   // Bye-bye plays on getting home. Only when that slot has a clip; empty stays silent.

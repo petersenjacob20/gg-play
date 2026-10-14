@@ -1079,6 +1079,7 @@
     "h-monster": "h-count",
     "h-stories": "h-stories",
     "h-says": "h-says",
+    "h-hide": "h-hide",
     "h-playground": "h-playground",
     "cheep": "fx-cheep",
     "quack": "fx-quack",

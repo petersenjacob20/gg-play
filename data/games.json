@@ -116,6 +116,7 @@
         { "act": "says", "lv": 4 }
       ]
     },
+    { "id": "hide", "title": "{puppy}'s Hide and Seek", "titleDefault": "Hide and Seek", "host": "puppy", "theme": "hide", "tile": "tl-hide", "label": "h-hide", "edge": "#5B7BD5", "ladder": [{ "act": "hide", "lv": 1 }, { "act": "hide", "lv": 2 }, { "act": "hide", "lv": 3 }, { "act": "hide", "lv": 4 }] },
     { "id": "pizza", "title": "Pizza Kitchen", "titleDefault": "Pizza Kitchen", "host": "friendDino", "theme": "park", "tile": "tl-pizza", "label": "h-pizza", "edge": "#E5484D", "ladder": [{ "act": "pizza", "lv": 1 }, { "act": "pizza", "lv": 2 }, { "act": "pizza", "lv": 3 }] },
     {
       "id": "stories",

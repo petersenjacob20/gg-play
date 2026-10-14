@@ -238,5 +238,6 @@ export function createAudio({ enabled = true, family = null } = {}) {
     get enabled() { return on; },
     get unlocked() { return Boolean(ac); },
     get manifest() { return manifest; },
+    more: (m) => Object.assign(manifest, m), // a game pack's clips
   };
 }

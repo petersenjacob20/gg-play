@@ -395,8 +395,11 @@ export const LEVEL_LINES = {
   pizza: ['One topping, 1 to 3', 'Two toppings', 'Half and half, up to the max'],
   add: ['Up to 5', '6 to 10'],
   pattern: ['AB', 'AAB, ABB', 'ABC'],
+  hide: ['In, on, under (2 spots)', '+ 2 more place words (3 spots)', 'Colour + where', 'Her turn to hide it'],
   says: ['Puppy says one move', 'Count the moves (2 to 5)', 'Two moves in a row', 'Listen for "Puppy says"'],
 };
+
+export const DAD = {}; // Dad-sheet parts from a game pack
 
 export function levelLine(actId, lv) {
   return (LEVEL_LINES[actId] || [])[lv - 1] || `Step ${lv}`;
@@ -580,6 +583,7 @@ export function openDadPanel(ctx, view = 'menu') {
         body.push(sheetBtn('Puppy Says settings', () => withUnlock(ctx, () => openDadPanel(ctx, 'menu'))));
       }
     }
+    if (q && q.hide) body.push(...DAD.hide({ ctx, h, sheetBtn, withUnlock, open: openDadPanel, on: !locked || gate(ctx).isUnlocked() })); // from the Hide pack
     // Pizza Kitchen: max count, toppings shown, who orders (behind the lock like Puppy Says)
     if (q && q.pizza) {
       if (!locked || gate(ctx).isUnlocked()) {

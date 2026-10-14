@@ -1569,6 +1569,14 @@
   "bytes": 5184,
   "checked": "machine"
  },
+ "h-hide": {
+  "kind": "text",
+  "input": "Hide and seek!",
+  "phonemes": "hˈId ænd sˈik!",
+  "seconds": 0.799,
+  "bytes": 5184,
+  "checked": "machine"
+ },
  "h-playground": {
   "kind": "text",
   "input": "Playground!",

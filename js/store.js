@@ -1,5 +1,5 @@
 // On-device storage (build plan sections 1 and 6, Amendment m / m8 / save v3). One localStorage key,
-// `gg.v1` (the key name stays). Household fields (sound, intros, sayNames, saysShort, pets, lock) are shared; each profile has
+// `gg.v1` (the key name stays). Household fields (sound, intros, sayNames, saysShort, hideCount, pets, lock) are shared; each profile has
 // its own name, levels (keyed by game id), book, seenLetters and parks (the Playground parks she built,
 // Amendment q6/q10: { <ready zone id>: [[pieceId, gx, gy], ...] }, no version bump). Photos stay in IndexedDB gg-photos.
 // A v2 save becomes profiles.p1; levels map per Amendment m2 revised (primary act from games.json).
@@ -72,6 +72,7 @@ export function defaults() {
     intros: true,   // Hello voices (Amendment n)
     sayNames: true, // Say pet names via on-device speech only (Amendment n)
     saysShort: false, // Puppy Says: Dad's Short round (3 moves instead of 5; Amendment p5)
+    hideCount: 30, // Hide and Seek: 30, 20, 10 or 0 = Skip (hide.js)
     playground: true, // Playground home tile (Amendment n)
     pets,
     lock: null,
@@ -222,6 +223,7 @@ export function normalize(obj, { letters = enabledLetters, book = catalog } = {}
   if (typeof obj.intros === 'boolean') s.intros = obj.intros;
   if (typeof obj.sayNames === 'boolean') s.sayNames = obj.sayNames;
   if (typeof obj.saysShort === 'boolean') s.saysShort = obj.saysShort;
+  s.hideCount = [30, 20, 10, 0].includes(obj.hideCount) ? obj.hideCount : 30;
   if (typeof obj.playground === 'boolean') s.playground = obj.playground;
   if (isObj(obj.pizza)) s.pizza = pizzaPrefs(obj.pizza); // Pizza Kitchen: Dad's settings
   s.lock = normalizeLock(obj.lock);

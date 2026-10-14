@@ -1,7 +1,7 @@
 // Offline: app shell cached first (build plan section 1).
 // Bump CACHE on every content or code change. Older gg- caches are deleted on activate;
-// caches of other apps on the same origin are never touched.
-const CACHE = 'gg-v1-20261013oe';
+// caches of other apps on the same origin are never touched; nor are gg-pack- (game pack) caches.
+const CACHE = 'gg-v1-20261013of';
 const ASSETS = [
   './',
   './audio/audio-manifest.json',
@@ -34,6 +34,7 @@ const ASSETS = [
   './audio/h-pattern.mp3',
   './audio/h-playground.mp3',
   './audio/h-says.mp3',
+  './audio/h-hide.mp3',
   './audio/h-stories.mp3',
   './audio/hi-blackDog.mp3',
   './audio/hi-bunny.mp3',
@@ -277,7 +278,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('gg-') && k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('gg-') && k !== CACHE && !k.startsWith('gg-pack-')).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
