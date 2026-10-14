@@ -1,9 +1,7 @@
-// Hide and Seek Puppy (Amendment 2026-10-05r; route #game/hide or #hide). One scene a round: Puppy
-// counts against the tree (Dad's 30, 20, 10 or Skip) while a friend tiptoes off, then 4 questions by
-// level and "Find ALL my friends!". A right tap pops the friend out with a giggle and Puppy spins; a
-// wrong tap peeks the spot open (empty) and the call plays again, nothing else. L4 is her turn: tap the
-// friend, then the spot; it snuggles in and Puppy finds it. About 1 round in 5 (never the first) has the
-// silly moment: the bunny in a box much too small. The standard progress() rule: 4 of 5 first-tap rights.
+// Hide and Seek Puppy (Amendment 2026-10-05r; #game/hide or #hide). Puppy counts (Dad's 30, 20, 10 or Skip)
+// while a friend tiptoes off, then 4 questions by level and "Find ALL my friends!". Right: pop, giggle, spin;
+// wrong: the spot peeks open empty and the call replays. L4: tap the friend, then the spot. About 1 round in 5
+// (never the first) has the silly moment. progress(): 4 of 5 first-tap rights.
 // No typed name is ever spoken here (Amendment r5); the drawings carry the default labels.
 import { h, drawing } from '../dom.js';
 import { drawChar } from '../pets.js';
@@ -33,9 +31,9 @@ DAD.hide = ({ ctx, h: el, sheetBtn, withUnlock, open, on }) => {
     ...(q.real ? [el('p', { class: 'sheet-hint', 'data-dad': 'hide-real', text: `Play it for real: ${q.real}` })] : [])];
 };
 
-// The Hide pack (EM ruling b): imported on first open; ready() loads its data, clips and styles and caches the pack.
-// named by a hash of the pack's content (tests/packhash.mjs): kept across app updates while the pack is unchanged
-export const HIDE_CACHE = 'gg-pack-hide-2f6cd34801';
+// The Hide pack (EM ruling b): loaded on first open; ready() fetches data, clips and styles and caches them
+// under a content hash (tests/packhash.mjs), so app updates keep it while the pack is unchanged.
+export const HIDE_CACHE = 'gg-pack-hide-de39ef8666';
 export const HIDE_PACK = ['./js/screens/hide.js', './js/hide.js', './js/art-hide.js', './data/hide.json', './data/hide-clips.json', './css/hide.css'];
 export async function ready(ctx) {
   const get = async (f) => { const r = await fetch(`./data/${f}`); if (!r.ok) throw new Error(f); return r.json(); };
@@ -75,7 +73,7 @@ export function render(ctx) {
   const scene = sceneById(hide, round.scene);
   const puppy = (data.pets || []).find((p) => p.id === 'puppy') || { label: 'Puppy' };
 
-  const charView = (id, cls = '') => h('div', { class: `pet hider-char ${cls}`.trim(), 'data-pet': id }, drawing(drawChar(id), { label: genericLabel(data, id) }));
+  const charView = (id, cls = '', t = drawChar(id)) => h('div', { class: `pet hider-char ${cls}`.trim(), 'data-pet': id }, drawing(t, { label: genericLabel(data, id) }));
   const pupEl = h('div', { class: 'pet hide-pup', 'data-pet': 'puppy' }, h('span', { class: 'char' }, drawing(drawChar('puppy'), { label: puppy.label })));
   const found = h('div', { class: 'hide-found', 'aria-hidden': 'true' });
   const pupRow = h('div', { class: 'hide-pup-row' }, pupEl, found);
@@ -296,14 +294,16 @@ export function render(ctx) {
     else startQ(at + 1);
   }
 
-  // The silly moment (r3.5): the bunny in a box about half its size, ears and bottom sticking out. Puppy looks
+  // Silly moment (r3.5): the bunny head first in a box half its size. Puppy looks
   // the other way for about a second, then finds it. Nothing to tap; Dad's Skip goes straight on.
   async function silly() {
     const my = ++gen;
     setPhase('silly');
     const who = round.silly.hider;
+    const t = drawChar(who);
+    if (who === 'bunny') t[2].push(['circle', { cx: 60, cy: 113, r: 7, fill: '#fff', stroke: '#4A3426', 'stroke-width': 2 }], ...[37, 83].map((x) => ['ellipse', { cx: x, cy: 60, rx: 4, ry: 14, fill: '#F4B6C2', transform: `rotate(${(60 - x) / 1.6} ${x} 58)` }]));
     const box = h('div', { class: 'hide-silly', 'data-hider': who },
-      h('span', { class: 'silly-who' }, charView(who)),
+      h('span', { class: 'silly-who' }, charView(who, '', t)),
       h('span', { class: 'silly-box' }, drawing(art('hsTinyBox'), { box: '0 0 120 100' })));
     spotsRow.replaceChildren(box);
     tray.replaceChildren();

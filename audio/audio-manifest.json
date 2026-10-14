@@ -1648,5 +1648,13 @@
   "seconds": 0.527,
   "bytes": 3456,
   "checked": "machine"
+ },
+ "h-grow": {
+  "kind": "text",
+  "input": "Grow It!",
+  "phonemes": "ɡɹˈO ˌɪt!",
+  "seconds": 0.582,
+  "bytes": 2592,
+  "checked": "machine"
  }
 }

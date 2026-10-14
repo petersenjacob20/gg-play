@@ -1,0 +1,30 @@
+.grow .gr-stage{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px;margin:8px;padding:12px 8px;border:3px solid #4A3426;border-radius:22px;background:linear-gradient(#DFF3FF 0 55%,#B9E39A 55%)}
+.gr-host{width:96px;height:96px;align-self:flex-start}.gr-host .drawing{width:100%;height:100%}
+.gr-cards{display:flex;justify-content:center;gap:12px;min-height:104px;flex-wrap:wrap}
+.gr-card{width:96px;height:96px;padding:4px;border:3px solid #4A3426;border-radius:18px;background:#FFFBEF;box-shadow:0 4px 0 #4A342633}
+.gr-card .drawing,.gr-frame .drawing{width:100%;height:100%;display:block}
+.gr-card.glow{box-shadow:0 0 0 6px #FFD84A}
+.gr-card.wiggle{animation:gr-wig .45s}
+@keyframes gr-wig{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.gr-frames{display:flex;align-items:center;gap:6px;margin:auto 0}
+.gr-arrow{flex:none;width:12px;height:12px;border:solid #4A3426;border-width:4px 4px 0 0;transform:rotate(45deg);margin-left:-4px}
+.gr-num{position:absolute;left:5px;top:5px;width:24px;height:24px;border-radius:50%;background:#4A3426;color:#fff;font:700 15px/24px sans-serif;text-align:center;transition:opacity .4s}
+.gr-frame.in .gr-num{opacity:0}
+.gr-frames[data-n="4"]{gap:3px}.gr-frames[data-n="4"] .gr-frame{width:min(84px,18vw)}.gr-frames[data-n="4"] .gr-arrow{width:9px;height:9px;border-width:3px 3px 0 0}
+.gr-end{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:8px}.gr-cheer{width:130px;height:130px}.gr-cheer .drawing{width:100%;height:100%}
+.gr-row{display:flex;gap:10px}.gr-row .drawing{width:76px;height:76px}
+.gr-frame{position:relative;width:min(100px,24vw);aspect-ratio:1;border:3px dashed #4A3426;border-radius:16px;background:#FFFFFF99;padding:4px}
+.gr-frame.now{border-style:solid;box-shadow:0 0 0 5px #5DBB63}
+.gr-frame.in{border-style:solid;animation:gr-in .45s ease-out}
+.gr-frame.pop{animation:gr-pop .6s ease-out}
+@keyframes gr-in{from{transform:translateY(-60px) scale(.8);opacity:.4}}
+@keyframes gr-pop{50%{transform:scale(1.18)}}
+.gr-big{width:150px;height:150px;margin:auto 0}.gr-big .drawing{width:100%;height:100%}
+.gr-big.perk{animation:gr-pop .4s ease-out}.gr-big.roll{animation:gr-roll .6s ease-in-out}
+button.gr-big{border:0;background:none;padding:0}
+.gr-got{display:flex;gap:4px;min-height:44px}.gr-got .drawing{width:44px;height:44px}
+@keyframes gr-roll{50%{transform:rotate(-160deg)}}
+.gr-tool{position:relative;z-index:2}.gr-tool.throw .drawing{animation:gr-throw .7s ease-in-out}
+@keyframes gr-throw{45%{transform:translateY(220px) scale(.7)}}.gr-big.dance{animation:gr-dance .5s ease-in-out 4}
+@keyframes gr-dance{25%{transform:rotate(-10deg) translateY(-8px)}75%{transform:rotate(10deg) translateY(-8px)}}
+@media (prefers-reduced-motion:reduce){.gr-card.wiggle,.gr-frame.in,.gr-frame.pop,.gr-big.perk,.gr-big.roll,.gr-big.dance,.gr-tool.throw .drawing{animation:none}}

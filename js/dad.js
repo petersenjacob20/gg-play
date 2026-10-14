@@ -395,6 +395,7 @@ export const LEVEL_LINES = {
   pizza: ['One topping, 1 to 3', 'Two toppings', 'Half and half, up to the max'],
   add: ['Up to 5', '6 to 10'],
   pattern: ['AB', 'AAB, ABB', 'ABC'],
+  grow: ['2 steps', '3 steps', 'Fill the ends', '4 steps + what next'],
   hide: ['In, on, under (2 spots)', '+ 2 more place words (3 spots)', 'Colour + where', 'Her turn to hide it'],
   says: ['Puppy says one move', 'Count the moves (2 to 5)', 'Two moves in a row', 'Listen for "Puppy says"'],
 };

@@ -9,7 +9,7 @@ export const ACTS = { letters, count, add, pattern };
 
 // Games that are not a quiz and have their own screen (Amendment p: Puppy Says). The ladder's act
 // names the screen. A game is built when its first act is a quiz act or one of these.
-export const SCREENS = { says: 'says', hide: 'hide', pizza: 'pizza' };
+export const SCREENS = { says: 'says', hide: 'hide', grow: 'grow', pizza: 'pizza' };
 export const PLAYABLE = { ...ACTS, ...SCREENS };
 
 // Compatibility for older tests: activity list in the old home order. Home itself reads games.json.

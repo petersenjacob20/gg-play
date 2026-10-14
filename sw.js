@@ -1,7 +1,8 @@
 // Offline: app shell cached first (build plan section 1).
 // Bump CACHE on every content or code change. Older gg- caches are deleted on activate;
-// caches of other apps on the same origin are never touched; nor are gg-pack- (game pack) caches.
-const CACHE = 'gg-v1-20261013of';
+// caches of other apps on the same origin are never touched. Game packs: only the current PACKS caches are kept and read.
+const CACHE = 'gg-v1-20261013og';
+const PACKS = ['gg-pack-hide-de39ef8666', 'gg-pack-grow-3e4c582d29']; // HIDE_CACHE, GROW_CACHE
 const ASSETS = [
   './',
   './audio/audio-manifest.json',
@@ -35,6 +36,7 @@ const ASSETS = [
   './audio/h-playground.mp3',
   './audio/h-says.mp3',
   './audio/h-hide.mp3',
+  './audio/h-grow.mp3',
   './audio/h-stories.mp3',
   './audio/hi-blackDog.mp3',
   './audio/hi-bunny.mp3',
@@ -278,7 +280,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('gg-') && k !== CACHE && !k.startsWith('gg-pack-')).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('gg-') && k !== CACHE && !PACKS.includes(k)).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
@@ -287,6 +289,8 @@ self.addEventListener('activate', (event) => {
 // Pet photos live only in IndexedDB and are shown through blob: URLs: the worker never caches,
 // stores or answers them (anything not plain http(s) is left alone), and nothing fetched is ever
 // added to the cache (only the fixed ASSETS list above).
+// answers come only from CACHE and the current PACKS
+const find = (req) => [CACHE, ...PACKS].reduce((p, n) => p.then((hit) => hit || caches.has(n).then((y) => y && caches.open(n).then((c) => c.match(req, { ignoreSearch: true })))), Promise.resolve());
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
@@ -294,9 +298,6 @@ self.addEventListener('fetch', (event) => {
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
   if (url.origin !== self.location.origin) return;
   event.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((hit) => {
-      if (hit) return hit;
-      return fetch(req).catch(() => (req.mode === 'navigate' ? caches.match('./index.html') : Response.error()));
-    }),
+    find(req).then((hit) => hit || fetch(req).catch(() => (req.mode === 'navigate' ? find('./index.html') : Response.error()))),
   );
 });
