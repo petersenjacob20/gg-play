@@ -7,7 +7,13 @@ import { activeProfile } from '../store.js';
 import { stepAt } from '../games.js';
 import * as K from '../kitchen.js';
 
+// window listeners added by render(); leave() (main.js calls it on the way out) removes them all
+let winOn = [];
+export function leave() { winOn.forEach(([t, f]) => removeEventListener(t, f)); winOn = []; }
+
 export function render(ctx) {
+  leave();
+  const onWin = (t, f) => { addEventListener(t, f); winOn.push([t, f]); };
   const snd = (...ids) => { if (ctx.audio) ctx.audio.play(ids); };
   const prefs = K.pizzaPrefs(ctx.state.pizza);
   const pl = activeProfile(ctx.state).levels.pizza;
@@ -30,8 +36,8 @@ export function render(ctx) {
   const draw = () => clear(pieBox).appendChild(drawing(K.pieArt(pie), { label: 'Pizza' }));
   let down = false;
   let drag = null, ghost = null; // a topping lifted from its button (1.1x, shadow) on its way to the pie
-  addEventListener('pointermove', (e) => { if (ghost) ghost.style.translate = `${e.clientX - 28}px ${e.clientY - 28}px`; });
-  addEventListener('pointerup', (e) => {
+  onWin('pointermove', (e) => { if (ghost) ghost.style.translate = `${e.clientX - 28}px ${e.clientY - 28}px`; });
+  onWin('pointerup', (e) => {
     const g = ghost; ghost = null;
     if (!drag) return;
     const [id, b] = drag; drag = null;
@@ -43,8 +49,26 @@ export function render(ctx) {
   });
   pieBox.addEventListener('pointerdown', (e) => { down = true; if (rub) rub(at(e)); });
   pieBox.addEventListener('pointermove', (e) => { if (down && rub) rub(at(e)); });
-  addEventListener('pointerup', () => { down = false; });
+  onWin('pointerup', () => { down = false; });
   const btn = (label, pic, on, cls = 'pz-btn') => h('button', { type: 'button', class: cls, 'aria-label': label, onclick: on }, pic, h('span', { class: 'pz-lbl', text: label }));
+  // crust, sauce and cheese choices: a tap counts on pointerup inside the button, since the browser can drop the
+  // click for a tap that lands soon after a finger rub (QA); click stays as the keyboard and fallback path, once only
+  let ghostClick = 0, dn; // after a pointerup pick, a late click lands on a button it never pressed: swallowed; a real tap starts on its own target
+  main.addEventListener('pointerdown', (e) => { dn = e.target; }, true);
+  main.addEventListener('click', (e) => { if (Date.now() - ghostClick < 600 && e.target !== dn) { e.stopPropagation(); e.preventDefault(); } }, true);
+  const pick = (label, pic, on) => {
+    let done = false, pid = null;
+    const go = () => { if (!done) { done = true; on(); } };
+    const b = btn(label, pic, go);
+    b.addEventListener('pointerdown', (e) => { pid = e.pointerId; });
+    b.addEventListener('pointerup', (e) => {
+      if (e.pointerId !== pid) return;
+      pid = null;
+      const r = b.getBoundingClientRect();
+      if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) { ghostClick = done ? ghostClick : Date.now(); go(); }
+    });
+    return b;
+  };
   const mini = (p) => drawing(K.pieArt(p));
   const next = () => { step += 1; down = false; show(); };
 
@@ -64,17 +88,17 @@ export function render(ctx) {
     rub = null; draw(); clear(row); bubble.textContent = '';
     if (s === 'base') {
       say.textContent = 'Pick a crust!';
-      K.BASES.forEach((b) => row.append(btn(b.label, mini({ base: b.id }), () => { pie.base = b.id; snd(K.CLIPS.pick); next(); })));
+      K.BASES.forEach((b) => row.append(pick(b.label, mini({ base: b.id }), () => { pie.base = b.id; snd(K.CLIPS.pick); next(); })));
     } else if (s === 'sauce') {
       say.textContent = 'Spread the sauce with your finger!';
       const got = new Set();
       rub = (xy) => { pie.spread.push(xy); draw(); if (K.cover(got, ...xy)) { pie.dabs = K.SAUCE_FULL; snd(K.CLIPS.pick); next(); } };
-      K.SAUCES.forEach((c) => row.append(btn(c.label, mini(K.fullPie(pie.base, c.id)), () => { pie.sauce = c.id; pie.dabs = K.SAUCE_FULL; snd(K.CLIPS.pick); next(); })));
+      K.SAUCES.forEach((c) => row.append(pick(c.label, mini(K.fullPie(pie.base, c.id)), () => { pie.sauce = c.id; pie.dabs = K.SAUCE_FULL; snd(K.CLIPS.pick); next(); })));
     } else if (s === 'cheese') {
       say.textContent = 'Sprinkle the cheese!';
       const got = new Set();
       rub = (xy) => { pie.shreds.push(xy); draw(); if (K.cover(got, ...xy, 12)) { pie.shreds = K.fullPie(0, 0, 'lots').shreds.concat(pie.shreds); next(); } };
-      K.CHEESES.forEach((c) => row.append(btn(c.label, mini(K.fullPie(pie.base, pie.sauce, c.id)), () => { pie.shreds = K.fullPie(0, 0, c.id).shreds; snd(K.CLIPS.pick); next(); })));
+      K.CHEESES.forEach((c) => row.append(pick(c.label, mini(K.fullPie(pie.base, pie.sauce, c.id)), () => { pie.shreds = K.fullPie(0, 0, c.id).shreds; snd(K.CLIPS.pick); next(); })));
     } else if (s === 'toppings') {
       say.textContent = K.orderText(order);
       snd(...order.flatMap((o) => [K.numClip(o.n), K.CLIPS.pick]));

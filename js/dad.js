@@ -119,6 +119,8 @@ function gate(ctx) {
 }
 
 function hasLock(ctx) { return !!(ctx.state && ctx.state.lock); }
+// A grown-up screen may show: no password set, or the lock is open now.
+export function grownUpOpen(ctx) { return !hasLock(ctx) || gate(ctx).isUnlocked(); }
 
 // Run a locked action: if no lock or already unlocked, run now; else show the password prompt.
 function withUnlock(ctx, action, back = 'menu') {
@@ -497,7 +499,7 @@ export function openDadPanel(ctx, view = 'menu') {
   if (view === 'confirm') {
     body = [
       h('h2', { id: 'sheet-title', text: 'Delete everything on this phone, including pet photos?' }),
-      h('p', { class: 'sheet-sub', text: 'Pet photos, pet names, family pets, stickers and settings for this game are removed from this phone.' }),
+      h('p', { class: 'sheet-sub', text: 'Pet photos, pet names, family pets, family voice clips, stickers and settings for this game are removed from this phone.' }),
       sheetBtn('Delete', async () => {
         await deleteAll();
         ctx.state = defaults();
@@ -612,6 +614,8 @@ export function openDadPanel(ctx, view = 'menu') {
       body.push(sheetBtn('Change grown-up password', () => withUnlock(ctx, () => openChangePassword(ctx))));
     }
     body.push(sheetBtn('Family pets', () => withUnlock(ctx, () => { closeDadPanel(); ctx.go('#pets'); })));
+    body.push(sheetBtn('Family voices', () => withUnlock(ctx, () => { closeDadPanel(); ctx.go('#voices'); }), '', { 'data-dad': 'voices' }));
+    body.push(h('p', { class: 'sheet-hint', text: 'Record family hellos and cheers. They stay on this phone.' }));
     body.push(sheetBtn('Levels', () => withUnlock(ctx, () => openDadPanel(ctx, 'levels'))));
     // Hello / Say pet names: require unlock when a password exists
     if (locked) {

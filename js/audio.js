@@ -25,13 +25,13 @@ export function clipFile(manifest, id) {
 }
 
 // A sequence is a list of clip ids and pauses ({ pause: ms }). Returns what will play and what is missing.
-export function planSequence(seq, manifest) {
+export function planSequence(seq, manifest, extra = null) {
   const items = [];
   const missing = [];
   for (const x of seq || []) {
     if (x && typeof x === 'object' && Number.isFinite(x.pause)) items.push({ pause: Math.max(0, x.pause) });
     else if (typeof x === 'string') {
-      if (playable(manifest, x)) items.push({ id: x });
+      if (playable(manifest, x) || (extra && extra(x))) items.push({ id: x });
       else missing.push(x);
     }
   }
@@ -54,7 +54,9 @@ export function estimateMs(seq, manifest = {}) {
   return ms;
 }
 
-export function createAudio({ enabled = true } = {}) {
+// family(id) (Family voices, voices.js): { key, blob } when a grown-up's clip on this phone stands
+// in for that clip id, else null and the app's own clip (or nothing) plays as before.
+export function createAudio({ enabled = true, family = null } = {}) {
   let manifest = {};
   let ac = null;
   let on = enabled;
@@ -73,7 +75,10 @@ export function createAudio({ enabled = true } = {}) {
     if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) manifest = {};
   }
 
+  const fam = (id) => (family ? family(id) : null);
   function load(id) {
+    const f = fam(id);
+    if (f) return loadFamily(f);
     if (buffers.has(id)) return Promise.resolve(buffers.get(id));
     if (loading.has(id)) return loading.get(id);
     const p = (async () => {
@@ -95,6 +100,18 @@ export function createAudio({ enabled = true } = {}) {
     })();
     loading.set(id, p);
     return p;
+  }
+
+  function loadFamily(f) {
+    if (buffers.has(f.key)) return Promise.resolve(buffers.get(f.key));
+    return f.blob.arrayBuffer().then((data) => new Promise((resolve, reject) => {
+      const r = ac.decodeAudioData(data, resolve, reject);
+      if (r && typeof r.then === 'function') r.then(resolve, reject);
+    })).then((buf) => {
+      for (const k of buffers.keys()) if (k.startsWith(f.key.replace(/:\d+$/, ':'))) buffers.delete(k);
+      buffers.set(f.key, buf);
+      return buf;
+    }).catch(() => null);
   }
 
   // Called from the first tap anywhere. Creates the AudioContext inside the gesture, plays one
@@ -129,7 +146,7 @@ export function createAudio({ enabled = true } = {}) {
     stop();
     const my = token;
     if (!on || !ac) return false;
-    const { items } = planSequence(seq, manifest);
+    const { items } = planSequence(seq, manifest, fam);
     if (!items.length) return false;
     const bufs = await Promise.all(items.map((x) => (x.id ? load(x.id) : null)));
     if (my !== token) return false;
@@ -161,7 +178,7 @@ export function createAudio({ enabled = true } = {}) {
   async function fx(seq) {
     const my = token;
     if (!on || !ac) return false;
-    const { items } = planSequence([].concat(seq), manifest);
+    const { items } = planSequence([].concat(seq), manifest, fam);
     if (!items.length) return false;
     const bufs = await Promise.all(items.map((x) => (x.id ? load(x.id) : null)));
     if (my !== token) return false;
@@ -214,7 +231,8 @@ export function createAudio({ enabled = true } = {}) {
     play,
     fx,
     stop,
-    has: (id) => playable(manifest, id),
+    has: (id) => playable(manifest, id) || !!fam(id),
+    hasFamily: (id) => !!fam(id),
     estimateMs: (seq) => estimateMs(seq, manifest),
     setEnabled(v) { on = Boolean(v); if (!on) stop(); },
     get enabled() { return on; },

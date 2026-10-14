@@ -119,6 +119,7 @@ export function render(ctx) {
     ctx.question = { says: true, skip: () => paw(), dadText: dadLine(says, call) };
     const seq = callSeq(says, call, lead());
     if (i === 0 && ctx.intro) { seq.unshift(ctx.intro, { pause: 300 }); ctx.intro = null; }
+    if (i === 0 && ctx.lead) { seq.unshift(ctx.lead, { pause: 300 }); ctx.lead = null; } // Family voices: Ready to play
     animate(call, my);
     playSeq(seq, my).then((ok) => {
       if (!ok || phase !== 'call') return;

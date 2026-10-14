@@ -79,6 +79,11 @@ export function playHello(ctx, character) {
   const hello = character.hello;
   const clip = typeof hello.clip === 'string' ? hello.clip : '';
   const isPet = isPetId(ctx.data, character.id);
+  // a grown-up's Family voices clip for this hello comes first (audio.js plays it in place of the app clip)
+  if (clip && ctx.audio && typeof ctx.audio.hasFamily === 'function' && ctx.audio.hasFamily(clip) && typeof ctx.audio.fx === 'function') {
+    ctx.audio.fx([clip]);
+    return 'family';
+  }
   if (isPet && ctx.state && ctx.state.sayNames !== false) {
     const typed = ctx.state.pets && ctx.state.pets[character.id] && typeof ctx.state.pets[character.id].name === 'string'
       ? ctx.state.pets[character.id].name.trim() : '';

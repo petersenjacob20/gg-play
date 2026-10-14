@@ -1,7 +1,7 @@
 // Offline: app shell cached first (build plan section 1).
 // Bump CACHE on every content or code change. Older gg- caches are deleted on activate;
 // caches of other apps on the same origin are never touched.
-const CACHE = 'gg-v1-20261013od';
+const CACHE = 'gg-v1-20261013oe';
 const ASSETS = [
   './',
   './audio/audio-manifest.json',
@@ -242,6 +242,7 @@ const ASSETS = [
   './js/pets.js',
   './js/photo-core.js',
   './js/photos.js',
+  './js/voices.js',
   './js/pics.js',
   './js/playground.js',
   './js/quiz.js',
@@ -250,6 +251,7 @@ const ASSETS = [
   './js/says.js',
   './js/screens/book.js',
   './js/screens/family.js',
+  './js/screens/voices.js',
   './js/screens/home.js',
   './js/screens/play.js',
   './js/screens/playground.js',

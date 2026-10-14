@@ -296,9 +296,25 @@ export function deletePhotoDB(env = globalThis) {
   });
 }
 
+// Family voices clips (voices.js) live in their own database; Delete my data removes it too.
+export const VOICE_DB_NAME = 'gg-voices';
+export function deleteVoiceDB(env = globalThis) {
+  return new Promise((resolve) => {
+    try {
+      const idb = env.indexedDB;
+      if (!idb) { resolve(false); return; }
+      const r = idb.deleteDatabase(VOICE_DB_NAME);
+      r.onsuccess = () => resolve(true);
+      r.onerror = () => resolve(false);
+      r.onblocked = () => { if (globalThis.setTimeout) globalThis.setTimeout(() => resolve(false), 3000); };
+    } catch { resolve(false); }
+  });
+}
+
 export async function deleteAll(env = globalThis) {
   try { env.localStorage.removeItem(KEY); } catch { /* ignore */ }
   await deletePhotoDB(env);
+  await deleteVoiceDB(env);
   try {
     if (env.caches) {
       const keys = await env.caches.keys();

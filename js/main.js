@@ -8,6 +8,7 @@ import * as book from './screens/book.js';
 import * as shelf from './screens/stories.js';
 import * as story from './screens/story.js';
 import * as pets from './screens/family.js';
+import * as voices from './screens/voices.js';
 import * as says from './screens/says.js';
 import * as playground from './screens/playground.js';
 import * as pizza from './screens/pizza.js';
@@ -21,10 +22,12 @@ import { storyById } from './story.js';
 import { gameById, isBuilt } from './games.js';
 import { ACTS, SCREENS, PLAYABLE } from './acts/index.js';
 import { loadPhotos, setPhotos, revokePhotoURLs, forgetAllPhotos } from './photos.js';
+import { loadVoices, setVoices, setVoiceData, forgetAllVoices, familyClip, createCuer } from './voices.js';
+const cuer = createCuer();
 
 // the routes that are a kid's game screen (with its round end); the Playground scene is added in render()
 const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'pizza']);
-const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, says, pizza, playground, letters: play, count: play };
+const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, voices, says, pizza, playground, letters: play, count: play };
 
 function paramFor(name, hash) {
   if (name === 'letters' || name === 'count') return name;
@@ -47,7 +50,7 @@ const ctx = {
   // a zone gate swaps the place without a new history entry, so Back still goes to the pick screen
   replace(hash) { if (location.hash === hash) render(); else location.replace(hash); },
   refresh() { render(); },
-  afterDelete() { forgetAllPhotos(); location.hash = '#home'; location.reload(); },
+  afterDelete() { forgetAllPhotos(); forgetAllVoices(); location.hash = '#home'; location.reload(); },
 };
 
 let current = null;
@@ -109,6 +112,11 @@ function render() {
   }
   if (name === 'story' && !storyById(ctx.data.stories, ctx.param)) { name = 'stories'; ctx.param = null; }
   const mod = ROUTES[name];
+  // Family voices: Ready to play leads a game's first line (or plays at once on the Playground);
+  // Bye-bye plays on getting home. Only when that slot has a clip; empty stays silent.
+  const voiceCue = cuer(ctx, current ? current.name : null, name);
+  ctx.lead = voiceCue === 'p-ready' && name !== 'playground' ? voiceCue : null;
+  const cueNow = voiceCue && !ctx.lead ? voiceCue : null;
   closeDadPanel();
   if (ctx.audio) ctx.audio.stop();
   if (current && current.mod.leave) current.mod.leave(ctx);
@@ -123,6 +131,7 @@ function render() {
   const root = document.getElementById('app');
   const out = mod.render(ctx);
   root.replaceChildren(...[].concat(out).flat(Infinity).filter(Boolean));
+  if (cueNow) ctx.audio.fx([cueNow]);
   window.scrollTo(0, 0);
 }
 
@@ -165,8 +174,10 @@ async function start() {
     return;
   }
   setPhotos(await loadPhotos());
+  setVoiceData(ctx.data);
+  setVoices(await loadVoices());
   ctx.gate = createGate();
-  ctx.audio = createAudio({ enabled: ctx.state.sound });
+  ctx.audio = createAudio({ enabled: ctx.state.sound, family: familyClip });
   await ctx.audio.init();
   const unlock = () => ctx.audio.unlock();
   document.addEventListener('pointerdown', unlock, { capture: true });

@@ -245,6 +245,7 @@ export function render(ctx) {
     const say = () => {
       const seq = [...q.prompt];
       if (ctx.intro) { seq.unshift(ctx.intro, { pause: 300 }); ctx.intro = null; }
+      if (ctx.lead) { seq.unshift(ctx.lead, { pause: 300 }); ctx.lead = null; } // Family voices: Ready to play
       const ms = ctx.audio ? ctx.audio.estimateMs(seq) : 2500;
       cue(speaker, ms);
       if (sign) cue(sign, ms, 'wiggle');
