@@ -1,8 +1,12 @@
 // Offline: app shell cached first (build plan section 1).
-// Bump CACHE on every content or code change. Older gg- caches are deleted on activate;
-// caches of other apps on the same origin are never touched. Game packs: only the current PACKS caches are kept and read.
-const CACHE = 'gg-v1-20261013og';
+// Bump CACHE on every content or code change. On activate only Family Games' own stale caches are deleted:
+// a name must start with one of OWN (the app shell gg-v1-, the Hide and Grow It! packs) to be removed.
+// Caches of other apps on the same origin (fc-, pr-, any other gg- name) are never touched.
+// Game packs: only the current PACKS caches are kept and read.
+const CACHE = 'gg-v1-20261015oh';
 const PACKS = ['gg-pack-hide-de39ef8666', 'gg-pack-grow-3e4c582d29']; // HIDE_CACHE, GROW_CACHE
+const OWN = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-'];
+const stale = (k) => OWN.some((p) => k.startsWith(p)) && k !== CACHE && !PACKS.includes(k);
 const ASSETS = [
   './',
   './audio/audio-manifest.json',
@@ -280,7 +284,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('gg-') && k !== CACHE && !PACKS.includes(k)).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter(stale).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
