@@ -3,7 +3,7 @@
 // a name must start with one of OWN (the app shell gg-v1-, the Hide and Grow It! packs) to be removed.
 // Caches of other apps on the same origin (fc-, pr-, any other gg- name) are never touched.
 // Game packs: only the current PACKS caches are kept and read.
-const CACHE = 'gg-v1-20261015pn';
+const CACHE = 'gg-v1-20261015pb';
 const PACKS = ['gg-pack-hide-f68021e625', 'gg-pack-grow-7447d8765e']; // HIDE_CACHE, GROW_CACHE
 const OWN = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-'];
 const stale = (k) => OWN.some((p) => k.startsWith(p)) && k !== CACHE && !PACKS.includes(k);

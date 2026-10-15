@@ -125,6 +125,7 @@ function kitty() {
 }
 
 // ---- white lop bunny (one, or a pair where one has an ear flipped up) ------------------------
+// data-ear on each ear says its pose (up | down), so the ear rule is tested, not guessed from paths.
 function oneBunny(flip) {
   const W = '#FFFFFF'; const EAR = '#A08C7A'; const PATCH = '#D2AD88';
   return g('char',
@@ -138,18 +139,18 @@ function oneBunny(flip) {
       el('ellipse', { cx: 51, cy: 49, rx: 6, ry: 5, fill: PATCH }),
       el('ellipse', { cx: 69, cy: 49.5, rx: 5, ry: 4.5, fill: PATCH }),
       el('ellipse', { cx: 60, cy: 59, rx: 7.5, ry: 5, fill: PATCH }),
-      g('ear l', ell(37, 58, 8, 21, EAR, { transform: 'rotate(14 37 58)' })),
-      flip ? g('ear r flip', ell(80, 24, 7, 18, EAR, { transform: 'rotate(32 80 24)' }))
-        : g('ear r', ell(83, 58, 8, 21, EAR, { transform: 'rotate(-14 83 58)' })),
+      el('g', { class: 'ear l', 'data-ear': 'down' }, ell(37, 58, 8, 21, EAR, { transform: 'rotate(14 37 58)' })),
+      flip ? el('g', { class: 'ear r flip', 'data-ear': 'up' }, ell(80, 24, 7, 18, EAR, { transform: 'rotate(32 80 24)' }))
+        : el('g', { class: 'ear r', 'data-ear': 'down' }, ell(83, 58, 8, 21, EAR, { transform: 'rotate(-14 83 58)' })),
       el('ellipse', { class: 'nose', cx: 60, cy: 56.5, rx: 3.2, ry: 2.3, fill: '#E88FA5' }),
       line('M57 60q3 3 6 0', INK, 2),
       eye(51, 49),
       eye(69, 49)));
 }
-// The second bunny on its own: the same white lop drawing with one ear flipped up.
-const bunny2 = () => oneBunny(true);
+// Bunny: a lop with one ear up and one floppy ear down. Second Bunny: the same lop with both ears down.
+const bunny2 = () => oneBunny(false);
 function bunny({ pair = false } = {}) {
-  if (!pair) return oneBunny(false);
+  if (!pair) return oneBunny(true);
   return g('pair',
     el('g', { transform: 'translate(-2 34) scale(0.68)' }, oneBunny(false)),
     el('g', { transform: 'translate(40 34) scale(0.68)' }, oneBunny(true)));
