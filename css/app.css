@@ -1178,3 +1178,6 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .tile-art .hide-pic .drawing{width:100%;height:100%;display:block}
 .tile-art .tile-bush{position:absolute;inset:0;z-index:2}
 .tile-art .tile-ears{position:absolute;left:10%;top:-30%;width:80%;height:96%;z-index:1;clip-path:inset(0 0 46% 0)}
+.hello-bop{animation:hello-bop .4s ease-out}
+@keyframes hello-bop{40%{scale:1.12 .9}70%{scale:.95 1.08}}
+@media (prefers-reduced-motion:reduce){.hello-bop{animation:none}}

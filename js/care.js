@@ -54,10 +54,21 @@ const P = (d, fill, o = O) => ['path', { d, fill, ...o }];
 const C = (cx, cy, r, fill, o = O) => ['circle', { cx, cy, r, fill, ...o }];
 const g = (...k) => ['g', {}, ...k];
 const N = {};
+const OUCH = 'M50 24V8M24 36L12 24M76 36l12-12';
+const MUD = '#C9A66B'; const MUDO = { stroke: '#A8834A', 'stroke-width': 2.5, 'stroke-linejoin': 'round' };
 export const CARE_ART = {
-  mud: () => g(P('M30 40q4-16 22-14q14-8 22 6q14 4 10 20q6 14-10 18q-8 12-24 4q-18 4-20-12q-12-8 0-22z', '#8A5A34'), C(40, 44, 5, '#A87449', N), C(62, 60, 4, '#6E4526', N)),
-  booboo: () => g(P('M28 50q0-14 22-14t22 14q0 14-22 14t-22-14z', '#F7A8B8', { stroke: '#E57A93', 'stroke-width': 3 }),
-    ['path', { d: 'M38 46l8 8M48 44l8 8M58 46l6 6', stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round' }]),
+  // a light tan mud splash: a flat splat with drip tails and specks; some carry a little green leaf
+  mud: (leaf) => g(P('M22 44q-6-12 8-14q4-12 18-8q10-8 20 2q14-2 12 12q10 8 0 16q2 10-8 10l-2 12q-3 4-6 0l-1-10q-6 2-10-2l-2 16q-3 4-6 0l-1-16q-10 0-10-10q-12-2-12-8z', MUD, MUDO),
+    C(14, 28, 3, MUD, MUDO), C(86, 30, 2.5, MUD, MUDO), C(84, 70, 2, MUD, MUDO), C(20, 70, 2.5, MUD, MUDO),
+    leaf ? P('M44 40q10-12 22-6q-8 12-22 6z', '#7CC36B', { stroke: '#3F9A4A', 'stroke-width': 2 }) : null),
+  // a cartoon bump (a bonk): a light pink circle on the fur with short ouch lines around it
+  // a white halo under the circle and the lines keeps it clear on dark fur (black or chocolate dogs)
+  bump: (_, o = OUCH) => g(C(50, 58, 29, '#FFFFFF', N), ['path', { d: o, stroke: '#FFFFFF', 'stroke-width': 12, 'stroke-linecap': 'round' }],
+    C(50, 58, 24, '#FBD3DD', { stroke: '#D9748F', 'stroke-width': 4 }), C(42, 50, 6, '#FFFFFF', N),
+    ['path', { d: o, stroke: '#D9748F', 'stroke-width': 6, 'stroke-linecap': 'round' }]),
+  // after a spot is cleared: blue drops and sparkles
+  shine: () => g(...[[26, 40], [74, 36], [50, 70]].map(([x, y]) => P(`M${x} ${y - 9}q-7 10 0 14q7-4 0-14z`, '#7CC4EE', { stroke: '#4AA3DF', 'stroke-width': 2 })),
+    ...[[50, 22, 9], [18, 66, 7], [82, 64, 7]].map(([x, y, r]) => P(`M${x} ${y - r}l${r * 0.3} ${r * 0.7}l${r * 0.7} ${r * 0.3}l-${r * 0.7} ${r * 0.3}l-${r * 0.3} ${r * 0.7}l-${r * 0.3}-${r * 0.7}l-${r * 0.7}-${r * 0.3}l${r * 0.7}-${r * 0.3}z`, '#FFE680', { stroke: '#F2B638', 'stroke-width': 1.5 }))),
   bandage: () => ['g', { transform: 'rotate(-20 50 50)' }, P('M14 38h72q8 0 8 12t-8 12H14q-8 0-8-12t8-12z', '#F2C994'), P('M36 38h28v24H36z', '#FBE3C2'),
     C(44, 46, 2, '#C99A66', N), C(56, 46, 2, '#C99A66', N), C(44, 54, 2, '#C99A66', N), C(56, 54, 2, '#C99A66', N)],
   hose: () => g(P('M50 96q-30 0-30-18t28-14q22 4 22-14', 'none', { ...O, stroke: '#3F9A4A', 'stroke-width': 12 }), P('M60 52l-4-30h16l-4 30z', '#FFD84A'), P('M54 22h20v-8H54z', '#F29E38'),
@@ -68,3 +79,10 @@ export const CARE_ART = {
   stars: () => g(...[[14, 20, 9], [84, 16, 11], [90, 70, 8], [10, 76, 10], [50, 6, 7]].map(([x, y, r]) => P(`M${x} ${y - r}l${r * 0.3} ${r * 0.7}l${r * 0.7} ${r * 0.3}l-${r * 0.7} ${r * 0.3}l-${r * 0.3} ${r * 0.7}l-${r * 0.3}-${r * 0.7}l-${r * 0.7}-${r * 0.3}l${r * 0.7}-${r * 0.3}z`, '#FFD84A', { stroke: '#F29E38', 'stroke-width': 2 }))),
   drops: () => g(...[[30, 30], [52, 18], [72, 32], [40, 54], [64, 56]].map(([x, y]) => P(`M${x} ${y - 8}q-7 10 0 14q7-4 0-14z`, '#7CC4EE', { stroke: '#4AA3DF', 'stroke-width': 2 }))),
 };
+
+// sad eyebrows over a pet's own eyes (read from its drawing, 120 x 120): the inner ends lifted; empty when it has none
+export function brows(tree) {
+  const eyes = []; const walk = (t) => { if (!Array.isArray(t)) return; if (typeof t[0] === 'string') { if (t[1] && t[1].class === 'eye' && t[1].r < 3.5) eyes.push([t[1].cx, t[1].cy]); t.slice(2).forEach(walk); } else t.forEach(walk); };
+  walk(tree); eyes.sort((a, b) => a[0] - b[0]);
+  return eyes.slice(0, 2).map(([x, y], i) => { const s = i ? -1 : 1; return ['path', { d: `M${x - 6 * s} ${y - 6}L${x + 5 * s} ${y - 10}`, stroke: INK, 'stroke-width': 2.5, 'stroke-linecap': 'round', fill: 'none' }]; });
+}

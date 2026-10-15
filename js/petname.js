@@ -1,9 +1,6 @@
-// Pet names (Amendment pn): one helper for every place a pet is shown or said. The name is the one
-// Dad typed in Family pets (gg.v1 pets[id].name, on this phone only); without one, the neutral default
-// label. Speech order: the grown-up's Family voices clip for that slot, else an on-device voice saying
-// the line with the name (localService only, Say pet names on), else the game's own clip.
-// Names are never logged, put in a URL or title, cached or sent anywhere.
-import { speakLocal } from './character.js';
+// Pet names (Amendment pn): the name Dad typed (gg.v1, this phone only), else the default label. Speech: Family clip,
+// else on-device voice (localService, Say pet names on), else the game clip. Names are never logged, cached or sent.
+import { speakLocal, characterById } from './character.js';
 
 let get = () => null;
 export function usePetState(fn) { get = typeof fn === 'function' ? fn : () => fn; }
@@ -35,8 +32,7 @@ export const helloPrompt = (data, id) => `Hi, I'm ${petLabel(data, id)}!`;
 
 const waitSpeech = (u) => Promise.race([new Promise((r) => { u.onend = r; u.onerror = r; }), new Promise((r) => setTimeout(r, SPEECH_MAX_MS))]);
 
-// Say a line about one pet. slot: the app clip a Family voices clip may stand in for; text has
-// {name}; clips: the game's own sequence. Resolves 'family' | 'speech' | 'clip' | 'skip'.
+// Say a line about a pet (text with {name}): Family clip for slot, else on-device speech, else clips.
 export async function petSpeak(ctx, { id, text, clips = [], slot = '', pitch = 1, rate = 1 }) {
   const a = ctx && ctx.audio;
   if (slot && a && typeof a.hasFamily === 'function' && a.hasFamily(slot)) { await a.play([slot]); return 'family'; }
@@ -49,9 +45,7 @@ export async function petSpeak(ctx, { id, text, clips = [], slot = '', pitch = 1
   return 'skip';
 }
 
-// Hide and Seek: the joined call (clip ids) as words, with the pet hider's typed name. Returns
-// { lead, text } (lead: clips before the first word, e.g. the game intro) or null when no pet
-// hider in the call has a sayable name or a piece has no words.
+// Hide's call as words with the pet hider's typed name: { lead, text } (lead: clips before the first word), or null.
 export function hideText(hide, data, seq, state = cur()) {
   const c = hide.clips;
   const words = new Map([[c.where, 'Where is'], [c.tap, 'tap'], [c.put, 'Put'], [c.yourTurn, 'Your turn to hide!'], [c.findAll, 'Find all my friends!']]);
@@ -92,4 +86,26 @@ export async function hidePlay(ctx, hide, seq) {
     if (u) { await waitSpeech(u); return true; }
   }
   return a ? a.play(seq) : true;
+}
+
+// Hello tap: a tap on a .pet[data-pet] that means nothing else (no control, not a quiet screen) says hello: Family clip,
+// else on-device "Hi, I'm <name or label>!", else hi-<id>. Same pet again within HELLO_MS: ignored.
+export const HELLO_MS = 1500;
+const NO = 'button,a,input,label,[role=button],.count-pup';
+const QUIET = ['playground', 'says', 'pets', 'voices'];
+let last = {};
+export function sayHello(ctx, id, now = Date.now()) {
+  const a = ctx.audio || {}; const st = ctx.state || {}; const c = characterById(ctx.data, id); const k = `hi-${id}`;
+  if (!c || st.sound === false || (last.id === id && now - last.at < HELLO_MS)) return 'skip';
+  last = { id, at: now };
+  if (a.hasFamily && a.hasFamily(k)) return a.fx([k]), 'family';
+  if (c.kind !== 'friend' && st.sayNames !== false && (st.pets || {})[id]?.on !== false && speakLocal(`Hi, I'm ${sayName(id, st) || c.label}!`, c.hello)) return 'speech';
+  return a.fx ? (a.fx([k]), 'clip') : 'skip';
+}
+export const helloAt = (t, screen) => !QUIET.includes(screen) && !t.closest(NO) && t.closest('.pet[data-pet]');
+export function bindHello(doc, ctx) {
+  doc.addEventListener('click', (e) => {
+    const el = !e.defaultPrevented && e.target.closest && helloAt(e.target, doc.body.dataset.screen);
+    if (el) { el.classList.remove('hello-bop'); void el.offsetWidth; el.classList.add('hello-bop'); sayHello(ctx(), el.dataset.pet); }
+  });
 }

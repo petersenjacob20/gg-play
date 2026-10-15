@@ -1,7 +1,4 @@
-// Character Fun n1 (Amendment n, design.md §13): hello on host arrive, right-answer tricks.
-// Friends use recorded clips. Pets use default-label clips, or on-device speech for Dad's typed
-// name when Say pet names is on — only SpeechSynthesisVoice.localService === true. Names are
-// never logged, put in a URL/title, cached by the SW, or sent anywhere.
+// Character Fun n1 (Amendment n, §13): hellos and tricks. Pet names are spoken only by a localService voice, never sent.
 
 export const HELLO_MAX_MS = 1500;
 
@@ -16,9 +13,7 @@ export function pickLocalVoice(synth = globalThis.speechSynthesis) {
   return en;
 }
 
-// Speak a short line with an on-device voice only, with pitch/rate. Returns the utterance when one
-// was started, else null (no speech, no local voice, or it failed). Cancels any prior utterance.
-// Never logs the text. Used by the hello ("I'm <name>!") and Puppy Says' lead ("<name> says...").
+// Speak a line with an on-device voice only (cancels any prior); the utterance, or null. Never logs the text.
 export function speakLocal(text, { pitch = 1, rate = 1, synth = globalThis.speechSynthesis } = {}) {
   if (!synth || typeof synth.speak !== 'function') return null;
   const t = typeof text === 'string' ? text.trim() : '';
@@ -41,16 +36,14 @@ export function speakLocal(text, { pitch = 1, rate = 1, synth = globalThis.speec
   }
 }
 
-// Speak "I'm <name>!" with pitch/rate. Returns true if an utterance was started.
-// Cancels any prior utterance. Never logs the name.
+// Speak "I'm <name>!"; true if started.
 export function speakPetHello(name, { pitch = 1, rate = 1, synth = globalThis.speechSynthesis } = {}) {
   const n = typeof name === 'string' ? name.trim() : '';
   if (!n) return false;
   return Boolean(speakLocal(`I'm ${n}!`, { pitch, rate, synth }));
 }
 
-// The name Dad typed for a pet, when the voice may say it (Amendment n): Say pet names on, Sound on,
-// the pet switched on and a name typed. Otherwise '' (the default-label clip plays instead).
+// Dad's typed name when the voice may say it (Say pet names and Sound on, pet on), else ''.
 export function speakableName(state, id) {
   if (!state || state.sayNames === false || state.sound === false) return '';
   const p = state.pets && state.pets[id];

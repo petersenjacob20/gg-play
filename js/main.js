@@ -22,7 +22,7 @@ import { gameById, isBuilt } from './games.js';
 import { ACTS, SCREENS, PLAYABLE } from './acts/index.js';
 import { loadPhotos, setPhotos, revokePhotoURLs, forgetAllPhotos } from './photos.js';
 import { loadVoices, setVoices, setVoiceData, forgetAllVoices, familyClip, createCuer } from './voices.js';
-import { usePetState } from './petname.js';
+import { usePetState, bindHello } from './petname.js';
 const cuer = createCuer();
 
 // the routes that are a kid's game screen (with its round end); the Playground scene is added in render()
@@ -177,7 +177,7 @@ async function start() {
     setGames(ctx.data.games);
     setPlayground(ctx.data);
     ctx.state = load();
-    usePetState(() => ctx.state);
+    usePetState(() => ctx.state); bindHello(document, () => ctx);
   } catch {
     document.getElementById('app').textContent = 'Could not load the game. Reload once.';
     return;

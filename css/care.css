@@ -10,7 +10,10 @@
 .pc-box.cheer .pc-pet{animation:pc-hop .7s ease-out 2}
 .pc-spot{position:absolute;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;transition:opacity .25s,scale .25s;touch-action:none}
 .pc-mark{display:block;width:70px;height:70px;margin:auto;pointer-events:none}
-.pc-spot.booboo .pc-mark{width:46px;height:46px}
+.pc-spot.bump .pc-mark{width:50px;height:50px}
+.pc-brows{position:absolute;inset:0;pointer-events:none}
+.pc-brows .drawing,.pc-shine .drawing{width:100%;height:100%;display:block}
+.pc-shine{position:absolute;width:76px;height:76px;margin:-38px 0 0 -38px;pointer-events:none;animation:pc-fade .9s forwards}
 .pc-spot.gone{opacity:0!important;scale:.4;pointer-events:none}
 .pc-spot.glow{box-shadow:0 0 0 5px #FFD84A}
 .pc-drops,.pc-bandage{position:absolute;width:64px;height:64px;margin:-32px 0 0 -32px;pointer-events:none}

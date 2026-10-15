@@ -10,9 +10,9 @@ import { pickStickers } from '../engine.js';
 import { roundEnd } from '../reward.js';
 import { getBook, activeProfile } from '../store.js';
 import { gameById, ladderMax, stepAt, keysForLevel } from '../games.js';
-import { CARE_ART, SPRAY_MS, pickPet, makeRound, spray, fade, hitSpot, levelAfter } from '../care.js';
+import { CARE_ART, SPRAY_MS, pickPet, makeRound, spray, fade, hitSpot, levelAfter, brows } from '../care.js';
 
-export const CARE_CACHE = 'gg-pack-care-1c28dd561b';
+export const CARE_CACHE = 'gg-pack-care-bfa718de1c';
 export const CARE_PACK = ['./js/screens/care.js', './js/care.js', './data/care.json', './css/care.css'];
 export async function ready(ctx) {
   const get = async (f) => { const r = await fetch(`./data/${f}`, { cache: 'reload' }); if (!r.ok) throw new Error(f); return r.json(); };
@@ -30,7 +30,7 @@ export async function ready(ctx) {
 
 export const CHEER_MS = 2200; // the clean pet hops and cheers, then the surprise box
 const at = (el, s) => { el.style.left = `${s.x}%`; el.style.top = `${s.y}%`; return el; };
-const pic = (id, cls) => h('span', { class: cls, 'aria-hidden': 'true' }, drawing(CARE_ART[id](), { box: '0 0 100 100' }));
+const pic = (id, cls, v) => h('span', { class: cls, 'aria-hidden': 'true' }, drawing(CARE_ART[id](v), { box: '0 0 100 100' }));
 
 export function render(ctx) {
   const data = ctx.data; const cd = data.care;
@@ -57,14 +57,16 @@ export function render(ctx) {
     round = makeRound(kind, level, cd.at, pet); helped = false; last = {};
     const name = petLabel(data, pet);
     main.dataset.phase = 'play'; main.dataset.kind = kind; main.dataset.pet = pet;
-    box = h('div', { class: 'pc-box' }, h('div', { class: 'pc-pet' }, drawing(drawChar(pet), { label: name })),
-      ...round.spots.map((s) => at(h('button', { type: 'button', class: `pc-spot ${kind === 'bath' ? 'mud' : 'booboo'}`, 'data-spot': String(s.i), 'aria-label': kind === 'bath' ? 'Mud' : 'Boo-boo',
-        onclick: () => hit(s.i) }, pic(kind === 'bath' ? 'mud' : 'booboo', 'pc-mark')), s)));
+    const face = kind === 'heal' ? [h('div', { class: 'pc-brows', 'aria-hidden': 'true' }, drawing(['g', {}, ...brows(drawChar(pet))]))] : [];
+    main.dataset.face = kind === 'heal' ? 'sad' : '';
+    box = h('div', { class: 'pc-box' }, h('div', { class: 'pc-pet' }, drawing(drawChar(pet), { label: name })), ...face,
+      ...round.spots.map((s) => at(h('button', { type: 'button', class: `pc-spot ${kind === 'bath' ? 'mud' : 'bump'}`, 'data-spot': String(s.i), 'aria-label': kind === 'bath' ? 'Mud' : 'Bump',
+        onclick: () => hit(s.i) }, pic(kind === 'bath' ? 'mud' : 'bump', 'pc-mark', s.i % 2)), s)));
     tool = h('button', { type: 'button', class: 'pc-tool', 'data-tool': kind === 'bath' ? 'hose' : 'bottle', 'aria-label': kind === 'bath' ? 'Hose' : 'Healer bottle' }, pic(kind === 'bath' ? 'hose' : 'bottle', 'pc-tool-art'));
     drag(tool);
     stage.replaceChildren(box, h('div', { class: 'pc-dock' }, tool));
     ctx.question = { care: true, showAnswer: () => { helped = true; box.querySelectorAll('.pc-spot').forEach((b) => b.classList.add('glow')); }, skip: () => { helped = true; done(); },
-      dadText: kind === 'bath' ? `Bath time: spray the mud off ${name}.` : `Heal: spray ${name}'s boo-boos, then a bandage.` };
+      dadText: kind === 'bath' ? `Bath time: spray the mud off ${name}.` : `Heal: spray ${name}'s bumps, then a bandage.` };
     petSpeak(ctx, { id: pet, text: cd.lines[kind], clips: ['fx-giggle'] });
   }
   // one spray on spot i: it fades, then goes; a healed spot gets a bandage; all gone: the cheer
@@ -77,7 +79,7 @@ export function render(ctx) {
     if (Date.now() - noise > 350) { noise = Date.now(); fx(cd.fx[round.kind]); }
     if (r.gone) {
       b.classList.add('gone'); b.disabled = true;
-      if (round.kind === 'heal') { bandage(s); }
+      if (round.kind === 'heal') bandage(s); else { const w = at(pic('shine', 'pc-shine'), s); box.append(w); later(() => w.remove(), 900); }
     }
     if (r.done) done();
   }
@@ -101,6 +103,7 @@ export function render(ctx) {
     main.dataset.phase = 'clean'; ctx.question = null;
     box.querySelectorAll('.pc-spot').forEach((b) => { b.classList.add('gone'); b.disabled = true; });
     if (round.kind === 'heal') round.spots.forEach((s) => { if (!box.querySelector(`[data-bandage="${s.i}"]`)) bandage(s); });
+    main.dataset.face = round.kind === 'heal' ? 'smile' : ''; box.querySelectorAll('.pc-brows').forEach((b) => b.remove());
     box.classList.add('cheer'); box.append(pic('stars', 'pc-stars')); fx('fx-confetti');
     const lines = cd.lines[`${round.kind}Done`];
     const line = lines[session.n++ % lines.length];

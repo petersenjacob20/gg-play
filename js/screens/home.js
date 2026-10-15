@@ -29,18 +29,13 @@ function clipFor(game, data) {
 }
 
 export function render(ctx) {
-  const all = [...ctx.data.pets, ...ctx.data.friends];
   const ids = parade(ctx.data, ctx.state);
   const b2 = ctx.state.pets.bunny2;
   const pairOk = (!b2 || b2.on !== false) && !ids.includes('bunny2');
   const row = h('div', { class: 'parade' }, ids.map((id, i) => {
     const v = petView(ctx.data, id, 'idle', { pair: id === 'bunny' && pairOk && Math.random() < 0.5 });
     v.classList.add('walk-in', `delay-${i}`);
-    const who = all.find((p) => p.id === id);
-    v.addEventListener('pointerdown', () => {
-      setPose(v, 'happy', 900);
-      if (ctx.audio && who) ctx.audio.play([who.sound]);
-    });
+    v.addEventListener('pointerdown', () => setPose(v, 'happy', 900)); // the hello comes from the hello tap (petname.js)
     return v;
   }));
   const games = builtGames(ctx.data.games, PLAYABLE);
