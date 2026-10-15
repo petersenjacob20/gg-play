@@ -1,7 +1,7 @@
-// Family voices (Dad's screen, reached from Dad settings behind the grown-up lock): one row per slot
-// with Record / Stop, Pick a file, Play, Clear. The microphone is asked for only when Record is
-// tapped. Clips stay in this phone's IndexedDB (voices.js); an empty slot plays the app's own sound.
+// Family voices (Dad, behind the lock): a row per slot; mic asked only on Record; clips in IndexedDB.
 import { h } from '../dom.js';
+import { nameBox, leave as flushName } from './family.js';
+import { helloPrompt } from '../petname.js';
 import { openSheet, closeDadPanel, sheetBtn, grownUpOpen } from '../dad.js';
 import {
   voiceSlots, hasVoice, voiceCount, voiceBlob, rememberVoice, forgetVoice,
@@ -132,7 +132,16 @@ export function render(ctx) {
       status: h('p', { class: 'pc-status', role: 'status', 'aria-live': 'polite' }),
     };
     row.el.append(h('div', { class: 'voice-head' }, h('strong', { class: 'voice-label', text: slot.label }), row.state));
-    if (slot.prompt) row.el.append(h('p', { class: 'voice-prompt', text: `Say: “${slot.prompt}”` }));
+    const p = slot.prompt && ctx.data.pets[+slot.id.slice(4) - 1];
+    if (p) {
+      const say = h('p', { class: 'voice-prompt', text: `Say: “${slot.prompt}”` });
+      const st = ctx.state.pets[p.id] ||= { on: true, name: '' };
+      if (!st.name) {
+        const box = nameBox(ctx, p, st, () => { say.textContent = `Say: “${helloPrompt(ctx.data, p.id)}”`; });
+        row.el.append(h('label', { class: 'pc-name', for: `name-${p.id}`, text: "Pet's name" }), box);
+      }
+      row.el.append(say);
+    }
     if (slot.note) row.el.append(h('span', { class: 'voice-note', text: slot.note }));
     row.el.append(row.btns, row.status);
     rows.set(slot.id, row);
@@ -153,6 +162,8 @@ export function render(ctx) {
     h('header', { class: 'dad-head' },
       h('button', { type: 'button', class: 'dad-back', onclick: () => ctx.go('#home') }, '\u2039 Done'),
       h('h1', { text: 'Family voices' })),
+    ctx.data.pets.some((p) => { const t = ctx.state.pets[p.id]; return !t || (t.on !== false && !t.name); })
+      && h('button', { type: 'button', class: 'photo-btn voice-hint', onclick: () => ctx.go('#pets') }, 'Tap to add pet names'),
     h('p', { class: 'dad-sub', text: "Clips stay on this phone. They're never sent anywhere." }),
     count,
     h('p', { class: 'dad-note voice-tip', text: 'Tip: somewhere quiet, phone a hand away, one short happy line. Each clip is trimmed and evened out.' }),
@@ -160,7 +171,8 @@ export function render(ctx) {
     h('div', { class: 'voice-rows' }, list));
 }
 
-export function leave() {
+export function leave(ctx) {
+  flushName(ctx);
   stopRec(false);
   stopPlayer();
 }

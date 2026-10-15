@@ -1,8 +1,4 @@
-// Family pets (Dad's screen, design.md sections 5 and 6c): 8 pet cards, each with its picture (the
-// photo in its sticker frame, or the drawing), an "In our family" toggle, a name field (max 20
-// characters, placeholder = generic label) and Add photo / Change photo / Remove photo.
-// Names are stored in gg.v1 on this phone only, shown here as text, and never spoken. Photos are
-// stored on this phone only (gg-photos) and never uploaded; the picked file itself is never kept.
+// Family pets (Dad): 8 cards, each with art, on/off, a name (gg.v1) and a photo (gg-photos), this phone only.
 import { h, drawing } from '../dom.js';
 import { drawChar } from '../pets.js';
 import { capName, NAME_MAX } from '../store.js';
@@ -16,6 +12,23 @@ import {
 } from '../photos.js';
 
 let saveTimer = null;
+// Name box (Voices too): capName, trim, gg.v1 pets[id].name
+export function nameBox(ctx, p, st, on) {
+  const input = h('input', {
+    type: 'text', class: 'name-input', id: `name-${p.id}`, maxlength: String(NAME_MAX), placeholder: p.label,
+    autocomplete: 'off', autocapitalize: 'words', spellcheck: 'false', enterkeyhint: 'done', value: st.name,
+    oninput: () => {
+      const v = capName(input.value);
+      if (v !== input.value) input.value = v;
+      st.name = v.trim();
+      on();
+      clearTimeout(saveTimer); saveTimer = setTimeout(() => ctx.save(), 250);
+    },
+    onchange: () => { clearTimeout(saveTimer); ctx.save(); },
+    onkeydown: (e) => { if (e.key === 'Enter') input.blur(); },
+  });
+  return input;
+}
 
 function art(p) {
   const url = photoURL(p.id);
@@ -24,7 +37,6 @@ function art(p) {
 }
 
 export function render(ctx) {
-  const save = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => ctx.save(), 250); };
   // One hidden picker for all cards: accept="image/*" and no capture attribute, so the phone offers
   // both the photo library and the camera.
   const picker = h('input', { type: 'file', accept: 'image/*', class: 'photo-input', hidden: true, tabindex: '-1', 'aria-hidden': 'true' });
@@ -44,19 +56,7 @@ export function render(ctx) {
         ctx.save();
       },
     });
-    const input = h('input', {
-      type: 'text', class: 'name-input', id: `name-${p.id}`, maxlength: String(NAME_MAX), placeholder: p.label,
-      autocomplete: 'off', autocapitalize: 'words', spellcheck: 'false', enterkeyhint: 'done', value: st.name,
-      oninput: () => {
-        const v = capName(input.value);
-        if (v !== input.value) input.value = v;
-        st.name = v.trim();
-        title.textContent = st.name || p.label;
-        save();
-      },
-      onchange: () => { clearTimeout(saveTimer); ctx.save(); },
-      onkeydown: (e) => { if (e.key === 'Enter') input.blur(); },
-    });
+    const input = nameBox(ctx, p, st, () => { title.textContent = st.name || p.label; });
     const status = h('p', { class: 'pc-status', role: 'status', 'aria-live': 'polite' });
     const photoRow = h('div', { class: 'pc-photo' });
     let artEl = art(p);
