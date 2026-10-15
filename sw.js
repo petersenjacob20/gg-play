@@ -3,8 +3,8 @@
 // a name must start with one of OWN (the app shell gg-v1-, the Hide and Grow It! packs) to be removed.
 // Caches of other apps on the same origin (fc-, pr-, any other gg- name) are never touched.
 // Game packs: only the current PACKS caches are kept and read.
-const CACHE = 'gg-v1-20261015pb';
-const PACKS = ['gg-pack-hide-f68021e625', 'gg-pack-grow-7447d8765e']; // HIDE_CACHE, GROW_CACHE
+const CACHE = 'gg-v1-20261015pr';
+const PACKS = ['gg-pack-hide-fa9a5f385f', 'gg-pack-grow-43190319dd']; // HIDE_CACHE, GROW_CACHE
 const OWN = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-'];
 const stale = (k) => OWN.some((p) => k.startsWith(p)) && k !== CACHE && !PACKS.includes(k);
 const ASSETS = [
@@ -295,6 +295,7 @@ self.addEventListener('activate', (event) => {
 // stores or answers them (anything not plain http(s) is left alone), and nothing fetched is ever
 // added to the cache (only the fixed ASSETS list above).
 // answers come only from CACHE and the current PACKS
+// a miss is fetched with cache: 'reload' (a page load keeps its own), so no stale pack file after an update
 const find = (req) => [CACHE, ...PACKS].reduce((p, n) => p.then((hit) => hit || caches.has(n).then((y) => y && caches.open(n).then((c) => c.match(req, { ignoreSearch: true })))), Promise.resolve());
 self.addEventListener('fetch', (event) => {
   const req = event.request;
@@ -303,6 +304,6 @@ self.addEventListener('fetch', (event) => {
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
   if (url.origin !== self.location.origin) return;
   event.respondWith(
-    find(req).then((hit) => hit || fetch(req).catch(() => (req.mode === 'navigate' ? find('./index.html') : Response.error()))),
+    find(req).then((hit) => hit || fetch(req.mode === 'navigate' ? req : new Request(req.url, { cache: 'reload' })).catch(() => (req.mode === 'navigate' ? find('./index.html') : Response.error()))),
   );
 });

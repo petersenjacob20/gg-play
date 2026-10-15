@@ -21,7 +21,7 @@ export const HIDE_ART = {
     R(22, 60, 76, 22, CREAM, 8), L('M60 62V80'), L('M18 88V96M102 88V96', INK, 5)),
   hsToybox: (o) => g(R(14, 42, 92, 52, col(o, '#4AA3DF'), 8), R(10, 32, 100, 16, col(o, '#4AA3DF'), 6), C(40, 68, 9, '#F2C230', { 'stroke-width': 2 }),
     P('M70 60L80 76H60Z', '#E5484D', { 'stroke-width': 2 }), R(84, 60, 12, 14, '#5DBB63', 2, { 'stroke-width': 2 })),
-  // a flat rectangle with fringe on both short ends and two cream stripes (no rings: those read as the frisbee target)
+  // a flat rectangle with fringe on both short ends and two cream stripes
   hsRug: (o) => g(L('M17 70H10M15 75H8M13 80H6M11 85H4M9 90H2M103 70H110M105 75H112M107 80H114M109 85H116M111 90H118', INK, 2.5),
     P('M18 66H102L112 92H8Z', col(o, '#E5484D')), L('M24 71H96M21 87H99', CREAM, 3), L('M30 79H90', CREAM, 2)),
   hsLamp: () => g(L('M60 40V90', GREY, 5), E(60, 92, 22, 5, GREY), P('M38 42L48 10H72L82 42Z', '#F2C230'), C(60, 26, 3, '#FFF4D6', { stroke: 'none' })),

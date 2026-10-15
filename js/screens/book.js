@@ -8,7 +8,7 @@ import { h, drawing } from '../dom.js';
 import { stickerArt } from '../art.js';
 import { topBar, icon } from '../ui.js';
 
-// A pet or friend sticker plays that character's own sound; every other sticker a soft pop.
+// A pet or friend sticker plays that character's own sound; alternating stickers a soft pop.
 export function soundFor(id, data) {
   const who = [...data.pets, ...(data.friends || [])].find((p) => `sk-${p.id}` === id);
   return who && who.sound ? who.sound : data.clips.pop;

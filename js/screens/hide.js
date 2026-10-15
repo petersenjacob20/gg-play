@@ -34,17 +34,17 @@ DAD.hide = ({ ctx, h: el, sheetBtn, withUnlock, open, on }) => {
 
 // The Hide pack (EM ruling b): loaded on first open; ready() fetches data, clips and styles and caches them
 // under a content hash (tests/packhash.mjs), so app updates keep it while the pack is unchanged.
-export const HIDE_CACHE = 'gg-pack-hide-f68021e625';
+export const HIDE_CACHE = 'gg-pack-hide-fa9a5f385f';
 export const HIDE_PACK = ['./js/screens/hide.js', './js/hide.js', './js/art-hide.js', './data/hide.json', './data/hide-clips.json', './css/hide.css'];
 export async function ready(ctx) {
-  const get = async (f) => { const r = await fetch(`./data/${f}`); if (!r.ok) throw new Error(f); return r.json(); };
+  const get = async (f) => { const r = await fetch(`./data/${f}`, { cache: 'reload' }); if (!r.ok) throw new Error(f); return r.json(); };
   const [hide, clips] = await Promise.all([get('hide.json'), get('hide-clips.json')]);
   await new Promise((ok) => { const k = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: './css/hide.css' }); k.onload = k.onerror = ok; document.head.append(k); });
   ctx.data.hide = hide;
   if (ctx.audio) ctx.audio.more(clips);
   if (globalThis.caches) {
     caches.open(HIDE_CACHE).then(async (c) => {
-      if (!(await c.match(HIDE_PACK[0]))) await c.addAll([...HIDE_PACK, ...Object.keys(clips).map((k) => `./audio/${k}.mp3`)]);
+      if (!(await c.match(HIDE_PACK[0]))) await c.addAll([...HIDE_PACK, ...Object.keys(clips).map((k) => `./audio/${k}.mp3`)].map((u) => new Request(u, { cache: 'reload' })));
       for (const k of await caches.keys()) if (k.startsWith('gg-pack-hide-') && k !== HIDE_CACHE) await caches.delete(k); // an older pack
     }).catch(() => {});
   }

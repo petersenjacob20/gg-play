@@ -12,17 +12,17 @@ import { GROW_ART, buildRound, isRight, CARE_TAPS, CARE, careFor, fitCare } from
 import { art } from '../art.js';
 import { petLabel } from '../petname.js';
 
-export const GROW_CACHE = 'gg-pack-grow-7447d8765e';
+export const GROW_CACHE = 'gg-pack-grow-43190319dd';
 export const GROW_PACK = ['./js/screens/grow.js', './js/grow.js', './data/grow.json', './data/grow-clips.json', './css/grow.css'];
 export async function ready(ctx) {
-  const get = async (f) => { const r = await fetch(`./data/${f}`); if (!r.ok) throw new Error(f); return r.json(); };
+  const get = async (f) => { const r = await fetch(`./data/${f}`, { cache: 'reload' }); if (!r.ok) throw new Error(f); return r.json(); };
   const [grow, clips] = await Promise.all([get('grow.json'), get('grow-clips.json')]);
   await new Promise((ok) => { const k = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: './css/grow.css' }); k.onload = k.onerror = ok; document.head.append(k); });
   ctx.data.grow = grow;
   if (ctx.audio) ctx.audio.more(clips);
   if (globalThis.caches) {
     caches.open(GROW_CACHE).then(async (c) => {
-      if (!(await c.match(GROW_PACK[0]))) await c.addAll([...GROW_PACK, ...Object.keys(clips).map((k) => `./audio/${k}.mp3`)]);
+      if (!(await c.match(GROW_PACK[0]))) await c.addAll([...GROW_PACK, ...Object.keys(clips).map((k) => `./audio/${k}.mp3`)].map((u) => new Request(u, { cache: 'reload' })));
       for (const k of await caches.keys()) if (k.startsWith('gg-pack-grow-') && k !== GROW_CACHE) await caches.delete(k); // an older pack
     }).catch(() => {});
   }
