@@ -86,6 +86,8 @@ export function render(ctx) {
     const s = K.STEPS[step];
     main.setAttribute('data-step', s);
     rub = null; draw(); clear(row); bubble.textContent = '';
+    main.removeAttribute('data-picked'); main.removeAttribute('data-drag'); pieBox.style.translate = '';
+    pieBox.onpointerdown = pieBox.onpointermove = pieBox.onpointerup = pieBox.onpointercancel = null;
     if (s === 'base') {
       say.textContent = 'Pick a crust!';
       K.BASES.forEach((b) => row.append(pick(b.label, mini({ base: b.id }), () => { pie.base = b.id; snd(K.CLIPS.pick); next(); })));
@@ -119,9 +121,43 @@ export function render(ctx) {
       });
       row.append(h('button', { type: 'button', class: 'pz-go', text: 'Bake it!', onclick: next }));
     } else if (s === 'bake') {
+      // Android Chrome fix: the pizza itself is draggable (pointer events + setPointerCapture, touch-action:none),
+      // dropped anywhere in a generous zone around the oven; or tap the pizza then the oven; or just tap the oven
       say.textContent = 'Slide it in the oven!';
       const oven = h('button', { type: 'button', class: 'pz-oven', 'aria-label': 'Oven' }, drawing(K.ovenArt(false)));
-      oven.onclick = () => { main.classList.add('pz-baking'); clear(oven).append(drawing(K.ovenArt(true))); snd(K.CLIPS.bake); oven.disabled = true; setTimeout(() => { pie.baked = true; main.classList.remove('pz-baking'); next(); }, 1200); };
+      let baking = false, pd = null;
+      const home = () => { pieBox.style.translate = ''; main.removeAttribute('data-drag'); };
+      const bake = () => {
+        if (baking) return; baking = true; pd = null; home(); main.removeAttribute('data-picked');
+        main.classList.add('pz-baking'); clear(oven).append(drawing(K.ovenArt(true))); snd(K.CLIPS.bake); oven.disabled = true;
+        setTimeout(() => { pie.baked = true; main.classList.remove('pz-baking'); next(); }, 1200);
+      };
+      const near = (x, y) => { const r = oven.getBoundingClientRect(), m = 60; return x > r.left - m && x < r.right + m && y > r.top - m && y < r.bottom + m; };
+      pieBox.onpointerdown = (e) => {
+        if (baking) return; e.preventDefault();
+        try { pieBox.setPointerCapture(e.pointerId); } catch { /* old browsers */ }
+        pd = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+      };
+      pieBox.onpointermove = (e) => {
+        if (!pd || e.pointerId !== pd.id) return;
+        const dx = e.clientX - pd.x, dy = e.clientY - pd.y;
+        if (!pd.moved && Math.hypot(dx, dy) < 10) return;
+        pd.moved = true; main.setAttribute('data-drag', near(e.clientX, e.clientY) ? 'over' : '1');
+        pieBox.style.translate = `${dx}px ${dy}px`;
+      };
+      const mid = () => { const r = pieBox.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+      const up = (e) => {
+        if (!pd || e.pointerId !== pd.id) return;
+        const d = pd; pd = null;
+        if (e.type === 'pointerup' && (near(e.clientX, e.clientY) || (d.moved && near(...mid())))) return bake();
+        home();
+        if (e.type === 'pointerup' && !d.moved) main.setAttribute('data-picked', '1');
+      };
+      pieBox.onpointerup = up; pieBox.onpointercancel = up;
+      let op = null;
+      oven.addEventListener('pointerdown', (e) => { op = e.pointerId; });
+      oven.addEventListener('pointerup', (e) => { if (e.pointerId === op && near(e.clientX, e.clientY)) bake(); op = null; });
+      oven.onclick = bake;
       row.append(oven);
     } else if (s === 'slice') {
       say.textContent = 'Slice it! Swipe across.';

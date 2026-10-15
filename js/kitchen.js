@@ -44,18 +44,48 @@ export const countOf = (o, pieces) => pieces.filter((p) => p.id === o.id && (!o.
 export const matched = (order, pieces) => order.every((o) => countOf(o, pieces) === o.n);
 
 const T = {
-  pepperoni: () => C(0, 0, 7, '#C8323A'),
-  olives: () => C(0, 0, 5.5, '#3B3B3B', { 'stroke-width': 2 }),
-  mushrooms: () => P('M-7 1a7 6 0 0 1 14 0zM-2 1h4v6h-4z', '#D9C3A5', { 'stroke-width': 2 }),
-  peppers: () => P('M-7 -2q7-6 14 0q-7 3-14 0z', '#5DBB63', { 'stroke-width': 2 }),
-  pineapple: () => P('M-6 -5h12l-3 10h-6z', '#FFD54A', { 'stroke-width': 2 }),
-  tomato: () => C(0, 0, 6.5, '#F06A5A', { 'stroke-width': 2 }),
-  ham: () => R(-6, -5, 12, 10, '#F4A6B0', { rx: 2, 'stroke-width': 2 }),
-  spinach: () => E(0, 0, 7, 4, '#2F8F46', { 'stroke-width': 2 }),
-  onion: () => C(0, 0, 5, 'none', { stroke: '#B784C9', 'stroke-width': 3 }),
-  corn: () => C(0, 0, 3.5, '#F5C518', { 'stroke-width': 1.5 }),
+  // Round pepperoni slice with little fat spots
+  pepperoni: () => g(
+    C(0, 0, 7, '#C8323A', { 'stroke-width': 2.5 }),
+    C(-2.5, -1.5, 1.2, '#F4A0A6', { 'stroke-width': 0 }),
+    C(2, 1.5, 1, '#F4A0A6', { 'stroke-width': 0 }),
+    C(1.5, -2.5, 0.8, '#E87880', { 'stroke-width': 0 }),
+    C(-1, 2.5, 0.9, '#E87880', { 'stroke-width': 0 })),
+  // Olive ring (black olive slice)
+  olives: () => g(
+    C(0, 0, 5.5, '#3B3B3B', { 'stroke-width': 2 }),
+    C(0, 0, 2.4, '#FFF4E0', { 'stroke-width': 0 })),
+  // Sliced mushroom: soft cap + short stem
+  mushrooms: () => g(
+    P('M-7 0a7 5.5 0 0 1 14 0z', '#E8D4B8', { 'stroke-width': 2 }),
+    P('M-5.5 0a5.5 3 0 0 0 11 0', '#C9B08A', { 'stroke-width': 0 }),
+    R(-2, 0, 4, 6, '#D9C3A5', { rx: 1.5, 'stroke-width': 2 })),
+  // Friendly pepper strips: one green, one red
+  peppers: () => g(
+    P('M-7 -3q6-5 12 1q-2 3-6 2q-4 1-6-3z', '#5DBB63', { 'stroke-width': 2 }),
+    P('M-5 2q7-4 13 2q-3 3-7 1q-4 1-6-3z', '#E5484D', { 'stroke-width': 2 })),
+  pineapple: () => g(
+    P('M-5.5 -5.5h11l-2.5 11h-6z', '#FFD54A', { 'stroke-width': 2 }),
+    P('M-3 -5.5v11M0 -5.5v11M3 -5.5v11', 'none', { stroke: '#E8B030', 'stroke-width': 1.2 })),
+  tomato: () => g(
+    C(0, 0, 6.5, '#F06A5A', { 'stroke-width': 2 }),
+    P('M-2 -5.5q2 2 4 0', 'none', { stroke: '#2F8F46', 'stroke-width': 1.8, 'stroke-linecap': 'round' })),
+  ham: () => g(
+    R(-6.5, -5, 13, 10, '#F4A6B0', { rx: 3, 'stroke-width': 2 }),
+    E(-1, 0, 2.5, 1.5, '#F8C8D0', { 'stroke-width': 0 })),
+  spinach: () => g(
+    E(-2, -1, 5, 3, '#2F8F46', { 'stroke-width': 2, transform: 'rotate(-25 -2 -1)' }),
+    E(2, 1, 4.5, 2.6, '#3FA055', { 'stroke-width': 2, transform: 'rotate(30 2 1)' })),
+  onion: () => g(
+    C(0, 0, 5.5, 'none', { stroke: '#B784C9', 'stroke-width': 2.5 }),
+    C(0, 0, 3.2, 'none', { stroke: '#D4A8E0', 'stroke-width': 1.8 })),
+  corn: () => g(
+    C(-2.2, -1.5, 2.2, '#F5C518', { 'stroke-width': 1.4 }),
+    C(2, -0.5, 2.2, '#FFD54A', { 'stroke-width': 1.4 }),
+    C(0, 2.2, 2.2, '#F5C518', { 'stroke-width': 1.4 })),
 };
-// About 1/6 of the pie across, over the cheese, ink outline and a contact shadow.
+
+// About 1/6 of the pie across; friendly realistic toppings (spots, stems, strips, rings) with a contact shadow. Melted cheese is the shreds in pieArt.
 export const toppingArt = (id, x = 0, y = 0) => ['g', { transform: `translate(${x} ${y}) scale(1.15)` }, ['ellipse', { cx: 1, cy: 5, rx: 7, ry: 3, fill: '#000', opacity: 0.18 }], (T[id] || T.corn)()];
 export const TOPPING_ART_IDS = Object.keys(T);
 
@@ -82,7 +112,7 @@ export function pieArt(p) {
   // cheese: loose thin shreds, clipped to the sauce area so sauce shows between them and nothing hangs over the crust
   const loose = (p.shreds || []).filter(([x, y], i, a) => a.findIndex(([u, v]) => Math.hypot(u - x, v - y) < 7) === i).slice(0, 26);
   const cheese = loose.length ? [['clipPath', { id: 'pzc' }, sq ? R(22, 22, 76, 76, 0, { rx: 10 }) : C(60, 60, 40, 0)],
-    ['g', { 'clip-path': 'url(#pzc)' }, ...loose.map(([x, y], i) => E(x, y, 5, 1.6, '#FFE9A0', { 'stroke-width': 0, transform: `rotate(${i * 37} ${x} ${y})` }))]] : [];
+    ['g', { 'clip-path': 'url(#pzc)' }, ...(loose.length > 8 ? [0, 1, 2, 3].map((k) => E(40 + (k % 2) * 40, 42 + (k >> 1) * 36, 17, 12, '#FFE08A', { 'stroke-width': 0, opacity: 0.55 })) : []), ...loose.map(([x, y], i) => E(x, y, 5.5, 1.8, '#FFE08A', { 'stroke-width': 0, transform: `rotate(${i * 37} ${x} ${y})` }))]] : [];
   const half = p.half ? [['path', { d: 'M60 14V106', stroke: '#FFF8E7', 'stroke-width': 2, 'stroke-dasharray': '4 4' }]] : [];
   const tops = (p.pieces || []).map((q) => toppingArt(q.id, q.x, q.y));
   const bake = p.baked ? [C(60, 60, sq ? 54 : 50, 'none', { stroke: '#FFB347', 'stroke-width': 4, opacity: 0.7 })] : [];

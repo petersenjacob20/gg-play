@@ -1163,6 +1163,10 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .pz-ghost{position:fixed;left:0;top:0;width:56px;scale:1.1;filter:drop-shadow(0 6px 4px #0004);pointer-events:none;z-index:9}
 .pz-ghost.back{transition:translate .3s}
 .pz-pie{position:relative}
+.pz[data-step=bake] .pz-pie{cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;position:relative;z-index:5}
+.pz[data-drag] .pz-pie{scale:.8;filter:drop-shadow(0 8px 6px #0004)}
+.pz[data-drag=over] .pz-oven,.pz[data-picked] .pz-oven{outline:4px dashed #FFB347;outline-offset:4px}
+.pz[data-picked] .pz-pie{scale:.92}
 .pz-wheel{position:absolute;left:44%;top:-6%;width:12%;aspect-ratio:1;border:3px solid;border-radius:50%;background:#B9B2AA;animation:pz-w .6s linear forwards}
 @keyframes pz-w{to{top:94%;rotate:720deg}}
 .pz-baking .pz-pie{animation:pz-s 1.2s}
