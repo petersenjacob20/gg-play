@@ -1,7 +1,8 @@
 // Hide and Seek Puppy (Amendment r): the pure parts. A round is one scene (never twice in a row): Puppy counts
 // (Dad's hideCount), then 4 questions by level (L1 in/on/under with a peek, L2 + behind/next to with a wiggle,
 // L3 colour + where, L4 her turn) and find-all (3 hiders, L1 peeks); about 1 round in 5 has the silly moment.
-// Questions are joined clips; never a typed name (r5). friendSilly/friendDino hide only at L1 and in find-all.
+// Questions are joined clips (a typed pet name: petname.js). friendSilly/friendDino hide only at L1 and in find-all.
+import { petName } from './petname.js';
 export const HIDE_COUNTS = [30, 20, 10, 0]; // 0 = Skip (store.js keeps the same rule for a save)
 export const HIDE_COUNT_DEFAULT = 30;
 export const QUESTIONS = 4; // then find-all: 5 in a round (the standard progress() rule)
@@ -150,7 +151,7 @@ const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 export function hiderName(data, id) {
   const x = [...(data.pets || []), ...(data.friends || [])].find((p) => p.id === id);
   if (!x) return id;
-  return x.kind === 'friend' ? x.label : `the ${x.label.toLowerCase()}`;
+  return x.kind === 'friend' ? x.label : petName(id) || `the ${x.label.toLowerCase()}`;
 }
 export function dadLine(hide, data, q) {
   const scene = sceneById(hide, q.scene);

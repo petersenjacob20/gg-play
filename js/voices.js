@@ -3,6 +3,7 @@
 // keyed by slot id). They are never part of the app files or the offline cache, never sent
 // anywhere and never logged. A slot with no clip plays exactly what the app plays without one.
 // Nothing here runs at import time.
+import { helloPrompt } from './petname.js';
 export const VOICE_DB = 'gg-voices';
 export const VOICE_STORE = 'clips';
 export const VOICE_DB_VERSION = 1;
@@ -33,7 +34,7 @@ export function voiceSlots(data) {
   });
   for (let i = 0; i < 8; i++) {
     const p = pets[i];
-    out.push({ id: `pet-${i + 1}`, label: `Pet ${i + 1} hello`, note: p ? p.label : '', clips: p ? [`hi-${p.id}`] : [], game: !!p });
+    out.push({ id: `pet-${i + 1}`, label: `Pet ${i + 1} hello`, note: p ? p.label : '', prompt: p ? helloPrompt(data, p.id) : '', clips: p ? [`hi-${p.id}`] : [], game: !!p });
   }
   for (const [id, label, clips, note = ''] of LINES) out.push({ id, label, note, clips: [id, ...clips], game: clips.length > 0 });
   return out;

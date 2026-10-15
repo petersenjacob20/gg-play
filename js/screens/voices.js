@@ -132,6 +132,7 @@ export function render(ctx) {
       status: h('p', { class: 'pc-status', role: 'status', 'aria-live': 'polite' }),
     };
     row.el.append(h('div', { class: 'voice-head' }, h('strong', { class: 'voice-label', text: slot.label }), row.state));
+    if (slot.prompt) row.el.append(h('p', { class: 'voice-prompt', text: `Say: “${slot.prompt}”` }));
     if (slot.note) row.el.append(h('span', { class: 'voice-note', text: slot.note }));
     row.el.append(row.btns, row.status);
     rows.set(slot.id, row);

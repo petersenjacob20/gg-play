@@ -16,6 +16,7 @@ import { react } from '../fun.js';
 import { getBook, activeProfile } from '../store.js';
 import { gameById, ladderMax, stepAt, keysForLevel } from '../games.js';
 import { countLabel, nextHideCount, buildRound, questionSeq, peekSeq, ringSeq, countClips, wagsAt, dadLine, realIdea, sceneById, spotOf, wordById, hiderById, colorById } from '../hide.js';
+import { hidePlay } from '../petname.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 Object.assign(ART, HIDE_ART);
@@ -33,7 +34,7 @@ DAD.hide = ({ ctx, h: el, sheetBtn, withUnlock, open, on }) => {
 
 // The Hide pack (EM ruling b): loaded on first open; ready() fetches data, clips and styles and caches them
 // under a content hash (tests/packhash.mjs), so app updates keep it while the pack is unchanged.
-export const HIDE_CACHE = 'gg-pack-hide-de39ef8666';
+export const HIDE_CACHE = 'gg-pack-hide-f68021e625';
 export const HIDE_PACK = ['./js/screens/hide.js', './js/hide.js', './js/art-hide.js', './data/hide.json', './data/hide-clips.json', './css/hide.css'];
 export async function ready(ctx) {
   const get = async (f) => { const r = await fetch(`./data/${f}`); if (!r.ok) throw new Error(f); return r.json(); };
@@ -98,7 +99,7 @@ export function render(ctx) {
   const later = (f, ms) => { timers.push(setTimeout(f, ms)); };
   const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
   const setPhase = (p) => { phase = p; main.dataset.phase = p; };
-  const play = (seq) => (ctx.audio ? ctx.audio.play(seq) : Promise.resolve(true));
+  const play = (seq) => hidePlay(ctx, hide, seq);
   const flash = (el, cls, ms) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); later(() => el.classList.remove(cls), ms); };
 
   // ---- the count (r3.1): Puppy covers its eyes at the tree, the numbers pop, the tail wags at 10s

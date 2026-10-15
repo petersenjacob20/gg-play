@@ -4,13 +4,10 @@ import { drawChar } from './pets.js';
 import { ICONS } from './pics.js';
 import { dadButton } from './dad.js';
 import { photoURL } from './photos.js';
+import { petLabel } from './petname.js';
 
-// Generic labels only (never a pet's real name): screen readers speak aria-labels aloud.
-export function genericLabel(data, id) {
-  const all = [...data.pets, ...(data.friends || [])];
-  const x = all.find((p) => p.id === id);
-  return x ? x.label : 'Pet';
-}
+// The name shown and read by screen readers: Dad's typed name (this phone only), else the default label.
+export const genericLabel = (data, id) => petLabel(data, id);
 
 // A pet with a photo saved on this phone shows it in the die-cut sticker frame (design.md 6c), in
 // the same box as the drawing; the poses become motion (breathe, hop, head tilt). Otherwise the drawing.

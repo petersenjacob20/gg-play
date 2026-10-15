@@ -85,8 +85,7 @@ export function playHello(ctx, character) {
     return 'family';
   }
   if (isPet && ctx.state && ctx.state.sayNames !== false) {
-    const typed = ctx.state.pets && ctx.state.pets[character.id] && typeof ctx.state.pets[character.id].name === 'string'
-      ? ctx.state.pets[character.id].name.trim() : '';
+    const typed = speakableName(ctx.state, character.id);
     if (typed) {
       const ok = speakPetHello(typed, { pitch: hello.pitch, rate: hello.rate });
       if (ok) return 'speech';

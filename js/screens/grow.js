@@ -10,8 +10,9 @@ import { getBook, activeProfile } from '../store.js';
 import { gameById, ladderMax, stepAt, keysForLevel } from '../games.js';
 import { GROW_ART, buildRound, isRight, CARE_TAPS, CARE, careFor, fitCare } from '../grow.js';
 import { art } from '../art.js';
+import { petLabel } from '../petname.js';
 
-export const GROW_CACHE = 'gg-pack-grow-3e4c582d29';
+export const GROW_CACHE = 'gg-pack-grow-7447d8765e';
 export const GROW_PACK = ['./js/screens/grow.js', './js/grow.js', './data/grow.json', './data/grow-clips.json', './css/grow.css'];
 export async function ready(ctx) {
   const get = async (f) => { const r = await fetch(`./data/${f}`); if (!r.ok) throw new Error(f); return r.json(); };
@@ -133,7 +134,7 @@ export function render(ctx) {
     }
     cards.replaceChildren(...(c.tool ? [h('button', { type: 'button', class: 'gr-card gr-tool', 'data-tool': c.tool, 'aria-label': c.tool.replace(/^gr/, '').toLowerCase(), onclick: tapCare },
       drawing(c.a ? art(c.tool) : GROW_ART[c.tool](), { box: '0 0 100 100' }))] : []));
-    ctx.question = { grow: true, skip: () => { if (my === gen) next(); }, dadText: `Care time (${cares[at]}): tap 3 times. Nothing to get wrong.` };
+    ctx.question = { grow: true, skip: () => { if (my === gen) next(); }, dadText: `Care time (${cares[at]}${c && c.pet ? ` with ${petLabel(data, c.pet)}` : ''}): tap 3 times. Nothing to get wrong.` };
   }
   function next() { gen++; delete main.dataset.care; delete main.dataset.careGame; at + 1 < round.length ? startSet(at + 1) : endRound(); }
   function skip() { helpedQ = true; const q = round[at]; ask = q.ask.length; frames.querySelectorAll('.gr-frame').forEach((f, k) => { if (!f.classList.contains('in')) { f.append(pic(q.steps[k], q)); f.classList.add('in'); } }); cards.replaceChildren(); cartoon(); }

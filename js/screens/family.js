@@ -137,7 +137,7 @@ export function render(ctx) {
     h('header', { class: 'dad-head' },
       h('button', { type: 'button', class: 'dad-back', onclick: () => { clearTimeout(saveTimer); ctx.save(); ctx.go('#home'); } }, '\u2039 Done'),
       h('h1', { text: 'Family pets' })),
-    h('p', { class: 'dad-sub', text: 'Names stay on this phone. The voice never says names.' }),
+    h('p', { class: 'dad-sub', text: 'Names stay on this phone only. The voice says them only with Say pet names on.' }),
     h('p', { class: 'dad-sub', text: "Photos stay on this phone. They're never uploaded." }),
     h('p', { class: 'dad-note', text: 'Tip: add Pet Parade to your Home Screen so the phone keeps the photos.' }),
     h('p', { class: 'dad-note', text: 'Pets that are off stay out of the games. Bloop, Berry and Dottie always come to play.' }),

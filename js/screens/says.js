@@ -13,8 +13,9 @@ import { progress, pickStickers, pickNot, ROUND } from '../engine.js';
 import { roundEnd } from '../reward.js';
 import { getBook, activeProfile } from '../store.js';
 import { gameById, ladderMax, stepAt, keysForLevel } from '../games.js';
-import { speakLocal, speakableName, cancelSpeech } from '../character.js';
+import { speakLocal, cancelSpeech } from '../character.js';
 import { buildRound, callSeq, giggleSeq, callAnims, dadLine, splitSeq, leadText, GIGGLE_MS, BEAT_MS } from '../says.js';
+import { sayName, petLabel } from '../petname.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const SPEECH_MAX_MS = 4000; // a spoken lead that never reports its end does not hold the call up
@@ -35,12 +36,12 @@ export function render(ctx) {
   const voice = puppy.hello || {};
   // Amendment n / p4: "<name> says..." only with Say pet names on, a typed name, the puppy on and an
   // on-device voice; otherwise the ps-lead clip. Nothing new is stored.
-  const name = speakableName(ctx.state, 'puppy');
+  const name = sayName('puppy', ctx.state);
   const lead = () => (name ? { speak: leadText(name) } : says.lead);
 
   const mouth = h('span', { class: 'mouth-paw', 'aria-hidden': 'true' }, drawing(ICONS.paw('#F5DC9C'), { box: '0 0 64 64' }));
   const pup = h('div', { class: 'pet says-pup', 'data-pet': 'puppy', 'data-anim': '' },
-    h('span', { class: 'pup-bounce' }, drawing(drawChar('puppy'), { label: puppy.label })), mouth);
+    h('span', { class: 'pup-bounce' }, drawing(drawChar('puppy'), { label: petLabel(data, 'puppy') })), mouth);
   const digit = h('span', { class: 'digit-pop letter-font', 'aria-hidden': 'true' });
   const stage = h('div', { class: 'says-stage' }, pup, digit);
   const pawsEl = paws(0, calls.length);

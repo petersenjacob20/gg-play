@@ -1,5 +1,6 @@
 // Games layer (plan l1, Amendment m): each game is a ladder of activity steps in games.json.
 // Pure helpers: which games are built, titles, the primary act for migration, mapping old levels.
+import { petName } from './petname.js';
 export const GAME_IDS = ['letterhunt', 'fetch', 'dig', 'sea', 'farm', 'monster', 'says', 'hide', 'grow', 'pizza', 'stories'];
 export const PROFILE_IDS = ['p1', 'p2', 'p3', 'p4'];
 export const PROFILE_MAX = 4;
@@ -29,7 +30,7 @@ export function gameTitle(game, pets) {
   if (!slots.length) return game.titleDefault || t;
   const names = {};
   for (const id of slots) {
-    const n = pets && pets[id] && typeof pets[id].name === 'string' ? pets[id].name.trim() : '';
+    const n = petName(id, pets);
     if (!n) return game.titleDefault || t;
     names[id] = n;
   }
@@ -48,7 +49,7 @@ export function gameTitleFixed(game, pets) {
   if (!slots.length) return game.titleDefault || t;
   let out = t;
   for (const id of slots) {
-    const n = pets && pets[id] && typeof pets[id].name === 'string' ? pets[id].name.trim() : '';
+    const n = petName(id, pets);
     if (!n) return game.titleDefault || t;
     const poss = /s$/i.test(n) ? `${n}'s` : `${n}'s`;
     out = out.replace(new RegExp(`\\{${id}\\}'s`, 'g'), poss).replace(new RegExp(`\\{${id}\\}`, 'g'), poss);
