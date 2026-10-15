@@ -1,7 +1,7 @@
 // Games layer (plan l1, Amendment m): each game is a ladder of activity steps in games.json.
 // Pure helpers: which games are built, titles, the primary act for migration, mapping old levels.
 import { petName } from './petname.js';
-export const GAME_IDS = ['letterhunt', 'fetch', 'dig', 'sea', 'farm', 'monster', 'says', 'hide', 'grow', 'pizza', 'stories'];
+export const GAME_IDS = ['letterhunt', 'fetch', 'dig', 'sea', 'farm', 'monster', 'says', 'hide', 'grow', 'care', 'pizza', 'stories'];
 export const PROFILE_IDS = ['p1', 'p2', 'p3', 'p4'];
 export const PROFILE_MAX = 4;
 export const PLAYER_LABEL = 'Player'; // empty name shows as this (Design §12)
@@ -63,8 +63,7 @@ export function primaryAct(game) {
   return first ? first.act : null;
 }
 
-// Map an old activity level onto a ladder step index (1-based). Exact act+lv match, else the
-// highest step of that act with a lower lv, else step 1. good always restarts at 0.
+// Map an old activity level onto a 1-based ladder step: exact act+lv, else the highest lower step of that act, else 1.
 export function mapOldLevel(ladder, actId, oldLv) {
   if (!Array.isArray(ladder) || !ladder.length || !actId) return 1;
   const n = Number.isInteger(oldLv) ? oldLv : 1;
@@ -98,8 +97,7 @@ export function displayName(name) {
 }
 
 
-// Step key (Amendment m8): "act:lv" or "act:mode:lv" (e.g. count:3, add:more2:1).
-// Stable across ladder inserts/reorders so her place follows the step, not the index.
+// Step key (m8): "act:lv" or "act:mode:lv", stable across ladder inserts.
 export function stepKey(step) {
   if (!step || typeof step.act !== 'string') return '';
   const lv = Number.isInteger(step.lv) ? step.lv : 1;
@@ -115,8 +113,7 @@ export function parseStepKey(key) {
   return null;
 }
 
-// 1-based ladder index for a saved step key. Exact key → that step; else nearest lower step of the
-// same act (by that step's own lv); else 1.
+// 1-based ladder index for a saved step key: exact, else the nearest lower step of the same act, else 1.
 export function resolveStepIndex(ladder, key, fallbackPos = 1) {
   if (!Array.isArray(ladder) || !ladder.length) return 1;
   const max = ladder.length;

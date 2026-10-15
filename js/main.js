@@ -1,6 +1,5 @@
-// Router + screen mounting. Routes: #home, #game/<id> (a built game's current ladder step),
-// #play/<act> (test-only: plays that act via the game that owns it), #book, #stories, #story/<id>,
-// #pets, #says (Puppy Says, also reached as #game/says), #playground, #playground/<id>. Dad help is a bottom sheet over the current screen.
+// Router + screen mounting (#home, #game/<id>, #play/<act> test-only, #book, #stories, #story/<id>, #pets, #says,
+// #playground[/<id>]). Dad help is a bottom sheet over the current screen.
 import { load, save, defaults, setLetters, setBook, setGames, setPlayground } from './store.js';
 import * as home from './screens/home.js';
 import * as play from './screens/play.js';
@@ -27,13 +26,15 @@ import { usePetState } from './petname.js';
 const cuer = createCuer();
 
 // the routes that are a kid's game screen (with its round end); the Playground scene is added in render()
-const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'hide', 'grow', 'pizza']);
+const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'hide', 'grow', 'care', 'pizza']);
 const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, voices, says, pizza, playground, letters: play, count: play };
 
 let hidePack = null; // the Hide pack, loaded on first open
 const loadHide = () => (hidePack ||= import('./screens/hide.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.hide = m; }, (e) => { hidePack = null; throw e; }));
 let growPack = null; // Grow It!, the same way
 const loadGrow = () => (growPack ||= import('./screens/grow.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.grow = m; }, (e) => { growPack = null; throw e; }));
+let carePack = null; // Pet Care, the same way
+const loadCare = () => (carePack ||= import('./screens/care.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.care = m; }, (e) => { carePack = null; throw e; }));
 
 function paramFor(name, hash) {
   if (name === 'letters' || name === 'count') return name;
@@ -119,9 +120,9 @@ function render() {
   if (name === 'story' && !storyById(ctx.data.stories, ctx.param)) { name = 'stories'; ctx.param = null; }
   if (name === 'hide' && !ROUTES.hide) { loadHide().then(render, () => ctx.go('#home')); return; }
   if (name === 'grow' && !ROUTES.grow) { loadGrow().then(render, () => ctx.go('#home')); return; }
+  if (name === 'care' && !ROUTES.care) { loadCare().then(render, () => ctx.go('#home')); return; }
   const mod = ROUTES[name];
-  // Family voices: Ready to play leads a game's first line (or plays at once on the Playground);
-  // Bye-bye plays on getting home. Only when that slot has a clip; empty stays silent.
+  // Family voices: Ready to play leads a game's first line; Bye-bye plays on getting home (only when recorded).
   const voiceCue = cuer(ctx, current ? current.name : null, name);
   ctx.lead = voiceCue === 'p-ready' && name !== 'playground' ? voiceCue : null;
   const cueNow = voiceCue && !ctx.lead ? voiceCue : null;
@@ -132,8 +133,7 @@ function render() {
   ctx.question = null;
   current = { name, mod };
   document.body.dataset.screen = name;
-  // No pull-to-refresh anywhere (EM, home pub r3): html contains its overscroll (app.css); while a kid plays
-  // (a game screen, its round end, the Playground scene) .kid-play on the root switches it to none.
+  // No pull-to-refresh (EM, home pub r3): .kid-play on the root while a kid plays switches overscroll to none.
   const kidPlay = KID_PLAY.has(name) || (name === 'playground' && scene);
   document.documentElement.classList.toggle('kid-play', kidPlay);
   const root = document.getElementById('app');

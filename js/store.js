@@ -1,10 +1,6 @@
-// On-device storage (build plan sections 1 and 6, Amendment m / m8 / save v3). One localStorage key,
-// `gg.v1` (the key name stays). Household fields (sound, intros, sayNames, saysShort, hideCount, pets, lock) are shared; each profile has
-// its own name, levels (keyed by game id), book, seenLetters and parks (the Playground parks she built,
-// Amendment q6/q10: { <ready zone id>: [[pieceId, gx, gy], ...] }, no version bump). Photos stay in IndexedDB gg-photos.
-// A v2 save becomes profiles.p1; levels map per Amendment m2 revised (primary act from games.json).
-// Each game level is {lv,top,good,at,topAt}; at/topAt are step keys (act[:mode]:lv) so ladder inserts keep her place (m8).
-// A broken or unknown save starts fresh. Pure helpers are importable from Node.
+// On-device storage (plan §1, §6; Amendment m/m8, save v3): one localStorage key gg.v1. Household fields are shared;
+// each profile has its own name, levels ({lv,top,good,at,topAt}, step keys per m8), book, seenLetters and parks (q6/q10).
+// Photos stay in IndexedDB gg-photos. A v2 save becomes profiles.p1; a broken or unknown save starts fresh.
 
 import { pizzaPrefs } from './kitchen.js';
 import { GAME_IDS, PROFILE_IDS, mapOldLevel, primaryAct, ladderMax, resolveLevel, keysForLevel } from './games.js';
@@ -14,7 +10,7 @@ import { normalizeParks } from './playground.js';
 export const KEY = 'gg.v1';
 export const CACHE_PREFIX = 'gg-';
 // Delete my data removes only Family Games' own caches (app shell and game packs), never another app's fc-, pr- or gg- cache.
-export const OWN_CACHE_PREFIXES = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-'];
+export const OWN_CACHE_PREFIXES = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-', 'gg-pack-care-'];
 export const VERSION = 3;
 export const NAME_MAX = 20;
 export const STICKER_MAX = 9999; // v1 sticker counter cap (migration only)

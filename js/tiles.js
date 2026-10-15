@@ -39,6 +39,8 @@ export function tilePic(id) {
         h('span', { class: 'tile-bush' }, drawing(art('hsBush'), { box: '0 0 120 100' })))];
     case 'grow':
       return [who('friendBerry', 'tile-who tiny'), pic('strawberry', 'mini-pic')];
+    case 'care':
+      return [who('kitty', 'tile-who tiny'), pic('bubbles', 'mini-pic')];
     case 'stories':
     case 'story':
       return [pic('bookOpen', 'story-pic')];

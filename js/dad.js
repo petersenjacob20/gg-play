@@ -1,6 +1,5 @@
-// Dad help (design.md §5 and §12). The button opens ONLY after a 1-second press. Once a grown-up
-// password exists, locked actions (profiles, reset, levels, family pets, change password) need an
-// unlock; Show answer, Skip, Home, Sound and Delete my data stay open with the 1-second press alone.
+// Dad help (design.md §5, §12): opens only after a 1-second press. With a password, locked actions need an
+// unlock; Show answer, Skip, Home, Sound and Delete my data need only the press.
 import { h } from './dom.js';
 import { deleteAll, defaults, activeProfile, resetProfileProgress, resetParks, freshProfile, save, NAME_MAX } from './store.js';
 import { setLevel } from './engine.js';
@@ -395,6 +394,7 @@ export const LEVEL_LINES = {
   pizza: ['One topping, 1 to 3', 'Two toppings', 'Half and half, up to the max'],
   add: ['Up to 5', '6 to 10'],
   pattern: ['AB', 'AAB, ABB', 'ABC'],
+  care: ['3 spots', '4 spots', '5 spots'],
   grow: ['2 steps', '3 steps', 'Fill the ends', '4 steps + what next'],
   hide: ['In, on, under (2 spots)', '+ 2 more place words (3 spots)', 'Colour + where', 'Her turn to hide it'],
   says: ['Puppy says one move', 'Count the moves (2 to 5)', 'Two moves in a row', 'Listen for "Puppy says"'],
@@ -532,8 +532,7 @@ export function openDadPanel(ctx, view = 'menu') {
     body.push(sheetBtn('Back', () => openDadPanel(ctx, 'menu')));
     body.push(sheetBtn('Close', () => closeDadPanel(), 'plain'));
   } else if (view === 'moves') {
-    // Puppy Says (Amendment p5): every move, read-only, for playing without the screen. Behind the
-    // grown-up lock like Short round: with a password set and not unlocked, this asks for it first.
+    // Puppy Says (p5): every move, read-only, behind the lock like Short round.
     if (hasLock(ctx) && !gate(ctx).isUnlocked()) { withUnlock(ctx, () => openDadPanel(ctx, 'moves')); return; }
     const says = ctx.data.says;
     body = [
@@ -570,8 +569,7 @@ export function openDadPanel(ctx, view = 'menu') {
       }, '', { 'aria-pressed': ctx.state.sayNames !== false ? 'true' : 'false' }));
       body.push(h('p', { class: 'sheet-hint', text: "Uses this phone's own voice for names you typed. Names stay on the phone." }));
     };
-    // Puppy Says (Amendment p5, the whole Dad sheet behind the lock): the soft-space note, Short round and
-    // the read-only move list. With a password set and not unlocked, only one button shows, and it asks first.
+    // Puppy Says (p5): the soft-space note, Short round and the move list; locked, one button asks first.
     if (q && q.says) {
       if (!locked || gate(ctx).isUnlocked()) {
         body.push(h('p', { class: 'sheet-hint', text: ctx.data.says.note }));
@@ -596,8 +594,7 @@ export function openDadPanel(ctx, view = 'menu') {
           ...TOPPINGS.map(({ id }) => { const on = !z.off.includes(id); return sheetBtn(`${id}: ${on ? 'On' : 'Off'}`, set(() => { z.off = on ? [...z.off, id] : z.off.filter((x) => x !== id); }), '', { 'aria-pressed': String(on) }); }));
       } else body.push(sheetBtn('Pizza Kitchen settings', () => withUnlock(ctx, () => openDadPanel(ctx, 'menu'))));
     }
-    // Playground (design.md §13.6, Amendment q): only when the Playground ships (Design's fix: no toggle
-    // before the tile exists). Behind the lock like Puppy Says: locked, one button asks for the password.
+    // Playground (§13.6, q): only once the tile ships; behind the lock like Puppy Says.
     if (playgroundShips(ctx.data)) {
       if (!locked || gate(ctx).isUnlocked()) {
         body.push(sheetBtn(`Playground: ${ctx.state.playground !== false ? 'On' : 'Off'}`, () => withUnlock(ctx, () => {
