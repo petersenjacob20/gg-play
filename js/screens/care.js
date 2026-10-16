@@ -12,7 +12,7 @@ import { getBook, activeProfile } from '../store.js';
 import { gameById, ladderMax, stepAt, keysForLevel } from '../games.js';
 import { CARE_ART, SPRAY_MS, pickPet, makeRound, spray, fade, hitSpot, levelAfter, brows } from '../care.js';
 
-export const CARE_CACHE = 'gg-pack-care-bfa718de1c';
+export const CARE_CACHE = 'gg-pack-care-77f2fc98f7';
 export const CARE_PACK = ['./js/screens/care.js', './js/care.js', './data/care.json', './css/care.css'];
 export async function ready(ctx) {
   const get = async (f) => { const r = await fetch(`./data/${f}`, { cache: 'reload' }); if (!r.ok) throw new Error(f); return r.json(); };
@@ -57,7 +57,7 @@ export function render(ctx) {
     round = makeRound(kind, level, cd.at, pet); helped = false; last = {};
     const name = petLabel(data, pet);
     main.dataset.phase = 'play'; main.dataset.kind = kind; main.dataset.pet = pet;
-    const face = kind === 'heal' ? [h('div', { class: 'pc-brows', 'aria-hidden': 'true' }, drawing(['g', {}, ...brows(drawChar(pet))]))] : [];
+    const face = kind === 'heal' ? [h('div', { class: 'pc-brows', 'aria-hidden': 'true' }, drawing(['g', {}, ...brows(drawChar(pet), pet)]))] : [];
     main.dataset.face = kind === 'heal' ? 'sad' : '';
     box = h('div', { class: 'pc-box' }, h('div', { class: 'pc-pet' }, drawing(drawChar(pet), { label: name })), ...face,
       ...round.spots.map((s) => at(h('button', { type: 'button', class: `pc-spot ${kind === 'bath' ? 'mud' : 'bump'}`, 'data-spot': String(s.i), 'aria-label': kind === 'bath' ? 'Mud' : 'Bump',

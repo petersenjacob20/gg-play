@@ -80,9 +80,11 @@ export const CARE_ART = {
   drops: () => g(...[[30, 30], [52, 18], [72, 32], [40, 54], [64, 56]].map(([x, y]) => P(`M${x} ${y - 8}q-7 10 0 14q7-4 0-14z`, '#7CC4EE', { stroke: '#4AA3DF', 'stroke-width': 2 }))),
 };
 
-// sad eyebrows over a pet's own eyes (read from its drawing, 120 x 120): the inner ends lifted; empty when it has none
-export function brows(tree) {
+// sad eyebrows over a pet's own eyes (read from its drawing, 120 x 120): the inner ends lifted; empty when it has none;
+// cream on a dark coat (the black and chocolate dogs) so the sad face reads
+export const DARK = ['blackDog', 'chocolateDog'];
+export function brows(tree, id) {
   const eyes = []; const walk = (t) => { if (!Array.isArray(t)) return; if (typeof t[0] === 'string') { if (t[1] && t[1].class === 'eye' && t[1].r < 3.5) eyes.push([t[1].cx, t[1].cy]); t.slice(2).forEach(walk); } else t.forEach(walk); };
   walk(tree); eyes.sort((a, b) => a[0] - b[0]);
-  return eyes.slice(0, 2).map(([x, y], i) => { const s = i ? -1 : 1; return ['path', { d: `M${x - 6 * s} ${y - 6}L${x + 5 * s} ${y - 10}`, stroke: INK, 'stroke-width': 2.5, 'stroke-linecap': 'round', fill: 'none' }]; });
+  return eyes.slice(0, 2).map(([x, y], i) => { const s = i ? -1 : 1; return ['path', { d: `M${x - 6 * s} ${y - 6}L${x + 5 * s} ${y - 10}`, stroke: DARK.includes(id) ? '#FFF1D6' : INK, 'stroke-width': 2.5, 'stroke-linecap': 'round', fill: 'none' }]; });
 }

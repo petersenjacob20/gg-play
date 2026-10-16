@@ -1,8 +1,5 @@
-// Home (design.md §11.1, piece 6): pet parade, then a 2-column grid of built games only (reflow, no
-// locked tiles). Each tile has a picture and a cream title strip (Andika, dark brown). The Playground,
-// when it is on, is the FIRST tile (top-left; CEO, so it is easy to find), then the games in Design
-// order. Story Time is full width only when it ends up alone on the last row (an odd tile count,
-// counting the Playground when present). Sticker book bar at the bottom.
+// Home (design §11.1): pet parade, a 2-column grid of built games (Playground first when on; Story Time full width only
+// when alone on the last row), then the sticker book bar.
 import { h, drawing } from '../dom.js';
 import { parade } from '../engine.js';
 import { art, stickerArt } from '../art.js';
@@ -58,11 +55,9 @@ export function render(ctx) {
       },
     },
       h('span', { class: 'tile-art', 'aria-hidden': 'true' }, tilePic(g.tile?.replace(/^tl-/, '') || g.id)),
-      h('span', { class: 'tile-title', text: title }));
+      h('span', { class: 'tile-title', text: title, 'data-plain': title !== g.titleDefault && g.titleDefault }));
   });
-  // Playground tile (Amendment n / design.md §13.3) — lilac edge; only when it ships and Dad's toggle is on.
-  // First in the grid. It could only be alone on the last row if it were the only tile; then it goes full
-  // width with its art kept at tile size, centred (design §17.1, the CSS rule for .wide.edge-playground).
+  // Playground tile (Amendment n, design §13.3, §17.1): lilac edge, first; wide only if it is the only tile.
   if (pgOn) {
     const pgWide = aloneLast('playground');
     const pgClip = (ctx.data.clips && ctx.data.clips['h-playground']) || 'c-yay1';
@@ -80,9 +75,12 @@ export function render(ctx) {
       h('span', { class: 'tile-title', text: 'Playground' })));
   }
   const n = tiles.length;
-  return h('main', { class: 'home' },
+  const m = h('main', { class: 'home' },
     h('div', { class: 'topbar' }, h('p', { class: 'dad-title', text: 'Pet Parade' }), dadButton(ctx)),
     row,
     h('div', { class: `game-grid n${n}` }, tiles),
     bookBar(ctx));
+  document.fonts?.ready.then(() => fitTitles(m)); // a cut-off pet-name title: the plain game name
+  return m;
 }
+export const fitTitles = (m) => m.querySelectorAll('[data-plain]').forEach((s) => s.scrollWidth > s.clientWidth && (s.textContent = s.dataset.plain));
