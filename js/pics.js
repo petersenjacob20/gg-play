@@ -4,6 +4,7 @@ const O = { stroke: INK, 'stroke-width': 3.5, 'stroke-linejoin': 'round', 'strok
 const el = (tag, attrs, ...kids) => [tag, attrs, ...kids];
 
 export const ICONS = {
+  zoom: () => el('g', {}, el('circle', { cx: 28, cy: 28, r: 14, fill: '#EAF7FF', ...O, 'stroke-width': 5 }), el('path', { d: 'M38 38l12 12', fill: 'none', ...O, 'stroke-width': 7 })),
   house: () => el('g', {},
     el('path', { d: 'M10 30L32 11L54 30', fill: 'none', ...O, 'stroke-width': 5 }),
     el('path', { d: 'M16 28v24h32V28', fill: '#FFF8EC', ...O }),

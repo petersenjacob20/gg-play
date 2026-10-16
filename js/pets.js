@@ -97,31 +97,28 @@ const DOGS = {
   puppy: { coat: '#F5DC9C', ear: '#E9C674', muzzle: '#FCF2DA', belly: '#FCF2DA', nose: '#4A3426', collar: '#E5484D', puppy: true },
 };
 
-// ---- black-and-white cat --------------------------------------------------------------------
+// ---- the cat: a chubby white king with a brown-gray tabby cap, ears, left-eye patch, saddle and tail (data-mark names each)
 function kitty() {
-  const B = '#262222'; const W = '#FFFFFF';
+  const W = '#FFFFFF'; const T = '#8C7B6B'; const K = '#2B2622'; const P = '#F49AB0'; const m = (k, ...x) => el('g', { 'data-mark': k }, ...x);
   return g('char',
-    g('tail', tube('M82 100q22-6 18-30q-2-8-8-5', B, 8)),
+    g('tail', m('tail', tube('M88 104q22-2 16-26q-2-8-8-4', T, 9), line('M100 96l5-2M103 86l5 0M98 79l5-3', K, 2))),
     g('body',
-      ell(60, 90, 25, 22, B),
-      el('ellipse', { cx: 60, cy: 95, rx: 14, ry: 16, fill: W }),
-      ell(49, 111, 9, 6, W),
-      ell(71, 111, 9, 6, W),
-      el('rect', { x: 43, y: 65, width: 34, height: 6, rx: 3, fill: '#FFD54A', ...O2 }),
-      circ(60, 75, 4, '#FFD54A', { 'stroke-width': 2 }),
-      line('M57 76h6', INK, 1.5)),
+      ell(60, 92, 32, 21, W),
+      m('saddle', path('M36 80q12-14 36-12q18 2 20 18q-10-6-22-4q-20 2-34-2z', T), line('M50 72l2 8M60 70l1 9M70 70l-1 9M80 74l-3 7', K, 2)),
+      m('paws', ell(48, 110, 10, 5.5, W), ell(72, 110, 10, 5.5, W), circ(45, 111, 1.4, P, { stroke: 'none' }), circ(49, 112, 1.4, P, { stroke: 'none' }), circ(69, 112, 1.4, P, { stroke: 'none' }), circ(73, 111, 1.4, P, { stroke: 'none' })),
+      m('collar', line('M44 67q16 6 32 0', K, 2.5), circ(60, 72, 3.2, '#C8CDD3', { 'stroke-width': 1.5 }))),
     g('head',
-      g('ear l', path('M39 33L42 12L57 25Z', B), path('M43 26l1-8l6 5z', '#F49AB0', { stroke: 'none' })),
-      g('ear r', path('M81 33L78 12L63 25Z', B), path('M77 26l-1-8l-6 5z', '#F49AB0', { stroke: 'none' })),
-      ell(60, 42, 23, 20, B),
-      el('ellipse', { cx: 60, cy: 51, rx: 16, ry: 10.5, fill: W }),
-      path('M56 27q4-2 8 0l2 18h-12z', W, { stroke: 'none' }),
-      path('M57 47h6l-3 3.4z', '#F49AB0', { 'stroke-width': 1.5 }),
-      line('M56 53q2 2 4 0q2 2 4 0', INK, 2),
-      line('M47 50l-12-3M47 53l-12 2M73 50l12-3M73 53l12 2', INK, 1.5),
-      tongue(60, 54.5),
-      eye(50, 40, '#9DB89A'),
-      eye(70, 40, '#9DB89A')));
+      g('ear l', m('ear', path('M37 36L40 13L56 26Z', T), path('M42 27l1-8l6 5z', P, { stroke: 'none' }), line('M41 20l4 2', K, 1.8))),
+      g('ear r', m('ear', path('M83 36L80 13L64 26Z', T), path('M78 27l-1-8l-6 5z', P, { stroke: 'none' }), line('M79 20l-4 2', K, 1.8))),
+      ell(60, 44, 25, 21, W),
+      m('cap', path('M37 38q4-16 23-17q19 1 23 17q-8-6-14-6l-5-10h-2l-5 10q-6 0-14 6z', T, { stroke: 'none' }), line('M52 24l1 5M68 24l-1 5', K, 1.8)),
+      m('patch', el('ellipse', { cx: 71, cy: 41, rx: 9, ry: 7.5, fill: T }), line('M64 35l3 2M78 36l-3 2', K, 1.5)),
+      path('M56 47h8l-4 4z', P, { 'stroke-width': 1.5 }),
+      line('M56 54q2 2 4 0q2 2 4 0', INK, 2),
+      m('whiskers', line('M47 51l-17-4M47 54l-17 2M73 51l17-4M73 54l17 2', '#BDB6AE', 2.4), line('M47 51l-17-4M47 54l-17 2M73 51l17-4M73 54l17 2', W, 1.2)),
+      tongue(60, 55.5),
+      eye(50, 41, '#B9C94A'),
+      eye(70, 41, '#B9C94A')));
 }
 
 // ---- white lop bunny (one, or a pair where one has an ear flipped up) ------------------------

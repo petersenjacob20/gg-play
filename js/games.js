@@ -52,7 +52,7 @@ export function gameTitleFixed(game, pets) {
     const n = petName(id, pets);
     if (!n) return game.titleDefault || t;
     const poss = /s$/i.test(n) ? `${n}'s` : `${n}'s`;
-    out = out.replace(new RegExp(`\\{${id}\\}'s`, 'g'), poss).replace(new RegExp(`\\{${id}\\}`, 'g'), poss);
+    out = out.replace(new RegExp(`\\{${id}\\}'s`, 'g'), poss).replace(new RegExp(`\\{${id}\\}`, 'g'), n);
   }
   return out;
 }

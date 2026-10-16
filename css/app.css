@@ -955,7 +955,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 }
 .pg-gates { position: absolute; left: 8px; bottom: 8px; z-index: 30; display: flex; gap: 10px; }
 .pg-gate { width: 96px; height: 96px; min-width: 96px; min-height: 96px; padding: 4px; border-radius: 14px; border: 2px solid #CFC6B8; background: #FFF9EE; }
-.building .pg-gates, .pg-on-ride .pg-gates { display: none; }
+.building .pg-gates, .pg-on-ride .pg-gates, .pg-throw .pg-gates { display: none; }
 .pg-cream { position: fixed; inset: 0; z-index: 9000; background: #FFF9EE; opacity: 0; pointer-events: none; transition: opacity 300ms ease; }
 .pg-leave .pg-cream { opacity: 1; }
 .pg-leave-rm .pg-cream { opacity: 1; transition: opacity 150ms linear !important; }
@@ -989,8 +989,8 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .pg-disc { position: absolute; width: 56px; height: 56px; transform: translate(-50%, -50%); pointer-events: none;
   transition-property: left, top; transition-timing-function: linear; z-index: 7000; }
 .pg-disc .pg-disc-in, .pg-disc .drawing, .pg-held .drawing { display: block; width: 100%; height: 100%; }
-.pg-disc.fly .pg-disc-in { animation: pg-arc .5s ease-in-out; }
-@keyframes pg-arc { 0%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-90px) rotate(180deg)} 100%{transform:translateY(0) rotate(360deg)} }
+.pg-disc.fly .pg-disc-in { animation: pg-arc .9s ease-in-out; }
+@keyframes pg-arc { 0%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-150px) rotate(180deg)} 100%{transform:translateY(0) rotate(360deg)} }
 .pg-held { position: absolute; left: 58%; top: 46%; width: 44px; height: 44px; pointer-events: none; }
 .pg-piece.pg-away { opacity: 0; }
 .pg-vehicle { position: absolute; left: 50%; top: 134px; width: 150px; height: 75px; transform: translateX(-50%); pointer-events: none; z-index: 0; }
@@ -1181,3 +1181,5 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .hello-bop{animation:hello-bop .4s ease-out}
 @keyframes hello-bop{40%{scale:1.12 .9}70%{scale:.95 1.08}}
 @media (prefers-reduced-motion:reduce){.hello-bop{animation:none}}
+.pg-zoom { position: absolute; width: 44px; height: 44px; margin-left: -40px; margin-top: -8px; border-radius: 50%; border: 0; padding: 6px; background: #FFFFFFE6; box-shadow: 0 2px 6px #0003; }
+.pg-zoom .icon { width: 100%; height: 100%; }

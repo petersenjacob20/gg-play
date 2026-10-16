@@ -26,7 +26,7 @@ import { usePetState, bindHello } from './petname.js';
 const cuer = createCuer();
 
 // the routes that are a kid's game screen (with its round end); the Playground scene is added in render()
-const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'hide', 'grow', 'care', 'pizza']);
+const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'hide', 'grow', 'care', 'pizza', 'ride']);
 const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, voices, says, pizza, playground, letters: play, count: play };
 
 let hidePack = null; // the Hide pack, loaded on first open
@@ -34,6 +34,8 @@ const loadHide = () => (hidePack ||= import('./screens/hide.js').then((m) => m.r
 let growPack = null; // Grow It!, the same way
 const loadGrow = () => (growPack ||= import('./screens/grow.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.grow = m; }, (e) => { growPack = null; throw e; }));
 let carePack = null; // Pet Care, the same way
+let ridesPack = null;
+const loadRides = () => (ridesPack ||= import('./screens/rides.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.ride = m; }, (e) => { ridesPack = null; throw e; }));
 const loadCare = () => (carePack ||= import('./screens/care.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.care = m; }, (e) => { carePack = null; throw e; }));
 
 function paramFor(name, hash) {
@@ -120,6 +122,7 @@ function render() {
   if (name === 'story' && !storyById(ctx.data.stories, ctx.param)) { name = 'stories'; ctx.param = null; }
   if (name === 'hide' && !ROUTES.hide) { loadHide().then(render, () => ctx.go('#home')); return; }
   if (name === 'grow' && !ROUTES.grow) { loadGrow().then(render, () => ctx.go('#home')); return; }
+  if (name === 'home' && /^#ride\//.test(location.hash) && !ROUTES.ride) { loadRides().then(render, () => ctx.go('#home')); return; }
   if (name === 'care' && !ROUTES.care) { loadCare().then(render, () => ctx.go('#home')); return; }
   const mod = ROUTES[name];
   // Family voices: Ready to play leads a game's first line; Bye-bye plays on getting home (only when recorded).

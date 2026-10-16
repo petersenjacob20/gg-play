@@ -2531,8 +2531,8 @@
     },
     "frisbeeDefault": "red",
     "frisbeeMs": {
-      "fly": 500,
-      "back": 380
+      "fly": 900,
+      "back": 600
     },
     "maxRiding": 2,
     "snackArt": {

@@ -77,18 +77,14 @@ export function gridOf(zone, data) {
   return { cell: c, cols: Math.floor(w.w / c), rows: Math.floor((w.h - num(zone && zone.pad)) / c) };
 }
 
-// Design's n1 fix ("hide the Playground toggle until the tile ships"): the Playground ships only when
-// its data has a ready park zone with a layout. The home tile, the route and Dad's Playground toggle
-// all ask this, so a build without it has no toggle at all (absent, not greyed out) and no dead button.
+// n1: the Playground ships only with a ready park zone and layout; the tile, route and Dad's toggle all ask this.
 export function playgroundShips(data) {
   const z = zoneById(data, 'park');
   return !!(z && Array.isArray(z.park) && z.park.length);
 }
 
 // ---- routes (q0, q10) ----
-// "#playground" is the pick grid. "#playground/<id>" opens the park for a switched-on character;
-// "#playground/<id>/<zone>" opens a ready zone (any other zone goes to the park); a bad id goes back
-// to "#playground" (fix). Not shipped, or Dad's toggle off: home (view 'off').
+// #playground: pick grid; /<id>: that character's park; /<id>/<zone>: a ready zone; bad id: the grid; off: home.
 export function resolvePlayground(data, state, hash) {
   if (!playgroundShips(data) || (state && state.playground === false)) return { view: 'off', id: null };
   const rest = String(hash || '').replace(/^#\/?/, '').split('?')[0].split('/').slice(1).filter(Boolean);
@@ -136,9 +132,7 @@ export function nearestFree(layout, id, gx, gy, zone, data, skip = -1) {
   }
   return best ? { gx: best.gx, gy: best.gy } : null;
 }
-// Sanitise one zone's list: catalog ids that zone lists, whole cells inside the world, no duplicates
-// or overlaps, at most PARK_CAP. Returns [] when nothing good is left.
-// `base` = pieces already there (the zone's pinned pieces): her pieces must not overlap them.
+// One zone's list, cleaned: listed ids, whole cells in the world, no overlaps (with `base` either), at most PARK_CAP.
 export function sanitizeLayout(list, zone, data, base = []) {
   if (!zone || !Array.isArray(list)) return [];
   const allowed = new Set(Array.isArray(zone.pieces) ? zone.pieces : []);
@@ -227,9 +221,7 @@ export function frontOf(entry, data, zone) {
 }
 
 // ---- camera (q1) ----
-// cam = the world point at the view's top-left. Clamped so the world always fills the view (a world
-// smaller than the view is centred). softClamp lets the thumb stretch a little past an edge; on
-// release the screen eases back to clampCamera.
+// cam = the world point at the view's top-left, clamped (a small world is centred); softClamp stretches a little.
 function axis(v, view, world) {
   if (world <= view) return (world - view) / 2;
   return Math.min(world - view, Math.max(0, v));
@@ -303,9 +295,8 @@ export function openSpotNear(pt, layout, data, zone) {
 }
 
 // ---- animals (q3) ----
-// Each zone animal: a kind from the shared library, a wander loop (world units, or offsets from the
-// first piece of its `anchor` kind) and a speed (units per second). An anchored animal whose piece is
-// not in her park stays home. At most `maxMoving` (about 6) move at once so phones stay smooth.
+// Zone animals: a kind, a wander loop (or offsets from its `anchor` piece; absent piece, it stays home), a speed;
+// at most `maxMoving` move at once.
 export function zoneAnimals(zone, layout, data) {
   const max = Math.max(0, Math.min(6, num(pg(data) && pg(data).maxMoving, 6)));
   const out = [];
@@ -390,9 +381,8 @@ export function trickClass(kind, reduced) {
 }
 
 // ---- rides and snacks (q10 ride shape, q11) ----
-// A ride piece carries `ride {anim, seats, speed, ms, path}`. The path is a loop of offsets from the
-// piece's centre (so it rides along with the piece wherever her park puts it), kept inside the world.
-// Rides are slow: never faster than the walk speed x 1.5. One rider per bike or scooter, at most 2 at once.
+// A ride piece: `ride {anim, seats, speed, ms, path}`, the path a loop of offsets from its centre, in the world;
+// at most walk speed x 1.5; one rider per bike or scooter, 2 at most.
 export const isRide = (piece) => !!(piece && isObj(piece.ride) && Array.isArray(piece.ride.path) && piece.ride.path.length >= 2);
 export const maxRiding = (data) => Math.max(1, Math.min(2, num(pg(data) && pg(data).maxRiding, 2)));
 export const walkSpeedOf = (data) => Math.max(100, num(pg(data) && pg(data).walkSpeed, 500));
@@ -495,9 +485,7 @@ export function rideLegs(start, pts, speed) {
   }
   return legs;
 }
-// Where the ride parts sit on the 160 px character drawing (design.md §15.4): the vehicle hangs from
-// the feet line (the bottom of the drawing box) so the seat is under the body and the wheels show below
-// the feet; the helmet sits on the top of the head. Per-character nudges live in data (rideFit).
+// Ride parts on the 160 px drawing (§15.4): the vehicle hangs from the feet line, the helmet on the head; nudges in rideFit.
 export const VEHICLE = Object.freeze({ w: 150, h: 75, seatTop: 0.18, wheelTop: 0.46 });
 export const HELMET = Object.freeze({ domeTop: 0.12, brim: 0.74, straps: 0.80 }); // of its size, from the pgHelmet art
 export const HELMET_DROP = 14; // the brim sits this far below the top of the head...
@@ -533,9 +521,7 @@ export function rideAnchors(data, id) {
   return { vehicleTop, helmetTop, helmetSize: fit.helmet, helmetX: fit.helmetX, brimY, domeY: Math.round(helmetTop + fit.helmet * HELMET.domeTop),
     strapY: helmetTop + fit.helmet * HELMET.straps, seatY: vehicleTop + Math.round(VEHICLE.h * VEHICLE.seatTop), wheelY: vehicleTop + Math.round(VEHICLE.h * VEHICLE.wheelTop), fit };
 }
-// Floaties (design §16.5): drawn whenever a character is in a water area, on the top layer, never over
-// the face. The kind is per character (a pet life vest, armbands, or a ring for the noodle shape), with
-// its top in the 160 px drawing box; the numbers live in data (rideFit.<id>.floaty).
+// Floaties (§16.5): in water, top layer, never over the face; kind and top per character in rideFit.<id>.floaty.
 export const FLOATY_KINDS = Object.freeze(['vest', 'armbands', 'ring']);
 export function floatyFit(data, who) {
   const id = who && who.id;
@@ -574,9 +560,7 @@ export function cheerOf(zone) {
   if (!c || typeof c.clip !== 'string' || !/^c-/.test(c.clip)) return null;
   return { clip: c.clip, gapMs: Math.max(800, Math.min(4000, Number(c.gapMs) || CHEER_GAP_MS)) };
 }
-// Seat 2 (Amendment x1, EM fix A): she boards a second character herself. Who may ride in seat 2 is in data
-// (`playground.seat2`: "any" or a list of ids); it is never the rider in seat 1, and only characters that are
-// switched on. Anything else is dropped.
+// Seat 2 (x1, fix A): who may board (`playground.seat2`: "any" or ids), switched on, never the seat-1 rider.
 export function seat2Allowed(data, state, id, whoId) {
   if (typeof id !== 'string' || !id || id === whoId) return false;
   const list = pg(data) && pg(data).seat2;
@@ -611,10 +595,8 @@ export function actorInView(cam, pt, view, margin = VIEW_MARGIN) {
   const b = actorBox(pt);
   return b.x - margin >= cam.x - 0.5 && b.x + b.w + margin <= cam.x + view.w + 0.5 && b.y - margin >= cam.y - 0.5 && b.y + b.h + margin <= cam.y + view.h + 0.5;
 }
-// The camera at zone start and gate arrival: centred on her, clamped so her whole drawing is in view
-// (16 px), then (§16.10) nudged, only if she stays fully in view, so a pinned piece near her (the
-// lifeguard and chair) sits wholly in view and clear of the overlays: the build button (top right) and
-// the gate strip (bottom left).
+// Camera at zone start and gate arrival: on her (16 px in view), nudged (§16.10) so a pinned piece near her
+// shows clear of the build button and gate strip.
 export const OVERLAY = Object.freeze({ top: 116, bottom: 104, side: 8 });
 export function startCamera(pt, layout, zone, data, view, world) {
   let cam = fitInView(centerOn(pt, view, world), pt, view, world);
@@ -671,12 +653,8 @@ export function startOk(cam, pt, layout, zone, data, view, strict = false) {
   if (strict && ov.some((q) => overlap(drawnRect({ x: pt.x, y: pt.y }, cam), q))) return false;
   return blockedTargets(cam, lay, data, zone, view, g).length === 0;
 }
-// Design fix 4 / §16.10: friendBerry's offer stands BESIDE the rider on the same ground line, never on top:
-// the rider's body (the middle half of the 160 px drawing), a gap, friendBerry's body (a 96 px drawing),
-// with the strawberry in the gap at paw height. It goes on the side with room; if neither side has room
-// in the view, the camera shifts just enough (keeping the rider fully in view, 16 px margin) and the
-// result says so. With `avoid` (the ride she just left) friendBerry stands off it when the other side
-// works. Returns { side, who: feet point, treat: centre, cam }.
+// Fix 4 / §16.10: friendBerry stands BESIDE the rider on one ground line, the strawberry between at paw height,
+// on the side with room (else the camera shifts, rider kept in view), off `avoid` when it can. { side, who, treat, cam }.
 export const OFFER = Object.freeze({ body: 40, whoW: 96, whoBody: 24, gap: 56, treat: 44, paw: 58, pad: 8 });
 export function offerSpot(pt, cam, view, world = null, avoid = null) {
   const D = OFFER.body + OFFER.gap + OFFER.whoBody; // centre to centre
@@ -727,8 +705,7 @@ export function reactionFor(data, whoId, piece) {
 }
 
 // ---- trick button glyphs (design.md §15.2) ----
-// Each trick button gets its own picture from the art library; no two buttons for one character
-// match. Candidates in order (Design's suggested map first); the star only as a last resort.
+// One picture per trick button, none repeated per character; Design's map first, the star last.
 export const TRICK_GLYPHS = Object.freeze({
   offerBerry: ['strawberry'], numberSparkles: ['eqSparkle'], happyToot: ['cloud'], tailFlip: ['fish'],
   crunchSnack: ['carrot'], pawTap: ['paw'], dropBall: ['ball'],
@@ -747,8 +724,7 @@ export function trickGlyphs(tricks, hasArt = () => true) {
 }
 
 // ---- frisbee (q4) ----
-// Dogs only. The colour is in data (ids only); any other dog gets the default (red). Friends and
-// non-dog pets get no frisbee.
+// Dogs only; colour from data, else red.
 export function frisbeeColor(data, who) {
   if (!isDog(who)) return null;
   const p = pg(data) || {};
@@ -758,8 +734,8 @@ export function frisbeeColor(data, who) {
 }
 export function frisbeeTiming(data) {
   const m = (pg(data) && pg(data).frisbeeMs) || {};
-  const fly = Math.min(600, Math.max(300, num(m.fly, 500)));
-  const back = Math.min(980 - fly, Math.max(200, num(m.back, 380)));
+  const fly = Math.min(900, Math.max(300, num(m.fly, 900)));
+  const back = Math.min(1600 - fly, Math.max(200, num(m.back, 600)));
   return { fly, back, total: fly + back };
 }
 // Where the disc lands: open ground a good throw away (ahead first, then behind), inside the world and

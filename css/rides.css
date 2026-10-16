@@ -1,0 +1,24 @@
+.rides .rd-stage { position: relative; flex: 1; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; touch-action: none; }
+.rides .rd-svg { width: 100%; height: 100%; display: block; }
+.rides .topbar { position: absolute; top: 0; left: 0; right: 0; z-index: 2; }
+.rides { position: relative; display: flex; flex-direction: column; height: 100%; background: #EAF7FF; }
+.rides .rd-back { min-width: 44px; min-height: 44px; }
+.rides .r-grab { animation: rd-glow 1.4s ease-in-out infinite; filter: drop-shadow(0 0 4px #FFE680); }
+.rides .r-tap { animation: rd-glow 1s ease-in-out infinite; }
+
+.rides .r-rays { transform-origin: 0 0; animation: rd-turn 30s linear infinite; }
+@keyframes rd-glow { 50% { opacity: 0.45; } }
+@keyframes rd-ghost { 0% { opacity: 0; transform: translateY(10px); } 50% { opacity: 0.9; transform: translateY(-20px); } 100% { opacity: 0; transform: translateY(-40px); } }
+@keyframes rd-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .rides .r-grab, .rides .r-tap, .rides .r-rays { animation: none; } }
+.rides .r-ghost { animation: rd-ghost2 2.4s ease-in-out 1 forwards; opacity: 1; }
+.rides .r-ghost-ring { transform-box: fill-box; transform-origin: center; animation: rd-pulse 1s ease-in-out 2; }
+.rides .r-ghost-arrow { animation: rd-glow 1s ease-in-out 2; }
+.rides .r-sparkle { transform-box: fill-box; transform-origin: center; animation: rd-twinkle 1.6s ease-in-out infinite; }
+.rides .r-sparkle.b { animation-delay: 0.8s; }
+@keyframes rd-ghost2 { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes rd-pulse { 50% { transform: scale(1.35); opacity: 0.3; } }
+@keyframes rd-twinkle { 50% { transform: scale(0.4); opacity: 0.4; } }
+@media (prefers-reduced-motion: reduce) { .rides .r-sparkle, .rides .r-ghost-ring { animation: none; } }
+.rides .rd-stage { display: block; background: #BFE6FF; }
+.rides .rd-svg { position: absolute; inset: 0; overflow: visible; }
