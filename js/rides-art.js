@@ -89,7 +89,7 @@ function dog(d, c, o) {
     c.sheen ? E(-8, -96, 7, 3, c.sheen, null, { opacity: 0.35 }) : null,
     E(0, -73, 12, 9, m.r, m.line),
     E(0, -78, 5, 3.6, c.nose, dark(c.nose, 0.2)), E(-1.5, -79.2, 1.6, 0.9, '#FFFFFF', null, { opacity: 0.6 }),
-    o.mouth === 'open' ? G({}, P('M-6 -70q6 9 12 0z', '#6B2A22', dark('#6B2A22')), P('M-3 -67q3 4 6 0z', '#F28CA0')) : L('M0 -74.5v3M-6 -70q6 5 12 0', m.line, 1.5),
+    o.mouth === 'O' ? E(0, -68, 4.5, 6, '#6B2A22', dark('#6B2A22'), { class: 'r-howlO' }) : o.mouth === 'open' ? G({}, P('M-6 -70q6 9 12 0z', '#6B2A22', dark('#6B2A22')), P('M-3 -67q3 4 6 0z', '#F28CA0')) : L('M0 -74.5v3M-6 -70q6 5 12 0', m.line, 1.5),
     o.cover ? null : G({}, eye(-9, -87, c.iris, 4.2, false, o.shut, o.half ? c.coat : null), eye(9, -87, c.iris, 4.2, false, o.shut, o.half ? c.coat : null)));
   return G({ class: 'r-body' },
     ...(o.tail === 'back' ? [L('M-20 -14q-24 2 -36 -10', k.line, 10.5), L('M-20 -14q-24 2 -36 -10', c.coat, 8)] : [L('M20 -14q24 -4 24 -28', k.line, 10.5), L('M20 -14q24 -4 24 -28', c.coat, 8)]), // tail
@@ -299,22 +299,40 @@ export const sparkles = (k = 5) => G({ class: 'r-sparkles' }, ...Array.from({ le
   return P(`M${x} ${y - 6}l1.5 4.5l4.5 1.5l-4.5 1.5l-1.5 4.5l-1.5 -4.5l-4.5 -1.5l4.5 -1.5z`, '#FFFFFF', '#BFE6FF'); }));
 
 // ---- the coaster park: a low gentle dragon coaster, teacups and a teapot; the fair backdrop --------------------------
-// the track: a low wavy rail (no scary heights), as a function of x; the car rides on it
-export const track = (x) => -26 - 12 * Math.sin((x / 360) * Math.PI * 3); // gentle: at most about 17 deg
-export function coasterTrack(defs, y) {
-  const pts = Array.from({ length: 49 }, (_, i) => { const x = -20 + i * 8.3; return [x, y + track(x)]; });
-  const d = pts.map(([x, py], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${py.toFixed(1)}`).join('');
-  return G({ class: 'r-track' }, groundShadow(defs, 200, 10, 180, y + 6), ...pts.filter((_, i) => i % 4 === 0).map(([x, py]) => metal(defs, x, py, x, y + 8, 4, '#C9A35A')),
+// the close-up ride (Design rc1): station, climb, a whole loop, a flat spin, the turn (half roll), a barrel roll, the brake run.
+// Segments are [name, seconds, shape(u) -> [x, y]]; the rail is one polyline with its length, so the car rides it by distance
+const lin = (x0, y0, x1, y1) => (u) => [x0 + (x1 - x0) * u, y0 + (y1 - y0) * u];
+const bz = (a, b, c, d, u) => a * (1 - u) ** 3 + 3 * b * u * (1 - u) ** 2 + 3 * c * u * u * (1 - u) + d * u ** 3;
+export const CO_SEGS = [['station', 0.35, lin(50, 740, 110, 740)], ['climb', 0.5, (u) => [bz(110, 170, 120, 180, u), bz(740, 740, 570, 570, u)]],
+  ['loop', 1.2, (u) => [180 + 95 * Math.sin(u * 6.2832), 475 + 95 * Math.cos(u * 6.2832)]], ['spin', 0.7, lin(180, 570, 200, 570)],
+  ['turn', 0.65, (u) => [200 + 45 * Math.sin(u * Math.PI), 615 - 45 * Math.cos(u * Math.PI)]], ['roll', 0.75, lin(200, 660, 150, 660)], ['brake', 0.35, lin(150, 660, 110, 660)]];
+export const CO_T = CO_SEGS.reduce((t, s) => t + s[1], 0);
+export const RAIL = []; // [x, y, length so far, segment]
+CO_SEGS.forEach(([, , f], i) => { for (let k = i ? 1 : 0; k <= 60; k++) { const [x, y] = f(k / 60); const q = RAIL.at(-1); RAIL.push([x, y, q ? q[2] + Math.hypot(x - q[0], y - q[1]) : 0, i]); } });
+export const railAt = (L) => { L = Math.max(0, Math.min(RAIL.at(-1)[2], L)); let i = 1; while (i < RAIL.length - 1 && RAIL[i][2] < L) i++; const p = RAIL[i - 1], q = RAIL[i], f = (L - p[2]) / (q[2] - p[2] || 1); return [p[0] + (q[0] - p[0]) * f, p[1] + (q[1] - p[1]) * f]; };
+export const railNear = (x, y, L = 0, w = 1e9) => Math.min(...RAIL.slice(1).map((q, i) => { const p = RAIL[i]; if (Math.abs(q[2] - L) > w) return 1e9; const dx = q[0] - p[0], dy = q[1] - p[1], f = Math.max(0, Math.min(1, ((x - p[0]) * dx + (y - p[1]) * dy) / (dx * dx + dy * dy || 1))); return Math.hypot(x - p[0] - dx * f, y - p[1] - dy * f); }));
+// (railNear: the distance to the rail, only within w of length L when given)
+// where the car is at time t: the distance along the rail, the segment, its own progress u, the spin (scale x) and the roll (scale y)
+const vis = (f) => (f < 0 ? -1 : 1) * Math.max(0.45, Math.abs(f)); // never thinner than 0.45: the car, pet and crown stay readable through a roll or the spin
+export function coasterAt(t) {
+  let i = 0, t0 = 0; while (i < CO_SEGS.length - 1 && t > t0 + CO_SEGS[i][1]) t0 += CO_SEGS[i++][1];
+  const u = Math.max(0, Math.min(1, (t - t0) / CO_SEGS[i][1])), e = i === 6 ? 1 - (1 - u) ** 2 : u, idx = RAIL.findIndex((q) => q[3] === i);
+  const L0 = idx ? RAIL[idx - 1][2] : 0, L1 = RAIL.findLast((q) => q[3] === i)[2];
+  return { seg: CO_SEGS[i][0], u, L: L0 + (L1 - L0) * e, s: i === 3 ? vis(Math.cos(u * 6.2832)) : 1, f: vis(i === 4 ? Math.cos(u * Math.PI) : i === 5 ? -Math.cos(u * 6.2832) : i === 6 ? -1 : 1) };
+}
+export function coasterTrack(defs) {
+  const d = RAIL.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join('');
+  return G({ class: 'r-track' }, groundShadow(defs, 170, 10, 180, 752), ...RAIL.filter((q, i) => i % 30 === 0 && q[1] > 560).map(([x, y]) => metal(defs, x, y + 4, x, 752, 4, '#C9A35A')),
     L(d, '#7D3A2A', 7), L(d, '#C2563F', 4.5), L(d, '#FFFFFF', 1.2, { opacity: 0.5, transform: 'translate(0 -1.5)' }));
 }
 // a dragon-front coaster car with a visible lap bar; kids (the riders) sit inside, the car's front rim drawn over them
-export function dragonCar(defs, kids = [], bar = true) {
+export function dragonCar(defs, kids = [], bar = true, over = false) { // over: the riders drawn over the car (in a roll they peek out)
   const g = plastic(defs, '#4FB35A', 'g');
-  return G({ class: 'r-car' }, ...kids,
-    P('M-48 -4q0 -30 8 -34h62q8 0 10 10l6 24z', g.v, g.line), L('M-42 -30h60', '#FFFFFF', 3, { opacity: 0.45 }),
+  return G({ class: 'r-car' }, ...(over ? [] : kids),
+    P('M-48 -4q0 -30 8 -34h62q8 0 10 10l6 24z', g.v, g.line, { class: 'r-carbody' }), L('M-42 -30h60', '#FFFFFF', 3, { opacity: 0.45 }),
     P('M36 -6q8 -32 26 -44q14 -6 18 6q2 10 -10 12q-6 0 -10 8q-6 12 -6 18z', g.v, g.line), T('circle', { cx: 68, cy: -44, r: 3, fill: '#FFFFFF' }), T('circle', { cx: 69, cy: -44, r: 1.6, fill: '#2B1D14' }),
     P('M58 -54l4 -10l4 8z', '#F2C230', '#B38A17'), L('M74 -38q4 2 6 0', '#2E6B34', 1.5),
-    bar ? G({ class: 'r-lapbar' }, metal(defs, -40, -34, 20, -34, 4, '#F2C230'), metal(defs, -40, -34, -40, -24, 3, '#F2C230'), metal(defs, 20, -34, 20, -24, 3, '#F2C230')) : null,
+    bar ? G({ class: 'r-lapbar' }, metal(defs, -40, -34, 20, -34, 4, '#F2C230'), metal(defs, -40, -34, -40, -24, 3, '#F2C230'), metal(defs, 20, -34, 20, -24, 3, '#F2C230')) : null, ...(over ? kids : []),
     ...[-34, 14].map((wx) => T('circle', { class: 'r-wheel', cx: wx, cy: -2, r: 6, fill: '#3A3F46', stroke: '#24282D', 'stroke-width': 1.5 })));
 }
 export function teacup(defs, c, kids = []) {

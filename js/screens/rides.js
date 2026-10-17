@@ -8,7 +8,7 @@ import { reducedMotion } from '../fun.js';
 import * as R from '../rides.js';
 import * as A from '../rides-art.js';
 
-export const RIDES_CACHE = 'gg-pack-rides-4a69c9d111';
+export const RIDES_CACHE = 'gg-pack-rides-d25e1a8bb0';
 export const RIDES_PACK = ['./js/screens/rides.js', './js/rides.js', './js/rides-art.js', './css/rides.css'];
 export async function ready(ctx) {
   await new Promise((ok) => { const k = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: './css/rides.css' }); k.onload = k.onerror = ok; document.head.append(k); });
@@ -351,31 +351,45 @@ function splashScene({ main, stage, pet, fx, first, reduced, zone }) {
   main.ridePop = pop; main.rideMove = (x, y) => { px = x; py = y; draw(); };
 }
 
-// ---- dragon coaster (coaster park): drag the car along the low track (or tap it to roll); everyone rides in the car ----
-const CO_POSE = { howl: () => ({ mouth: 'open' }), coverPeek: (ph) => (ph === 'after' ? { mouth: 'open' } : { cover: true }), hugBall: () => ({ toy: 'ballBlue', toyAt: 'paws' }), calmWise: () => ({ half: true }),
+// ---- dragon coaster (coaster park): tap the car and it rides the whole loop (climb, loop, spin, turn, barrel roll, brake) ----
+// the camera stays still with the whole loop in frame; each pet's own action plays on the straight parts, the face otherwise
+// simply happy; at the stop it is upright with a happy pose and a small puff
+const CO_POSE = { howl: (ph) => (ph === 'ride' ? { mouth: 'O', chinUp: true, tilt: -8 } : { mouth: 'open' }), coverPeek: (ph) => (ph === 'after' ? { mouth: 'open' } : { cover: true }), hugBall: () => ({ toy: 'ballBlue', toyAt: 'paws' }), calmWise: () => ({ half: true }),
   earsFlap: (ph, x) => (ph === 'ride' ? { ears: Math.sin(x / 9) > 0 ? 'out' : 'back', mouth: 'open' } : {}), pawsWave: (ph) => (ph === 'idle' ? {} : { pawsUp: true, mouth: 'open' }), earsBack: (ph) => (ph === 'ride' ? { ears: 'back', mouth: 'open' } : {}) };
+const CO_STRAIGHT = ['station', 'spin', 'brake'];
+export const busy = () => raf !== 0; // test hook: a ride animation is still running
 function coasterScene({ main, stage, pet, fx, first, reduced }) {
   const act = R.actOf('coaster', pet); const who = R.riders('coaster', pet);
-  const TY = 650, CS = 1.5, X0 = 92, X1 = 222; let x = X0, ph = 'idle', ghost = first && !reduced, drag = false;
-  const WB = 48 * CS, LIFT = 3 * CS; // the wheelbase; a wheel's centre just above the rail's middle, the rail through its lower half (at rest and rolling)
-  const wheels = (xx) => { const xa = xx - 34 * CS; let xb = xa + WB; for (let i = 0; i < 4; i++) xb = xa + Math.sqrt(Math.max(1, WB * WB - (A.track(xb) - A.track(xa)) ** 2)); return [xa, TY + A.track(xa), xb, TY + A.track(xb)]; };
+  const CS = 1.1, WB = 48 * CS, LIFT = 3 * CS; let t = 0, k = 0, ph = 'idle', ghost = first && !reduced;
+  // the car's middle runs WB/2 in from each rail end, so it moves right up to the stop
+  const LM = A.RAIL.at(-1)[2], at = (tt) => { const c = A.coasterAt(tt), Wd = WB * Math.max(0.02, Math.abs(c.s)), L = WB / 2 + c.L * (LM - WB) / LM, La = Math.max(0, Math.min(LM - Wd, L - Wd / 2)), [xa, ya] = A.railAt(La); let Lb = La + Wd, xb, yb;
+    for (let i = 0; i < 4; i++) { [xb, yb] = A.railAt(Lb); Lb += Wd - Math.hypot(xb - xa, yb - ya); } return { c, Wd, xa, ya, ang: (Math.atan2(yb - ya, xb - xa) * 180) / Math.PI }; }; // both wheels on the rail (closer in a spin)
+  const P0 = at(0), P1 = at(A.CO_T);
   function draw() {
-    main.dataset.phase = ph; main.dataset.x = String(Math.round(x));
-    const defs = []; const o = { ...CO_POSE[act](ph, x) };
-    const kids = who.map((id, i) => ['g', { transform: `translate(${-12 - i * 26} ${-22}) scale(${who.length > 1 ? 0.42 : 0.5})` }, pp(id, o)]);
-    const [xa, ya, xb, yb] = wheels(x); const tilt = (Math.atan2(yb - ya, xb - xa) * 180) / Math.PI;
-    const car = ['g', { class: 'rd-rider', 'data-act': act, transform: `translate(${xa} ${ya}) rotate(${tilt}) translate(0 ${-LIFT}) scale(${CS}) translate(34 2)` }, A.dragonCar(defs, kids), ph === 'idle' ? A.grabRing(46, -30) : null].filter(Boolean);
-    paint(stage, [...fair(defs), A.coasterTrack(defs, TY), car, ph === 'after' ? ['g', { transform: `translate(${x} ${TY - 120})` }, A.stars(3)] : null, ghost && ph === 'idle' ? ghostAt(x, TY - 40, 'M0 0h160m-14 -12l14 12l-14 12', 0.8) : null].filter(Boolean), defs);
+    const { c, Wd, xa, ya, ang } = at(t); const run = ph === 'ride' && CO_STRAIGHT.includes(c.seg);
+    main.dataset.phase = ph; main.dataset.t = String(Math.round(t * 1000)); main.dataset.seg = ph === 'idle' ? 'station' : c.seg;
+    const defs = []; const o = ph === 'ride' && !run ? { mouth: 'open' } : { ...CO_POSE[act](ph, c.L), ...(ph === 'after' ? { mouth: 'open', pawsUp: true } : {}) };
+    const sink = ph !== 'ride' ? 0 : 24 * (c.seg === 'turn' || c.seg === 'roll' ? 1 : c.seg === 'spin' ? Math.max(0, c.u * 2 - 1) : c.seg === 'brake' ? Math.max(0, 1 - c.u * 4) : 0); // through the turn and roll the pet sits down in the car, over the rail
+    const howl = run && act === 'howl' ? ['g', { class: 'r-howl', transform: 'translate(2 -86)' }, ...[0, 1, 2].map((i) => ['path', { d: `M${i * 9} ${-i * 7}q6 -6 0 -12`, fill: 'none', stroke: '#6A4A2E', 'stroke-width': 2.4, 'stroke-linecap': 'round' }])] : null; // the puppy's howl: song lines from its raised chin
+    const kids = who.map((id, i) => ['g', { transform: `translate(${-12 - i * 26} ${sink - 22}) scale(${who.length > 1 ? 0.42 : 0.5})` }, pp(id, o)]).concat(howl ? [howl] : []);
+    // after the stop: the puff at once, then (g 0 to 1, about 0.8 s) the car glides back to the station with a little turnaround hop
+    const g = ph === 'after' ? Math.max(0, Math.min(1, (k - 0.15) / 0.8)) : 0, e = g * g * (3 - 2 * g), sx = g ? Math.sign(e - 0.5 || 1) * Math.max(0.3, Math.abs(Math.cos(Math.PI * e))) : 1;
+    const tr = g ? `translate(${P1.xa + (P0.xa - P1.xa) * e} ${P1.ya + (P0.ya - P1.ya) * e - 30 * Math.sin(Math.PI * e)}) scale(${sx} 1) translate(${WB / 2} ${-LIFT}) scale(${CS}) translate(10 2)`
+      : `translate(${xa} ${ya}) rotate(${ang}) scale(1 ${c.f}) translate(${Wd / 2} ${-LIFT}) scale(${c.s * CS} ${CS}) translate(10 2)`;
+    const car = ['g', { class: 'rd-rider', 'data-act': act, 'data-run': run ? '1' : '0', 'data-ang': ang.toFixed(1), 'data-spin': c.s.toFixed(3), 'data-roll': c.f.toFixed(3), transform: tr },
+      A.dragonCar(defs, kids, true, sink > 12), ph === 'idle' ? A.grabRing(46, -30) : null].filter(Boolean);
+    paint(stage, [...fair(defs), A.coasterTrack(defs), car, ph === 'after' && k < 1 ? ['g', { class: 'r-puff', transform: `translate(${P1.xa - 40} ${P1.ya - 20 - k * 20}) scale(${0.7 + k * 0.3})`, opacity: Math.max(0, 1 - k).toFixed(2) }, A.cloud(0, 0)] : null,
+      ph === 'after' && k < 1 ? ['g', { transform: `translate(${P1.xa} ${P1.ya})` }, A.stars(3)] : null, ghost && ph === 'idle' ? ghostAt(xa + 20, ya - 40, '', 0.8) : null].filter(Boolean), defs);
   }
   draw();
-  const roll = () => { ph = 'ride'; fx(act === 'howl' ? 'fx-yip' : 'fx-zoom'); loop((dt) => { x += dt * 110; if (x >= X1) { x = X1; ph = 'after'; fx(R.TRAIT[pet].sound); draw(); return false; } draw(); return true; }); };
-  stage.onpointerdown = (ev) => { const [qx, qy] = svgPt(stage.firstChild, ev); ghost = false;
-    if (ph === 'after') { ph = 'idle'; x = X0; draw(); return; } if (ph === 'ride' && raf) return;
-    if (near2(x, TY + A.track(x) - 40, qx, qy, 80)) { drag = true; ph = 'ride'; try { stage.setPointerCapture(ev.pointerId); } catch { /* ignore */ } draw(); } };
-  stage.onpointermove = (ev) => { if (!drag) return; const [qx] = svgPt(stage.firstChild, ev); x = Math.max(x, Math.min(X1, qx)); if (x >= X1) { drag = false; ph = 'after'; fx(R.TRAIT[pet].sound); } draw(); };
-  stage.onpointerup = () => { if (drag && ph === 'ride' && x < X1) roll(); drag = false; };
-  main.rideSet = (p, v = 0) => { leave(); ghost = p === 'ghost'; ph = ghost ? 'idle' : p; x = p === 'ride' ? v || 170 : p === 'after' ? X1 : X0; draw(); };
-  main.rideRail = (xx) => TY + A.track(xx); main.rideLift = LIFT; // test hook: the rail's y at x, a wheel centre's height over it
+  const roll = () => { ph = 'ride'; t = 0; k = 0; fx(act === 'howl' ? 'fx-yip' : 'fx-zoom');
+    loop((dt) => { if (ph === 'ride') { t = Math.min(A.CO_T, t + dt); if (t >= A.CO_T) { ph = 'after'; k = 0; fx(R.TRAIT[pet].sound); } } else if ((k += dt) >= 0.95) { ph = 'idle'; t = 0; draw(); return false; } draw(); return true; }); };
+  // a tap (touch has no hover) anywhere within 56 px of the car starts it, on the press or, failing that, the release; never mid-ride
+  const near = (ev) => { const r = stage.querySelector('.rd-rider'); if (!r) return false; const b = r.getBoundingClientRect(); return ev.clientX >= b.left - 56 && ev.clientX <= b.right + 56 && ev.clientY >= b.top - 56 && ev.clientY <= b.bottom + 56; };
+  const go = (ev) => { ghost = false; if (raf || ph !== 'idle' || !near(ev)) return; roll(); };
+  stage.onpointerdown = go; stage.onpointerup = go;
+  main.rideSet = (p, v = 0) => { leave(); ghost = p === 'ghost'; ph = ghost ? 'idle' : p; t = p === 'ride' ? v * A.CO_T : p === 'after' ? A.CO_T : 0; k = p === 'after' ? v : 0.5; draw(); };
+  main.rideNear = (x, y) => A.railNear(x, y, A.coasterAt(t).L, 90); main.rideLift = LIFT; main.rideT = A.CO_T; // test hooks: a point's distance to the rail, a wheel centre's height over it, the ride's length
 }
 
 // ---- tipping bucket (water park): tap the bucket, a drop at a time; when it is full it tips over the pet; all cheer ----

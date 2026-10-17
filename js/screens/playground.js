@@ -944,8 +944,8 @@ function playScreen(ctx, who, zone) {
       piecesEl.appendChild(el); pieceEls.push(el);
       const ride = RIDE[`${zone.id}:${p.id}`];
       if (ride && !building) { const z = h('button', { type: 'button', class: 'pg-zoom', 'data-ride': ride, 'aria-label': 'Close-up', onclick: () => { ctx.session.rides = { seen: {}, mud: {}, ...ctx.session.rides, from: location.hash }; ctx.go(`#ride/${ride}/${who.id}`); } }, icon('zoom'));
-        z.addEventListener('pointerdown', (ev) => { if (ev.stopPropagation) ev.stopPropagation(); }); // never a walk or a pan: the button opens the ride
-        z.style.left = px(b.x + b.w); z.style.top = px(b.y); z.style.zIndex = '100000'; piecesEl.appendChild(z); }
+        z.addEventListener('pointerdown', (ev) => { if (ev.stopPropagation) ev.stopPropagation(); }); // no walk or pan
+        z.style.left = px(b.x + b.w); z.style.top = px(b.y + (ride == 'coaster' ? b.h - 60 : 0)); z.style.zIndex = '100000'; piecesEl.appendChild(z); }
     });
     liveRipples();
   };
