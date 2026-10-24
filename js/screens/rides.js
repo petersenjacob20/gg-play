@@ -8,7 +8,7 @@ import { reducedMotion } from '../fun.js';
 import * as R from '../rides.js';
 import * as A from '../rides-art.js';
 
-export const RIDES_CACHE = 'gg-pack-rides-d25e1a8bb0';
+export const RIDES_CACHE = 'gg-pack-rides-623705c70d';
 export const RIDES_PACK = ['./js/screens/rides.js', './js/rides.js', './js/rides-art.js', './css/rides.css'];
 export async function ready(ctx) {
   await new Promise((ok) => { const k = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: './css/rides.css' }); k.onload = k.onerror = ok; document.head.append(k); });
@@ -48,7 +48,7 @@ export function render(ctx) {
   const { scene, pet } = ok;
   const stage = h('div', { class: 'rd-stage' });
   const main = h('main', { class: 'kid rides', 'data-game': 'rides', 'data-scene': scene, 'data-pet': pet, 'data-phase': 'idle' },
-    h('div', { class: 'topbar' }, h('button', { type: 'button', class: 'icon-btn home-btn rd-back', 'aria-label': 'Back', onclick: () => ctx.go(back) }, backArt()), h('span', { class: 'spacer grow' }), dadButton(ctx)),
+    h('div', { class: 'topbar' }, h('button', { type: 'button', class: 'icon-btn home-btn rd-back', 'aria-label': 'Back', onclick: () => { R.dropTaps(); ctx.go(back); } }, backArt()), h('span', { class: 'spacer grow' }), dadButton(ctx)),
     stage);
   const fx = (id) => { if (ctx.audio) ctx.audio.fx([id]); };
   const first = !sess.seen[scene]; sess.seen[scene] = true; MUD = sess.mud;

@@ -1,8 +1,5 @@
-// Playground pick + play (design.md §13.4–13.5, Amendment n; Amendment q: the Big Playground).
-// Wordless for her. The park is bigger than the screen: her thumb on empty ground pans the camera
-// (a JS-set transform, clamped, a light ease on release; no pinch, no fling, no scroll bars); a press
-// on the character drags it (pointer capture) and the camera follows near the edge; dropping it on a
-// piece, or tapping it, uses it (y). Moved by transform.
+// Playground pick + play (design §13.4–13.5, Amendments n, q)
+// Wordless. Thumb on ground pans (JS transform, clamped, eased; no pinch/fling/scroll); press drags her, drop or tap uses (y).
 import { h, drawing } from '../dom.js';
 import { art, ART } from '../art.js';
 import { petView, icon } from '../ui.js';
@@ -160,13 +157,13 @@ function playScreen(ctx, who, zone) {
   const vsize = () => ({ w: view.clientWidth || 360, h: view.clientHeight || 520 });
 
   // camera
-  let cam = { x: 0, y: 0 };
+  let cam = { x: 0, y: 0 }, M = [], mag, hit, drop;
   let onCam = () => {};
   let liveRipples = () => {}; // set once the pieces are drawn
   const applyCam = (ease = false) => {
     worldEl.classList.toggle('pg-ease', !!ease && !reduced);
     worldEl.style.transform = `translate(${-Math.round(cam.x)}px, ${-Math.round(cam.y)}px)`;
-    liveRipples(); onCam();
+    liveRipples(); onCam(); mag?.(view, cam, M);
   };
   const toWorld = (ev) => {
     const r = view.getBoundingClientRect();
@@ -178,15 +175,14 @@ function playScreen(ctx, who, zone) {
   actor.classList.add('pg-actor');
   const actorWrap = h('div', { class: 'pg-actor-wrap', 'data-who': who.id, 'data-kind': who.kind || '' }, actor);
   actorWrap.classList.toggle('pg-hk', hasArmHooks(who.id)); // her drawing has arm hooks: poses move arms and ears only (§18.5, y-b S4)
-  let pos = PG.startSpot(layout, zone, data);
+  const S = ctx.session?.rides, bk = S?.at && S.from === location.hash && S.at; if (S) S.at = 0;
+  let pos = bk ? bk[0] : PG.startSpot(layout, zone, data);
   // her ground shadow (§18.3): on the ground under her feet; while she is up on a slide, swing or climber
   // it stays on the piece's foot line, smaller and fainter the higher she is
   const actorSh = shade('pg-ash');
   let shGround = null;
   let lift = 0; // in a ride car the rider sits up in the seat while the wheels stay on the track
-  // Where she is DRAWN right now (Architect x2, 3:13 AM): a walk is one CSS transition from one placeActor
-  // call, so mid-walk her drawn spot is between where she was and `pos` (the destination). In a browser the
-  // live computed left/top says exactly; otherwise the same ease curve is worked out from the start time.
+  // where she is DRAWN mid-walk (one CSS transition to `pos`): live left/top, else the same ease from t0
   let placedAt = { x: Math.round(pos.x), y: Math.round(pos.y) }; // the last destination (her feet)
   let glide = null; // the move in progress: { from, to, t0, ms, ease }
   const drawnPos = () => {
@@ -922,7 +918,7 @@ function playScreen(ctx, who, zone) {
   // pieces
   const pieceEls = [];
   const renderPieces = () => {
-    piecesEl.replaceChildren(); pieceEls.length = 0;
+    piecesEl.replaceChildren(); pieceEls.length = M.length = 0;
     layout.forEach((e, i) => {
       const p = PG.pieceById(data, e[0]);
       const el = h('button', { type: 'button', class: `pg-piece pc-${p.id}`, 'data-piece': p.id, 'data-slots': PG.seatsOf(PG.useOf(data, p.id)).length, 'aria-label': p.id },
@@ -943,9 +939,8 @@ function playScreen(ctx, who, zone) {
       el.addEventListener('click', (ev) => { if (ev.detail === 0 && !building) tapPiece(i); }); // keyboard only; taps are pointerup
       piecesEl.appendChild(el); pieceEls.push(el);
       const ride = RIDE[`${zone.id}:${p.id}`];
-      if (ride && !building) { const z = h('button', { type: 'button', class: 'pg-zoom', 'data-ride': ride, 'aria-label': 'Close-up', onclick: () => { ctx.session.rides = { seen: {}, mud: {}, ...ctx.session.rides, from: location.hash }; ctx.go(`#ride/${ride}/${who.id}`); } }, icon('zoom'));
-        z.addEventListener('pointerdown', (ev) => { if (ev.stopPropagation) ev.stopPropagation(); }); // no walk or pan
-        z.style.left = px(b.x + b.w); z.style.top = px(b.y + (ride == 'coaster' ? b.h - 60 : 0)); z.style.zIndex = '100000'; piecesEl.appendChild(z); }
+      if (ride && !building) { const z = h('button', { type: 'button', class: 'pg-zoom', 'data-ride': ride, 'aria-label': 'Close-up', onclick: () => { if (drop?.()) return; ctx.session.rides = { seen: {}, mud: {}, ...ctx.session.rides, from: location.hash, at: [pos, cam] }; ctx.go(`#ride/${ride}/${who.id}`); } }, icon('zoom'));
+        z.style.left = px(b.x + b.w); z.style.top = px(b.y + (ride == 'coaster' ? b.h - 60 : 0)); z.style.zIndex = '100000'; piecesEl.appendChild(z); M.push([z, b]); }
     });
     liveRipples();
   };
@@ -1139,8 +1134,10 @@ function playScreen(ctx, who, zone) {
   // start centred on the character beside the slide (again once the view has its real size)
   // zone start and gate arrival (Design fix 3): centred on her, clamped so all of her is in view
   const startCam = () => PG.startCamera(pos, layout, zone, data, vsize(), world);
-  cam = startCam(); applyCam(false);
-  clock.later(0, () => { cam = startCam(); applyCam(false); });
+  cam = bk ? bk[1] : startCam(); applyCam(false);
+  clock.later(0, () => { cam = bk ? bk[1] : startCam(); applyCam(false); });
+  import('../rides.js').then((m) => { mag = m.placeMags; hit = m.hitMag; drop = m.dropped; mag(view, cam, M); }, () => {});
+  view.addEventListener('pointerdown', (ev) => hit?.(ev, M), true); view.addEventListener('pointerup', (ev) => hit?.(ev, M), true); // magnifier first; it opens on pointerup
 
   // her own trick buttons (Amendment n): always work, pause the animals for the trick
   const runTrick = (kind) => {

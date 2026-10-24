@@ -1,7 +1,7 @@
 // Offline shell. Bump CACHE on every change. Activate deletes only stale caches starting with OWN;
 // other apps' caches (fc-, pr-, other gg-) are never touched. Only the current PACKS are kept and read.
-const CACHE = 'gg-v1-20261024pm';
-const PACKS = ['gg-pack-hide-fa9a5f385f', 'gg-pack-grow-43190319dd', 'gg-pack-care-77f2fc98f7', 'gg-pack-rides-d25e1a8bb0']; // HIDE_CACHE, GROW_CACHE, CARE_CACHE
+const CACHE = 'gg-v1-20261024pn';
+const PACKS = ['gg-pack-hide-fa9a5f385f', 'gg-pack-grow-43190319dd', 'gg-pack-care-77f2fc98f7', 'gg-pack-rides-623705c70d']; // HIDE_CACHE, GROW_CACHE, CARE_CACHE
 const OWN = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-', 'gg-pack-care-', 'gg-pack-rides-'];
 const stale = (k) => OWN.some((p) => k.startsWith(p)) && k !== CACHE && !PACKS.includes(k);
 const ASSETS = [

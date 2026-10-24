@@ -88,3 +88,86 @@ export function fallbackTo(hash, from) {
   return b === `#playground/${pet}` || b.startsWith(`#playground/${pet}/`) ? b : `#playground/${pet}`;
 }
 export const backTo = (from) => (/^#playground(\/[A-Za-z0-9]{1,20}){0,2}$/.test(String(from || '')) ? from : '#playground');
+
+// shared magnifier placement (Design's rule, J3): `seen` is the ride's own visible box on screen (already clamped
+// to the viewport by the caller); nudge its middle clear of any block (the top bar, the Build card), then clamp
+// inside the view. It never hides, only moves inward (so the bucket's button still lands somewhere on screen).
+export function magnifierAt(seen, blocks, view, half = 24) {
+  let x = seen.x + seen.w / 2, y = seen.y + seen.h / 2;
+  for (const b of blocks) {
+    if (x + half <= b.x || x - half >= b.x + b.w || y + half <= b.y || y - half >= b.y + b.h) continue;
+    y = y < b.y + b.h / 2 ? b.y - half : b.y + b.h + half;
+  }
+  return { x: Math.max(half, Math.min(view.w - half, x)), y: Math.max((view.t || 0) + half, Math.min(view.h - half, y)) };
+}
+// the Playground's hook (startup keeps only `list` = [button, world box]): each camera move puts every magnifier over its
+// ride's visible middle, >= 8 px below the top bar, clear of the Build card, inside the side edges; 48 px tap area
+const LAST = new WeakMap();
+// px² of drawn ride art inside q (view px at the target camera): a cached 8 px grid of the svg's opaque shapes (shadows skipped)
+const GRID = new WeakMap();
+function painted(pc, q, cam, b) {
+  const sv = pc?.querySelector?.('svg'); if (!sv?.getScreenCTM) return 1e9;
+  let g = GRID.get(sv);
+  if (!g) {
+    const P = pc.getBoundingClientRect(); g = new Set();
+    for (const e of sv.querySelectorAll('path,circle,ellipse,rect,polygon,polyline,line')) {
+      const cs = getComputedStyle(e), m = e.getScreenCTM?.(); if (!m || +cs.opacity * +cs.fillOpacity < 0.5 && cs.stroke == 'none' || cs.display == 'none') continue;
+      const k = e.getBBox(), c0 = new DOMPoint(k.x, k.y).matrixTransform(m), c1 = new DOMPoint(k.x + k.width, k.y + k.height).matrixTransform(m);
+      for (let y = Math.floor((Math.min(c0.y, c1.y) - P.top) / 8); y * 8 < Math.max(c0.y, c1.y) - P.top; y++) for (let x = Math.floor((Math.min(c0.x, c1.x) - P.left) / 8); x * 8 < Math.max(c0.x, c1.x) - P.left; x++) g.add(x + ',' + y);
+    }
+    GRID.set(sv, g);
+  }
+  let n = 0;
+  for (const c of g) { const [x, y] = c.split(',').map(Number), vx = b.x + x * 8 + 4 - cam.x, vy = b.y + y * 8 + 4 - cam.y; if (vx >= q.x && vx < q.x + q.w && vy >= q.y && vy < q.y + q.h) n++; }
+  return n * 64;
+}
+export function placeMags(v, cam, list) {
+  const d = globalThis.document; if (!d?.querySelector || !v.getBoundingClientRect) return; // no real page (gone, or a test stub)
+  const r = v.getBoundingClientRect(), W = v.clientWidth, H = v.clientHeight;
+  // the cards come and go (on a ride, a throw, the riders row) without a camera move: place again when they do
+  const pg = v.closest?.('.playground'); LAST.set(v, [{ x: cam.x, y: cam.y }, list]);
+  if (pg && !LAST.has(pg) && globalThis.MutationObserver) {
+    let q = 0; LAST.set(pg, 1);
+    new MutationObserver(() => q || (q = requestAnimationFrame(() => { q = 0; const a = LAST.get(v); if (v.isConnected && a) placeMags(v, a[0], a[1]); }))).observe(pg, { subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] });
+  }
+  const rel = (e) => { const b = e && e.getBoundingClientRect(); return b && b.width ? { x: b.left - r.left, y: b.top - r.top, w: b.width, h: b.height } : null; };
+  const bar = rel(d.querySelector('.playground .topbar'));
+  const view = { w: W, h: H, t: Math.max(0, bar ? bar.y + bar.h : 0) + 8 };
+  // clear of the Build card, the Places cards and the trick/rider row (Design FIX on c1b59cc)
+  const blocks = [...d.querySelectorAll('.pg-build-btn, .pg-gates, .pg-tricks:not([hidden])')].map(rel).filter(Boolean).map((q) => ({ x: q.x - 8, y: q.y - 8, w: q.w + 16, h: q.h + 16 })); // 8 px air
+  for (const [el, b] of list) {
+    // the drawn art in screen px (its svg's bbox through the screen matrix), back to world px against its piece, then to the view
+    const pc = el.previousElementSibling, sv = pc?.querySelector?.('svg'), m = sv?.getScreenCTM?.(); let a = { x: b.x, y: b.y, w: b.w, h: b.h };
+    if (m && sv.getBBox) { const k = sv.getBBox(), P = pc.getBoundingClientRect(), c0 = new DOMPoint(k.x, k.y).matrixTransform(m), c1 = new DOMPoint(k.x + k.width, k.y + k.height).matrixTransform(m);
+      a = { x: b.x + Math.min(c0.x, c1.x) - P.left, y: b.y + Math.min(c0.y, c1.y) - P.top, w: Math.abs(c1.x - c0.x), h: Math.abs(c1.y - c0.y) }; }
+    // what shows: inside the view, below the top bar, then the biggest piece left beside each card it meets
+    let q = { x: Math.max(a.x - cam.x, 0), y: Math.max(a.y - cam.y, view.t) }; q.w = Math.min(a.x + a.w - cam.x, W) - q.x; q.h = Math.min(a.y + a.h - cam.y, H) - q.y;
+    for (const k of blocks) {
+      if (q.x >= k.x + k.w || k.x >= q.x + q.w || q.y >= k.y + k.h || k.y >= q.y + q.h) continue;
+      q = [{ ...q, w: k.x - q.x }, { ...q, x: k.x + k.w, w: q.x + q.w - k.x - k.w }, { ...q, h: k.y - q.y }, { ...q, y: k.y + k.h, h: q.y + q.h - k.y - k.h }].sort((u, v) => Math.min(v.w, v.h) - Math.min(u.w, u.h))[0];
+    }
+    const s = Math.max(48, el.offsetWidth), all = q.w >= a.w - 1 && q.h >= a.h - 1, off = !(all ? q.w > 0 && q.h > 0 : q.w >= 48 && q.h >= 48 && painted(pc, q, cam, b) >= 2304); // q = art no card or bar covers: >= 48 px (and 48x48 px of drawn art), or a small ride wholly clear
+    const p = off ? { x: a.x - cam.x + a.w / 2, y: a.y - cam.y + a.h / 2 } : { x: q.x + q.w / 2, y: q.y + q.h / 2 };
+    el.tabIndex = off ? -1 : 0;
+    Object.assign(el.style, { visibility: off ? 'hidden' : '', width: `${s}px`, height: `${s}px`, margin: '0', left: `${Math.round(cam.x + p.x - s / 2)}px`, top: `${Math.round(cam.y + p.y - s / 2)}px` });
+  }
+}
+// a tap on a shown magnifier wins over walk-to, pan and pieces: tested in the view's capture phase against where it is drawn now (mid-ease too)
+const T = { back: -1e9, up: -1e9, syn: 0, z: null };
+export const dropTaps = () => { T.back = performance.now(); T.z = null; }; // Back drops a queued or late close-up tap
+// queued or ghost taps (350 ms after Back), and the native click after a pointerup already opened it (no double open)
+export const dropped = (t = performance.now()) => t - T.back < 350 || (!T.syn && t - T.up < 700);
+// pointerdown only notes a magnifier (the pan still sees it, so a drag from one pans); pointerup within 10 px of the down
+// opens it (a momentum release often fires no native click) and ends the pan with a pointercancel; a longer move just pans
+export function hitMag(ev, list) {
+  if (ev.timeStamp - T.back < 350) { ev.stopPropagation(); ev.preventDefault(); T.z = null; return 1; }
+  const at = (z) => { const r = z.getBoundingClientRect(); return z.style.visibility != 'hidden' && ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom; };
+  if (ev.type == 'pointerup') {
+    const z = T.z; T.z = null; if (!z) return; T.up = performance.now();
+    if (!z.isConnected || Math.hypot(ev.clientX - T.x, ev.clientY - T.y) >= 10 || !at(z)) return; // moved: it was a pan
+    ev.stopPropagation(); ev.currentTarget.dispatchEvent(new PointerEvent('pointercancel', { pointerId: ev.pointerId }));
+    T.syn = 1; try { z.click(); } finally { T.syn = 0; } T.up = performance.now(); return 1;
+  }
+  T.z = null;
+  for (const [z] of list) if (at(z)) { T.z = z; T.x = ev.clientX; T.y = ev.clientY; return; }
+}
