@@ -36,9 +36,10 @@ const RIDE = { 'park:slide': 'slide', 'park:swings': 'swings', 'park:merry': 'me
 const FX_MS = 900;
 const HOP_MS = 400; // the hop off a ride, before the prop comes back and the offer appears
 const OFFER_MS = 1400; // how long a treat offer stays beside her
-const CAR_LIFT = 31;    // px a rider sits up in a ride car: the feet in the seat, the wheels on the track      // every trick finishes inside a second
+const CAR_LIFT = 31;    // px a rider sits up in a ride car: the feet in the seat, the wheels on the track
 const WALK_MAX_MS = 900;
 
+const zOk = /* LIVE-acd2a67 */ (z, e, r = z.getBoundingClientRect(), x = e.clientX, y = e.clientY) => Date.now() - z.t < 999 || (e.detail ? x + y > 0 && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom : Date.now() - z.k < 999);
 let live = null; // the running scene: its timers and animal loop stop when the screen goes away
 export function leave() { if (live) live.stop(); live = null; }
 
@@ -211,8 +212,7 @@ function playScreen(ctx, who, zone) {
     onPlace();
   };
   // §18.2 (y-b S3): her z is her foot line, so a piece whose foot line is nearer draws over her; standing on
-  // a piece's own base (between its foot line and its box bottom) she draws over it. In a use, a ride or a
-  // car seat she keeps the top layer (the use's own steps set it: fit()). zIndex writes only when it changes.
+  // a piece's own base she draws over it; in a use, ride or car seat she keeps the top layer (fit()).
   let sortOn = false; // on once the pieces and the use state exist
   function sortZ(y = pos.y) {
     if (!sortOn || (use && !use.ride)) return;
@@ -326,8 +326,7 @@ function playScreen(ctx, who, zone) {
   const putCar = (car, front) => { if (car.pgFront) { actorWrap.prepend(car); actorWrap.append(car.pgFront); } else if (front) actorWrap.append(car); else actorWrap.prepend(car); };
   const dropCar = (car) => { car.remove(); if (car.pgFront) car.pgFront.remove(); };
   // §18.5 (y-b S3): a piece's front part (slide lip, swing seat and chains, merry post and canopy, tunnel face,
-  // sandbox frame, carousel canopy and pole, lazy pool rim) draws over her while she uses it: the same box
-  // and viewBox as the piece, which still draws whole underneath, so no box, anchor or tap target moves
+  // sandbox frame, carousel canopy and pole, lazy pool rim) draws over her while she uses it
   let frontEl = null; let frontAt = -1;
   const showFront = (i, cls = '') => {
     const e = layout[i]; const p = i >= 0 && e ? PG.pieceById(data, e[0]) : null;
@@ -939,8 +938,8 @@ function playScreen(ctx, who, zone) {
       el.addEventListener('click', (ev) => { if (ev.detail === 0 && !building) tapPiece(i); }); // keyboard only; taps are pointerup
       piecesEl.appendChild(el); pieceEls.push(el);
       const ride = RIDE[`${zone.id}:${p.id}`];
-      if (ride && !building) { const z = h('button', { type: 'button', class: 'pg-zoom', 'data-ride': ride, 'aria-label': 'Close-up', onclick: () => { if (drop?.()) return; ctx.session.rides = { seen: {}, mud: {}, ...ctx.session.rides, from: location.hash, at: [pos, cam] }; ctx.go(`#ride/${ride}/${who.id}`); } }, icon('zoom'));
-        z.style.left = px(b.x + b.w); z.style.top = px(b.y + (ride == 'coaster' ? b.h - 60 : 0)); z.style.zIndex = '100000'; piecesEl.appendChild(z); M.push([z, b]); }
+      if (ride && !building) { const z = h('button', { type: 'button', class: 'pg-zoom', 'data-ride': ride, 'aria-label': 'Close-up', onclick: (e) => { if (!zOk(z, e) || drop?.()) return; ctx.session.rides = { seen: {}, mud: {}, ...ctx.session.rides, from: location.hash, at: [pos, cam] }; ctx.go(`#ride/${ride}/${who.id}`); } }, icon('zoom'));
+        z.onpointerdown = () => z.t = Date.now(); z.onkeydown = () => z.k = Date.now(); z.style.left = px(b.x + b.w); z.style.top = px(b.y + (ride == 'coaster' ? b.h - 60 : 0)); z.style.zIndex = '100000'; piecesEl.appendChild(z); M.push([z, b]); }
     });
     liveRipples();
   };
