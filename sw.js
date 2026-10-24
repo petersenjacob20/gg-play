@@ -1,6 +1,6 @@
 // Offline shell. Bump CACHE on every change. Activate deletes only stale caches starting with OWN;
 // other apps' caches (fc-, pr-, other gg-) are never touched. Only the current PACKS are kept and read.
-const CACHE = 'gg-v1-20261016rc';
+const CACHE = 'gg-v1-20261024pm';
 const PACKS = ['gg-pack-hide-fa9a5f385f', 'gg-pack-grow-43190319dd', 'gg-pack-care-77f2fc98f7', 'gg-pack-rides-d25e1a8bb0']; // HIDE_CACHE, GROW_CACHE, CARE_CACHE
 const OWN = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-', 'gg-pack-care-', 'gg-pack-rides-'];
 const stale = (k) => OWN.some((p) => k.startsWith(p)) && k !== CACHE && !PACKS.includes(k);
@@ -214,6 +214,7 @@ const ASSETS = [
   './audio/w-yo-yo.mp3',
   './audio/w-zebra.mp3',
   './css/app.css',
+  './css/pizza-more.css',
   './data/activities.json',
   './data/games.json',
   './data/stories.json',
@@ -249,6 +250,7 @@ const ASSETS = [
   './js/voices.js',
   './js/petname.js',
   './js/pics.js',
+  './js/pizza-more.js',
   './js/playground.js',
   './js/quiz.js',
   './js/reward.js',
@@ -288,7 +290,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Same-origin GET only (non-GET passes straight through): cache first (CACHE and current PACKS), then
-// network. Photos (blob:) are never touched; nothing fetched is added to a cache. A miss is re-fetched as
+// network. nothing fetched is added to a cache. A miss is re-fetched as
 // new Request(req, { cache: 'reload' }), keeping method, headers and Range; a page load keeps its own.
 const find = (req) => [CACHE, ...PACKS].reduce((p, n) => p.then((hit) => hit || caches.has(n).then((y) => y && caches.open(n).then((c) => c.match(req, { ignoreSearch: true })))), Promise.resolve());
 self.addEventListener('fetch', (event) => {

@@ -43,24 +43,20 @@ export const orderText = (order) => `Put on ${order.map(one).join(' and ')}!`;
 export const countOf = (o, pieces) => pieces.filter((p) => p.id === o.id && (!o.side || (o.side === 'L') === (p.x < 60))).length;
 export const matched = (order, pieces) => order.every((o) => countOf(o, pieces) === o.n);
 
-const T = {
-  // Round pepperoni slice with little fat spots
+export const T = {
   pepperoni: () => g(
     C(0, 0, 7, '#C8323A', { 'stroke-width': 2.5 }),
     C(-2.5, -1.5, 1.2, '#F4A0A6', { 'stroke-width': 0 }),
     C(2, 1.5, 1, '#F4A0A6', { 'stroke-width': 0 }),
     C(1.5, -2.5, 0.8, '#E87880', { 'stroke-width': 0 }),
     C(-1, 2.5, 0.9, '#E87880', { 'stroke-width': 0 })),
-  // Olive ring (black olive slice)
   olives: () => g(
     C(0, 0, 5.5, '#3B3B3B', { 'stroke-width': 2 }),
     C(0, 0, 2.4, '#FFF4E0', { 'stroke-width': 0 })),
-  // Sliced mushroom: soft cap + short stem
   mushrooms: () => g(
     P('M-7 0a7 5.5 0 0 1 14 0z', '#E8D4B8', { 'stroke-width': 2 }),
     P('M-5.5 0a5.5 3 0 0 0 11 0', '#C9B08A', { 'stroke-width': 0 }),
     R(-2, 0, 4, 6, '#D9C3A5', { rx: 1.5, 'stroke-width': 2 })),
-  // Friendly pepper strips: one green, one red
   peppers: () => g(
     P('M-7 -3q6-5 12 1q-2 3-6 2q-4 1-6-3z', '#5DBB63', { 'stroke-width': 2 }),
     P('M-5 2q7-4 13 2q-3 3-7 1q-4 1-6-3z', '#E5484D', { 'stroke-width': 2 })),
@@ -85,7 +81,7 @@ const T = {
     C(0, 2.2, 2.2, '#F5C518', { 'stroke-width': 1.4 })),
 };
 
-// About 1/6 of the pie across; friendly realistic toppings (spots, stems, strips, rings) with a contact shadow. Melted cheese is the shreds in pieArt.
+// About 1/6 of the pie across, with a contact shadow.
 export const toppingArt = (id, x = 0, y = 0) => ['g', { transform: `translate(${x} ${y}) scale(1.15)` }, ['ellipse', { cx: 1, cy: 5, rx: 7, ry: 3, fill: '#000', opacity: 0.18 }], (T[id] || T.corn)()];
 export const TOPPING_ART_IDS = Object.keys(T);
 
@@ -97,7 +93,7 @@ export function spot(i, side = '') {
   return [x, 60 + Math.sin(a) * r];
 }
 export const SAUCE_FULL = 1e3; // dabs value meaning "covered"
-// Coverage: a 6x6 grid over the sauce area; a dab marks the cells near it. Auto-fill at about 70%.
+// Coverage: a 6x6 grid; auto-fill at about 70%.
 export function cover(set, x, y, r = 14) {
   for (let i = 0; i < 36; i++) if (Math.hypot(30 + (i % 6) * 12 - x, 30 + ((i / 6) | 0) * 12 - y) < r) set.add(i);
   return set.size / 36 >= 0.7;
@@ -109,7 +105,7 @@ export function pieArt(p) {
   const fill = p.sauce && SAUCES.find((s) => s.id === p.sauce).fill;
   const sauce = !fill ? [] : p.dabs >= SAUCE_FULL ? [sq ? R(22, 22, 76, 76, fill, { rx: 10, 'stroke-width': 0 }) : C(60, 60, 40, fill, { 'stroke-width': 0 })]
     : (p.spread || []).map(([x, y]) => C(x, y, 11, fill, { 'stroke-width': 0 }));
-  // cheese: loose thin shreds, clipped to the sauce area so sauce shows between them and nothing hangs over the crust
+  // cheese: thin shreds clipped to the sauce
   const loose = (p.shreds || []).filter(([x, y], i, a) => a.findIndex(([u, v]) => Math.hypot(u - x, v - y) < 7) === i).slice(0, 26);
   const cheese = loose.length ? [['clipPath', { id: 'pzc' }, sq ? R(22, 22, 76, 76, 0, { rx: 10 }) : C(60, 60, 40, 0)],
     ['g', { 'clip-path': 'url(#pzc)' }, ...(loose.length > 8 ? [0, 1, 2, 3].map((k) => E(40 + (k % 2) * 40, 42 + (k >> 1) * 36, 17, 12, '#FFE08A', { 'stroke-width': 0, opacity: 0.55 })) : []), ...loose.map(([x, y], i) => E(x, y, 5.5, 1.8, '#FFE08A', { 'stroke-width': 0, transform: `rotate(${i * 37} ${x} ${y})` }))]] : [];
@@ -119,7 +115,7 @@ export function pieArt(p) {
   // slicing: dashed guides, then 4 slices with a gap between them
   const cuts = p.guides || p.sliced ? [0, 90].map((a) => ['path', p.sliced ? { d: 'M60 8V112', stroke: '#FFF4E0', 'stroke-width': 5, transform: `rotate(${a} 60 60)` }
     : { d: 'M60 8V112', stroke: INK, 'stroke-width': 2, 'stroke-dasharray': '5 5', transform: `rotate(${a} 60 60)` }]) : [];
-  // the bite: a wavy notch out of the crust in the background colour, crumbs fall and fade
+  // the bite: a notch, crumbs fall
   const B = sq ? [[76, 14], [88, 14], [100, 14]] : [-62, -45, -28].map((a) => [60 + 48 * Math.cos(a * Math.PI / 180), 60 + 48 * Math.sin(a * Math.PI / 180)]);
   const bite = p.bitten ? [...B.map(([x, y]) => C(x, y, 8, '#FFF4E0', { 'stroke-width': 0 })),
     ['clipPath', { id: 'pzb' }, sq ? R(14, 14, 92, 92, 0, { rx: 14 }) : C(60, 60, 48, 0)],
