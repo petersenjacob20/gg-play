@@ -8,7 +8,7 @@ import { reducedMotion } from '../fun.js';
 import * as R from '../rides.js';
 import * as A from '../rides-art.js';
 
-export const RIDES_CACHE = 'gg-pack-rides-623705c70d';
+export const RIDES_CACHE = 'gg-pack-rides-1745c980c2';
 export const RIDES_PACK = ['./js/screens/rides.js', './js/rides.js', './js/rides-art.js', './css/rides.css'];
 export async function ready(ctx) {
   await new Promise((ok) => { const k = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: './css/rides.css' }); k.onload = k.onerror = ok; document.head.append(k); });
@@ -39,22 +39,34 @@ function park(defs) {
 }
 const near = () => A.layer([], 'near', W, H, A.flower(30, H - 30), A.flower(48, H - 20, '#FFE27A'), A.flower(320, H - 28, '#B9A3F0'), A.butterfly(300, HORIZON + 120));
 
+// the second pack (gg-pack-rides2): one shared template, precached at install (sw.js fill), so it opens offline
+let P2 = null;
+const pack2 = () => (P2 ||= import('../rides2.js').then((m) => {
+  if (globalThis.caches) caches.open(m.RIDES2_CACHE).then(async (c) => {
+    if (!(await c.match(m.RIDES2_PACK[0]))) await c.addAll(m.RIDES2_PACK.map((u) => new Request(u, { cache: 'reload' })));
+    for (const k of await caches.keys()) if (k.startsWith('gg-pack-rides2-') && k !== m.RIDES2_CACHE) await caches.delete(k); // an older pack
+  }).catch(() => {});
+  return m;
+}, (e) => { P2 = null; throw e; }));
 export function render(ctx) {
   leave();
   const sess = (ctx.session.rides = ctx.session.rides || {}); sess.seen = sess.seen || {}; sess.mud = sess.mud || {}; // the park's button may have set only .from
   const back = R.backTo(sess.from);
   const hash = location.hash, ok = R.parseRide(hash); // allowlists only (Security): an unknown ride lands on the pet's park, an unknown pet on the picker
-  if (!ok || !Object.hasOwn(BUILT, ok.scene)) { const to = R.fallbackTo(hash, sess.from); Promise.resolve().then(() => (ctx.replace ? ctx.replace(to) : ctx.go(to))); return h('main', { class: 'kid rides', 'data-game': 'rides' }); }
+  if (!ok || !(Object.hasOwn(BUILT, ok.scene) || Object.hasOwn(R.SCENES, ok.scene))) { const to = R.fallbackTo(hash, sess.from); Promise.resolve().then(() => (ctx.replace ? ctx.replace(to) : ctx.go(to))); return h('main', { class: 'kid rides', 'data-game': 'rides' }); }
   const { scene, pet } = ok;
   const stage = h('div', { class: 'rd-stage' });
-  const main = h('main', { class: 'kid rides', 'data-game': 'rides', 'data-scene': scene, 'data-pet': pet, 'data-phase': 'idle' },
+  const own = Object.hasOwn(BUILT, scene); // else it is in the second pack: data-scene lands once it is drawn
+  const main = h('main', { class: 'kid rides', 'data-game': 'rides', 'data-scene': own ? scene : null, 'data-pet': pet, 'data-phase': 'idle' },
     h('div', { class: 'topbar' }, h('button', { type: 'button', class: 'icon-btn home-btn rd-back', 'aria-label': 'Back', onclick: () => { R.dropTaps(); ctx.go(back); } }, backArt()), h('span', { class: 'spacer grow' }), dadButton(ctx)),
     stage);
   const fx = (id) => { if (ctx.audio) ctx.audio.fx([id]); };
   const first = !sess.seen[scene]; sess.seen[scene] = true; MUD = sess.mud;
   const zone = /\/water$/.test(sess.from || '') ? 'water' : R.SCENES[scene].park;
   ctx.question = { dadText: `Ride close-up: ${scene}.` };
-  BUILT[scene]({ ctx, main, stage, pet, sess, fx, first, reduced: reducedMotion(), zone, scene });
+  const c = { ctx, main, stage, pet, sess, fx, first, reduced: reducedMotion(), zone, scene };
+  if (own) BUILT[scene](c);
+  else pack2().then((m) => { if (!main.isConnected || !(m.SCENES2[scene] || m.BUILT2[scene])) return; (m.BUILT2[scene] || m.build)(KIT, c); main.dataset.scene = scene; }, () => ctx.go(back));
   return main;
 }
 
@@ -64,6 +76,8 @@ function paint(stage, kids, defs) {
   stage.firstChild.setAttribute('preserveAspectRatio', 'xMidYMax meet'); // the whole 360x780 frame fits its container; the backdrop bleeds past it
   return stage.firstChild;
 }
+// An invisible hit circle (48 px or more on a phone) in a small target's group
+const HIT = (r, cy = 0) => ['circle', { class: 'rd-hit', cy, r, fill: 'transparent' }];
 // SVG units from a pointer event
 const svgPt = (svg, ev) => { const m = svg.getScreenCTM(); if (!m) return [0, 0]; const q = new DOMPoint(ev.clientX, ev.clientY).matrixTransform(m.inverse()); return [q.x, q.y]; };
 const loop = (step) => { let t0 = 0; const f = (t) => { const dt = t0 ? Math.min(0.05, (t - t0) / 1000) : 0; t0 = t; if (step(dt) !== false) raf = requestAnimationFrame(f); else raf = 0; }; raf = requestAnimationFrame(f); };
@@ -261,7 +275,7 @@ function spinScene({ main, stage, pet, fx, first, reduced, scene, zone }) {
       const b = ((rot * 1.6 + 200) * Math.PI) / 180; const ball = act === 'ballRolls' ? [Math.sin(b), ['g', { transform: `translate(${Math.cos(b) * 128} ${Math.sin(b) * 32 - 8}) scale(1.2)` }, A.TOY.ballBlue(defs)]] : null;
       ride = [['g', { transform: `translate(${CX} ${CY}) scale(1.2)` }, A.merry(defs, 0, 0, rot, [[2, rider], ball].filter(Boolean))]]; // the rider sits up on the deck, drawn over the low bars and the pole (never a pole across a face)
     }
-    const hint = ph === 'idle' ? [ghost ? ghostAt(CX - 70, CY - 40, 'M0 0h150m-14 -12l14 12l-14 12', 0.9) : null, ['path', { class: 'r-tap', d: `M${CX - 120} ${CY + 70}q120 30 240 0`, fill: 'none', stroke: '#FFF3A8', 'stroke-width': 4, 'stroke-dasharray': '10 8' }]] : [];
+    const hint = ph === 'idle' ? [ghost ? ghostAt(CX - 75, CY + 34, 'M0 0h150m-14 -12l14 12l-14 12', 0.9) : null, ['path', { class: 'r-tap', d: `M${CX - 120} ${CY + 70}q120 30 240 0`, fill: 'none', stroke: '#FFF3A8', 'stroke-width': 4, 'stroke-dasharray': '10 8' }]] : [];
     paint(stage, [...back(zone, defs), ...ride, ...hint.filter(Boolean), zone === 'park' ? near() : null].filter(Boolean), defs);
   }
   draw();
@@ -288,8 +302,8 @@ function scooterScene({ main, stage, pet, fx, first, reduced }) {
     const o = { ...SC_POSE[act] }; if (huff > 0) { o.mouth = 'open'; o.chinUp = true; } if (ph === 'after') { o.mouth = 'open'; o.pawsUp = act !== 'grabRock'; }
     if (act === 'sniffFlowers') o.tilt = Math.sin(p * 30) * 8;
     const s = sOf(p) * 1.55; const x = xOf(p, l), y = yOf(p);
-    const rider = ['g', { class: 'rd-rider', 'data-act': act, transform: `translate(${x} ${y}) scale(${s}) rotate(${spin})` }, A.scooter(defs, [['g', { transform: 'scale(0.62)' }, pp(pet, o)]]),
-      spinning ? A.stars(3) : null, ph === 'idle' || ph === 'ride' ? A.grabRing(52, -60) : null].filter(Boolean);
+    const rider = ['g', { class: 'rd-rider', 'data-act': act, transform: `translate(${x} ${y}) scale(${s})` }, ['g', { class: 'rd-spin', transform: `rotate(${spin})` }, A.scooter(defs, [['g', { transform: 'scale(0.62)' }, pp(pet, o)]]),
+      ph === 'idle' || ph === 'ride' ? A.grabRing(52, -60) : null].filter(Boolean), spinning ? A.stars(3) : null].filter(Boolean); // the stars sit unturned over her, outside the spin (a counter-turn inside it boxes them far wider)
     paint(stage, [...park(defs), A.path(defs, Y1 - 40, H + 20, 90, 320), ...items, rider, ghost && ph === 'idle' ? ghostAt(x, y - 60, 'M0 -10V-160m-12 14l12 -14l12 14', 0.8) : null, near()].filter(Boolean), defs);
   }
   draw();
@@ -310,8 +324,8 @@ function scooterScene({ main, stage, pet, fx, first, reduced }) {
   stage.onpointerup = () => { drag = false; if (!tapAt || ph === 'after') return; tapAt = null; ph = 'ride'; auto = true; // a single tap rides it up the path by itself
     loop((dt) => { if (!spinning) p = Math.min(1, p + dt * 0.3); if (spinning) { spinning.t += dt / 0.8; spin = 360 * Math.min(1, spinning.t); if (spinning.t >= 1) { spinning = null; spin = 0; } } huff = Math.max(0, huff - dt);
       step(); if (ph === 'after') { auto = false; return false; } return true; }); };
-  main.rideSet = (ph2, v = 0) => { leave(); ghost = ph2 === 'ghost'; ph = ghost ? 'idle' : ph2;
-    if (ph2 === 'ride') { p = v || 0.3; l = 0.42; } if (ph2 === 'spin') { ph = 'ride'; p = 0.42; l = 0.62; spinning = { t: 0.4 }; spin = 144; } if (ph2 === 'after') { p = 1; l = 0.5; } draw(); };
+  main.rideSet = (ph2, v = 0, kk) => { leave(); ghost = ph2 === 'ghost'; ph = ghost ? 'idle' : ph2;
+    if (ph2 === 'ride') { p = v || 0.3; l = 0.42; } if (ph2 === 'spin') { ph = 'ride'; p = kk ?? 0.42; l = 0.62; spinning = { t: 0.4 }; spin = v || 144; } if (ph2 === 'after') { p = 1; l = 0.5; } draw(); };
 }
 
 // ---- splash pad (park and water park): tap a nozzle to pop its jet; drag the pet into a jet; mud washes off in sparkles
@@ -329,7 +343,7 @@ function splashScene({ main, stage, pet, fx, first, reduced, zone }) {
     const defs = []; const live = jets.some((j) => j > 0); const j = onJet();
     const o = { ...SP_POSE[act](live), wet }; if (ph === 'after' && act === 'tiptoeDry') o.tilt = Math.sin(k * 20) * 10;
     const lift = j >= 0 && act === 'launchWiggle' ? 60 * jets[j] : act === 'hopJets' && live ? 24 * Math.abs(Math.sin(k * 6)) : 0;
-    const pad = [A.splashPad(defs, 180, 600, 160, 66), ...NZ.map(([x, y], i) => ['g', { class: 'rd-nozzle', 'data-n': String(i), transform: `translate(${x} ${y})` }, A.nozzle(jets[i] > 0), ph === 'idle' && !jets[i] ? tapRing(0, 0, 24) : null].filter(Boolean))];
+    const pad = [A.splashPad(defs, 180, 600, 160, 66), ...NZ.map(([x, y], i) => ['g', { class: 'rd-nozzle', 'data-n': String(i), transform: `translate(${x} ${y})` }, HIT(30), A.nozzle(jets[i] > 0), ph === 'idle' && !jets[i] ? tapRing(0, 0, 24) : null].filter(Boolean))];
     const arcs = NZ.map(([x, y], i) => (jets[i] > 0 ? ['g', { transform: `translate(${x} ${y})` }, A.jetTo(px - x, py - lift - 58 - y, reach(i), k)] : null)).filter(Boolean);
     const rider = ['g', { class: 'rd-rider', 'data-act': act, transform: `translate(${px} ${py - lift})` }, ...who.map((id, i) => ['g', { transform: `translate(${(i - (who.length - 1) / 2) * 64} 0) scale(1)` }, pp(id, i ? { ...o } : o)]),
       sparkle > 0 ? ['g', { transform: 'scale(1.4)', opacity: String(Math.min(1, sparkle)) }, A.sparkles(6)] : null, ph !== 'after' ? dragRing(0, 0, 1, 52) : null].filter(Boolean);
@@ -373,7 +387,7 @@ function coasterScene({ main, stage, pet, fx, first, reduced }) {
     const howl = run && act === 'howl' ? ['g', { class: 'r-howl', transform: 'translate(2 -86)' }, ...[0, 1, 2].map((i) => ['path', { d: `M${i * 9} ${-i * 7}q6 -6 0 -12`, fill: 'none', stroke: '#6A4A2E', 'stroke-width': 2.4, 'stroke-linecap': 'round' }])] : null; // the puppy's howl: song lines from its raised chin
     const kids = who.map((id, i) => ['g', { transform: `translate(${-12 - i * 26} ${sink - 22}) scale(${who.length > 1 ? 0.42 : 0.5})` }, pp(id, o)]).concat(howl ? [howl] : []);
     // after the stop: the puff at once, then (g 0 to 1, about 0.8 s) the car glides back to the station with a little turnaround hop
-    const g = ph === 'after' ? Math.max(0, Math.min(1, (k - 0.15) / 0.8)) : 0, e = g * g * (3 - 2 * g), sx = g ? Math.sign(e - 0.5 || 1) * Math.max(0.3, Math.abs(Math.cos(Math.PI * e))) : 1;
+    const g = ph === 'after' ? Math.max(0, Math.min(1, (k - 0.15) / 0.8)) : 0, e = g * g * (3 - 2 * g), sx = g ? Math.sign(e - 0.5 || 1) * Math.max(0.45, Math.abs(Math.cos(Math.PI * e))) : 1;
     const tr = g ? `translate(${P1.xa + (P0.xa - P1.xa) * e} ${P1.ya + (P0.ya - P1.ya) * e - 30 * Math.sin(Math.PI * e)}) scale(${sx} 1) translate(${WB / 2} ${-LIFT}) scale(${CS}) translate(10 2)`
       : `translate(${xa} ${ya}) rotate(${ang}) scale(1 ${c.f}) translate(${Wd / 2} ${-LIFT}) scale(${c.s * CS} ${CS}) translate(10 2)`;
     const car = ['g', { class: 'rd-rider', 'data-act': act, 'data-run': run ? '1' : '0', 'data-ang': ang.toFixed(1), 'data-spin': c.s.toFixed(3), 'data-roll': c.f.toFixed(3), transform: tr },
@@ -462,7 +476,7 @@ function sprayScene({ main, stage, pet, fx, first, reduced }) {
     main.dataset.phase = ph; main.dataset.on = on.map(Number).join('');
     const defs = []; const live = on.some(Boolean); const o = { ...SR_POSE[act](live, ph, k), wet }; const sp = act === 'spin' && live ? k * 360 : 0; const wx = act === 'chaseDrops' && live ? Math.sin(k * 2) * 40 : 0;
     const riders = who.map((id, i) => ['g', { class: 'rd-rider', 'data-act': act, transform: `translate(${180 + wx + (i - (who.length - 1) / 2) * 70} 700) scale(1) rotate(${Math.sin(sp / 57) * 14} 0 -40)` }, pp(id, o)]);
-    const posts = POSTS.map(([x, y, f], i) => ['g', { class: 'rd-sprayer', 'data-n': String(i), transform: `translate(${x} ${y}) scale(${f * (i === 2 ? 0.8 : 1.1)} ${i === 2 ? 0.8 : 1.1})` }, A.sprayer(defs, on[i], ['#4FB35A', '#F28C28', '#8E5CC7'][i], k + i * 0.37, i === 2 ? [12, 236] : [120, 30]), ph === 'idle' && !on[i] ? tapRing(0, -74, 26) : null].filter(Boolean));
+    const posts = POSTS.map(([x, y, f], i) => ['g', { class: 'rd-sprayer', 'data-n': String(i), transform: `translate(${x} ${y}) scale(${f * (i === 2 ? 0.8 : 1.1)} ${i === 2 ? 0.8 : 1.1})` }, A.sprayer(defs, on[i], ['#4FB35A', '#F28C28', '#8E5CC7'][i], k + i * 0.37, i === 2 ? [12, 236] : [120, 30]), HIT(38, -74), ph === 'idle' && !on[i] ? tapRing(0, -74, 26) : null].filter(Boolean));
     paint(stage, [...poolside(defs), A.splashPad(defs, 180, 680, 170, 60), posts[2], ...riders, posts[0], posts[1], ghost && ph === 'idle' ? ghostAt(52, 610, '', 0.8) : null].filter(Boolean), defs);
   }
   draw();
@@ -482,7 +496,7 @@ function frisbeeScene({ main, stage, pet, fx, first, reduced }) {
     const defs = []; const T0 = TG[to];
     const f = Math.min(1, fly), bob = Math.sin(k * 2 + to) * 3, ty = T0[1] + bob - 2; // lands in the target's middle, bobbing with it
     const fx0 = ph === 'idle' ? HAND : [HAND[0] + (T0[0] - HAND[0]) * f, HAND[1] + (ty - HAND[1]) * f - Math.sin(f * Math.PI) * 90];
-    const disc = ph === 'after' && dives ? null : ['g', { class: 'rd-frisbee', transform: `translate(${drag ? drag[0] : fx0[0]} ${drag ? drag[1] : fx0[1]}) scale(${1.6 - 0.3 * f}) rotate(${ph === 'fly' ? -12 * Math.cos(f * Math.PI) : 0})` }, A.frisbee(defs, color)];
+    const disc = ph === 'after' && dives ? null : ['g', { class: 'rd-frisbee', transform: `translate(${drag ? drag[0] : fx0[0]} ${drag ? drag[1] : fx0[1]}) scale(${1.6 - 0.3 * f}) rotate(${ph === 'fly' ? -12 * Math.cos(f * Math.PI) : 0})` }, HIT(24), A.frisbee(defs, color)];
     const o = dives ? (ph === 'dive' ? { ears: 'back', tail: 'back', mouth: 'open' } : ph === 'after' ? { wet: true, toy: { blue: 'frisbeeBlue', green: 'frisbeeGreen', yellow: 'frisbeeYellow' }[color], toyAt: 'mouth' } : {}) : ph === 'idle' ? {} : { pawsUp: true, mouth: 'open' };
     const start = [130, 720]; const dk = Math.min(1, dive);
     const pos = dives && (ph === 'dive' || ph === 'after') ? [start[0] + (T0[0] - start[0]) * dk, start[1] + (T0[1] + 10 - start[1]) * dk - Math.sin(dk * Math.PI) * 120] : start;
@@ -509,6 +523,7 @@ function frisbeeScene({ main, stage, pet, fx, first, reduced }) {
 }
 
 // every scene (FINAL: all three parks; the splash pad opens from the park or the water park)
+const KIT = { paint, back, pp, ghostAt, svgPt, leave, loop: (f) => loop(f), park, near, near2, busy, H };
 const BUILT = { slide: slideScene, curly: (c) => slideScene({ ...c, scene: 'curly' }), swings: swingScene, merry: spinScene, teacups: spinScene, scooter: scooterScene, splash: splashScene,
   coaster: coasterScene, bucket: bucketScene, river: riverScene, sprayers: sprayScene, frisbee: frisbeeScene };
 

@@ -1,8 +1,7 @@
-// Offline shell. Bump CACHE on every change. Activate deletes only stale caches starting with OWN;
-// other apps' caches (fc-, pr-, other gg-) are never touched. Only the current PACKS are kept and read.
-const CACHE = 'gg-v1-20261024po';
-const PACKS = ['gg-pack-hide-fa9a5f385f', 'gg-pack-grow-43190319dd', 'gg-pack-care-77f2fc98f7', 'gg-pack-rides-623705c70d']; // HIDE_CACHE, GROW_CACHE, CARE_CACHE
-const OWN = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-', 'gg-pack-care-', 'gg-pack-rides-'];
+// Offline shell. Bump CACHE on every change. Activate drops only stale OWN caches.
+const CACHE = 'gg-v1-20261024pz';
+const PACKS = ['gg-pack-hide-fa9a5f385f', 'gg-pack-grow-43190319dd', 'gg-pack-care-77f2fc98f7', 'gg-pack-rides-1745c980c2', 'gg-pack-rides2-714012bf6d'];
+const OWN = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-', 'gg-pack-care-', 'gg-pack-rides-', 'gg-pack-rides2-'];
 const stale = (k) => OWN.some((p) => k.startsWith(p)) && k !== CACHE && !PACKS.includes(k);
 const ASSETS = [
   './',
@@ -275,10 +274,12 @@ const ASSETS = [
   './manifest.webmanifest',
 ];
 
-// Install fetches every asset fresh (cache: 'reload'), never from the browser's HTTP cache, so a new
-// cache name can never be filled with an older copy of a file.
+// install also fills PACKS; a failed fill never blocks it.
+const R=(u)=>new Request(u,{cache:'reload'}),T=(req)=>fetch(req=R(req)).then((r)=>r.text()),fill=(k)=>caches.open(k).then(async(c)=>{const n=k.slice(8,-11),m=`./js/${n[5]?'':'screens/'}${n}.js`;
+if(await c.match(m))return;const l=(await T(m)).match(/_PACK = \[(.*?)]/)[1].match(/[^' ,]+/g);
+for(const j of l)/clips/.test(j)&&l.push(...Object.keys(JSON.parse(await T(j))).map((x)=>`./audio/${x}.mp3`));await c.addAll(l.map(R))}).catch(()=>0);
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' })))).then(()=>Promise.all(PACKS.map(fill))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
@@ -289,9 +290,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Same-origin GET only (non-GET passes straight through): cache first (CACHE and current PACKS), then
-// network. nothing fetched is added to a cache. A miss is re-fetched as
-// new Request(req, { cache: 'reload' }), keeping method, headers and Range; a page load keeps its own.
+// Same-origin GET: CACHE, PACKS, then network; nothing fetched is stored.
 const find = (req) => [CACHE, ...PACKS].reduce((p, n) => p.then((hit) => hit || caches.has(n).then((y) => y && caches.open(n).then((c) => c.match(req, { ignoreSearch: true })))), Promise.resolve());
 self.addEventListener('fetch', (event) => {
   const req = event.request;

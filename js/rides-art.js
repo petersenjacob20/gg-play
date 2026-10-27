@@ -80,7 +80,7 @@ function dog(d, c, o) {
   const k = tones(d, c.coat, 'c'); const e = tones(d, c.ear, 'e'); const m = tones(d, c.muzzle, 'm'); const pup = !!c.pup;
   const hs = pup ? 1.12 : 1; // a puppy's bigger head
   const legs = o.pawsUp ? [P('M-14 -46q-14 -18 -10 -36l8 0q0 16 10 30z', k.v, k.line), P('M14 -46q14 -18 10 -36l-8 0q0 16 -10 30z', k.v, k.line), E(-20, -84, 6, 5, m.r, m.line), E(20, -84, 6, 5, m.r, m.line)]
-    : [P('M-16 -40q-1 20 1 36q5 4 10 0q2 -16 1 -36z', c.coat, k.line), P('M16 -40q1 20 -1 36q-5 4 -10 0q-2 -16 -1 -36z', c.coat, k.line), E(-10, -2, 8, 4.5, m.r, m.line), E(10, -2, 8, 4.5, m.r, m.line), L('M-12 -3v2M-8 -3v2M8 -3v2M12 -3v2', m.line, 1)];
+    : [P('M-20 -44q-6 22 -1 40q6 4 12 0q2 -14 -1 -32z', k.v, k.line), P('M20 -44q6 22 1 40q-6 4 -12 0q-2 -14 1 -32z', k.v, k.line), E(-10, -2, 8, 4.5, m.r, m.line), E(10, -2, 8, 4.5, m.r, m.line), L('M-12 -3v2M-8 -3v2M8 -3v2M12 -3v2', m.line, 1)];
   const head = G({ class: 'r-head', transform: `translate(0 -82) scale(${hs}) rotate(${o.chinUp ? -10 : 0}) translate(0 82)` },
     G({ class: 'r-ear l', 'data-ear': o.ears || 'flop' }, P(earPath(-1, o.ears, pup), e.v, e.line), fold(-1, o.ears, c.sheen || c.ear)),
     G({ class: 'r-ear r', 'data-ear': o.ears || 'flop' }, P(earPath(1, o.ears, pup), e.v, e.line), fold(1, o.ears, c.sheen || c.ear)),
@@ -276,6 +276,18 @@ export function scooter(defs, kids = []) {
     ...[-30, 30].map((wx) => G({}, T('circle', { cx: wx, cy: -6, r: 7, fill: '#3A3F46', stroke: '#24282D', 'stroke-width': 1.5 }), T('circle', { cx: wx, cy: -6, r: 2.5, fill: '#C9D3DC' }))),
     G({ transform: 'translate(-4 -14)' }, ...kids));
 }
+// a kid bike seen from the side (low and small-wheeled, like the scooter beside it): two wheels, a diamond
+// frame, handlebars; the pet sits on the saddle
+export function bike(defs, kids = []) {
+  const d = plastic(defs, '#E5484D', 'k2');
+  const hub = (x) => G({}, T('circle', { cx: x, cy: -8, r: 8, fill: 'none', stroke: '#3A3F46', 'stroke-width': 3.5 }),
+    T('circle', { cx: x, cy: -8, r: 8, fill: 'none', stroke: '#C9D3DC', 'stroke-width': 1 }), T('circle', { cx: x, cy: -8, r: 2.2, fill: '#8FA3B3' }));
+  return G({ class: 'r-bike' }, groundShadow(defs, 46, 7), hub(-28), hub(28),
+    metal(defs, -28, -8, 6, -8, 4), metal(defs, 6, -8, 0, -19, 4), metal(defs, 6, -8, 14, -17, 4), metal(defs, 14, -17, 28, -8, 4), metal(defs, 14, -17, 9, -20, 4),
+    T('ellipse', { cx: 0, cy: -20, rx: 8, ry: 3.5, fill: d.v, stroke: d.line, 'stroke-width': 1.5 }),
+    T('rect', { x: 1, y: -18, width: 15, height: 4.5, rx: 2.2, fill: d.v, stroke: d.line, 'stroke-width': 1.5 }),
+    G({ transform: 'translate(0 -19)' }, ...kids));
+}
 export const TOY = TOYS;
 export const rock = () => G({ class: 'r-toy', 'data-toy': 'rock' }, P('M-7 2q-2 -7 4 -9q8 -2 10 4q2 6 -5 7z', '#9AA0A6', '#6F767D'), E(-2, -4, 3, 1.4, '#FFFFFF', null, { opacity: 0.4 }));
 // the path she steers along: a soft tan band narrowing into the distance (near at the bottom)
@@ -376,7 +388,7 @@ const TUBE = 'M-16 -168q40 -4 44 30q4 30 -24 34q-24 2 -16 -18q10 -18 40 -2q30 18
 // Design r6: the rider rides INSIDE the tube: clipped to it, with the tube's see-through front drawn over it
 export function inTube(defs, kids) {
   defs.push(T('clipPath', { id: 'rd-tube' }, P(TUBE, '#000')));
-  return [G({ class: 'r-in-tube', 'clip-path': 'url(#rd-tube)' }, G({ transform: 'translate(0 24)' }, ...kids)), P(TUBE, '#3D8FE0', '#2C6FB5', { class: 'r-tube-front', opacity: 0.4 }),
+  return [G({ class: 'r-in-tube', 'clip-path': 'url(#rd-tube)' }, G({ transform: 'translate(0 24)' }, ...kids)), P(TUBE, '#3D8FE0', '#2C6FB5', { class: 'r-tube-front', opacity: 0.25 }),
     L('M-10 -164q34 -2 36 26', '#FFFFFF', 3, { opacity: 0.5 }), L('M40 -96q24 18 28 64', '#FFFFFF', 3, { opacity: 0.5 })];
 }
 export function curlySlide(defs, x, y) {

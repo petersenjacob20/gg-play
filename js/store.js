@@ -10,7 +10,7 @@ import { normalizeParks } from './playground.js';
 export const KEY = 'gg.v1';
 export const CACHE_PREFIX = 'gg-';
 // Delete my data removes only Family Games' own caches (app shell and game packs), never another app's fc-, pr- or gg- cache.
-export const OWN_CACHE_PREFIXES = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-', 'gg-pack-care-', 'gg-pack-rides-'];
+export const OWN_CACHE_PREFIXES = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-', 'gg-pack-care-', 'gg-pack-rides-', 'gg-pack-rides2-'];
 export const VERSION = 3;
 export const NAME_MAX = 20;
 export const STICKER_MAX = 9999; // v1 sticker counter cap (migration only)

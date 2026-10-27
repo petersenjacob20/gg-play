@@ -4,10 +4,12 @@
 export const PETS = ['yellowDog', 'chocolateDog', 'gingerDog', 'blackDog', 'puppy', 'kitty', 'bunny', 'bunny2'];
 // park -> its scenes, in the order the park lists the item; `piece` is the park item that opens it
 export const PARKS = {
-  park: [['slide', 'slide'], ['swings', 'swings'], ['merry', 'merry'], ['scooter', 'scooter'], ['splash', 'splash']],
-  coaster: [['coaster', 'dragonCoaster'], ['teacups', 'teapots']],
-  water: [['curly', 'curlySlide'], ['bucket', 'bucket'], ['river', 'lazyPool'], ['sprayers', 'sprayers'], ['frisbee', 'floatTargets']],
+  park: [['slide', 'slide'], ['swings', 'swings'], ['merry', 'merry'], ['scooter', 'scooter'], ['bike', 'bike'], ['splash', 'splash'], ['sandbox', 'sandbox'], ['climber', 'climber'], ['seesaw', 'seesaw'], ['tree', 'tree'], ['flowers', 'flowers'], ['pond', 'pond'], ['snacks', 'snacks']],
+  coaster: [['coaster', 'dragonCoaster'], ['teacups', 'teapots'], ['carousel', 'carousel'], ['bumpers', 'bumpers'], ['balloonTower', 'balloonTower'], ['kiddieTrain', 'kiddieTrain'], ['ferris', 'ferris'], ['ticketBooth', 'ticketBooth'], ['balloonArch', 'balloonArch'], ['fountain', 'fountain'], ['tents', 'tents'], ['hills', 'hills'], ['target', 'target'], ['fairSnacks', 'snacks'], ['bench', 'bench'], ['fairFlowers', 'flowers']],
+  water: [['curly', 'curlySlide'], ['bucket', 'bucket'], ['river', 'lazyPool'], ['sprayers', 'sprayers'], ['frisbee', 'floatTargets'], ['lazyRing', 'lazyRing'], ['dumpCups', 'dumpCups'], ['umbrellas', 'umbrellas'], ['lifeRings', 'lifeRings'], ['towels', 'towels'], ['cooler', 'cooler'], ['poolSnacks', 'snacks'], ['lifeguard', 'lifeguard']],
 };
+// the park's close-up buttons: zone:piece -> scene (vehicle pieces with a ride path fall back to their own id)
+export const ZOOM = { 'park:slide': 'slide', 'park:swings': 'swings', 'park:merry': 'merry', 'park:scooter': 'scooter', 'park:bike': 'bike', 'park:splash': 'splash', 'park:sandbox': 'sandbox', 'park:climber': 'climber', 'park:seesaw': 'seesaw', 'park:tree': 'tree', 'park:flowers': 'flowers', 'park:pond': 'pond', 'park:snacks': 'snacks', 'coaster:dragonCoaster': 'coaster', 'coaster:teapots': 'teacups', 'coaster:ticketBooth': 'ticketBooth', 'coaster:balloonArch': 'balloonArch', 'water:curlySlide': 'curly', 'water:bucket': 'bucket', 'water:lazyPool': 'river', 'water:sprayers': 'sprayers', 'water:floatTargets': 'frisbee', 'water:splash': 'splash', 'coaster:fountain': 'fountain', 'coaster:tents': 'tents', 'coaster:hills': 'hills', 'coaster:target': 'target', 'coaster:snacks': 'fairSnacks', 'coaster:bench': 'bench', 'coaster:flowers': 'fairFlowers', 'water:dumpCups': 'dumpCups', 'water:umbrellas': 'umbrellas', 'water:lifeRings': 'lifeRings', 'water:towels': 'towels', 'water:cooler': 'cooler', 'water:snacks': 'poolSnacks', 'water:lifeguard': 'lifeguard' };
 export const SCENES = Object.fromEntries(Object.entries(PARKS).flatMap(([park, l]) => l.map(([id, piece]) => [id, { id, park, piece }])));
 export const sceneFor = (zone, piece) => (PARKS[zone] || []).find((s) => s[1] === piece)?.[0] || null;
 // the splash pad is in the park and the water park; either one opens the same scene (the water park's own backdrop)
@@ -28,6 +30,7 @@ export const TRAIT = {
 export const ACT = {
   slide: { puppy: 'headfirst', chocolateDog: 'curlSpin', blackDog: 'holdBall', yellowDog: 'slowCalm', gingerDog: 'zoomFrisbee', kitty: 'kingTail', bunny: 'bunnyPile', bunny2: 'bunnyPile' },
   scooter: { puppy: 'aimPuddles', chocolateDog: 'zipQuiet', blackDog: 'grabRock', yellowDog: 'slowSteady', gingerDog: 'leanEars', kitty: 'swerveMud', bunny: 'zoom', bunny2: 'sniffFlowers' },
+  bike: { puppy: 'tongueFlap', chocolateDog: 'duckLow', blackDog: 'holdToy', yellowDog: 'pedalCalm', gingerDog: 'leanFast', kitty: 'crownHigh', bunny: 'ringBell', bunny2: 'basketRide' },
   merry: { puppy: 'hangHowl', chocolateDog: 'snuggleMiddle', blackDog: 'ballRolls', yellowDog: 'chinRest', gingerDog: 'earsOut', kitty: 'ownsCenter', bunny: 'bounceDizzy', bunny2: 'bounceDizzy' },
   coaster: { puppy: 'howl', chocolateDog: 'coverPeek', blackDog: 'hugBall', yellowDog: 'calmWise', gingerDog: 'earsFlap', kitty: 'pawsWave', bunny: 'earsBack', bunny2: 'earsBack' },
   swings: { puppy: 'barkUp', chocolateDog: 'curlCozy', blackDog: 'jumpOff', yellowDog: 'gentle', gingerDog: 'jumpOff', kitty: 'tailWave', bunny: 'shareSwing', bunny2: 'shareSwing' },
@@ -71,7 +74,7 @@ export const fill = (n) => (n + 1 >= FULL ? 0 : n + 1);
 
 // #ride/<ride>/<pet> (Security): both parts are checked against fixed allowlists (Maps, never a plain-object lookup, so
 // __proto__ or constructor match nothing); anything else gives null and the screen falls back to the park
-export const RIDE_IDS = ['slide', 'swings', 'merry', 'teacups', 'scooter', 'splash', 'coaster', 'curly', 'bucket', 'river', 'sprayers', 'frisbee'];
+export const RIDE_IDS = ['slide', 'swings', 'merry', 'teacups', 'scooter', 'bike', 'splash', 'coaster', 'curly', 'bucket', 'river', 'sprayers', 'frisbee', 'lazyRing', 'carousel', 'bumpers', 'balloonTower', 'kiddieTrain', 'ferris', 'sandbox', 'climber', 'seesaw', 'tree', 'flowers', 'pond', 'snacks', 'ticketBooth', 'balloonArch', 'fountain', 'tents', 'hills', 'target', 'fairSnacks', 'bench', 'fairFlowers', 'dumpCups', 'umbrellas', 'lifeRings', 'towels', 'cooler', 'poolSnacks', 'lifeguard'];
 const RIDE_OK = new Map(RIDE_IDS.map((k) => [k, k])), PET_OK = new Map(PETS.map((k) => [k, k]));
 export function parseRide(hash) {
   const m = /^#ride\/([A-Za-z0-9]{1,20})\/([A-Za-z0-9]{1,20})$/.exec(String(hash || ''));
@@ -133,8 +136,9 @@ export function placeMags(v, cam, list) {
   const rel = (e) => { const b = e && e.getBoundingClientRect(); return b && b.width ? { x: b.left - r.left, y: b.top - r.top, w: b.width, h: b.height } : null; };
   const bar = rel(d.querySelector('.playground .topbar'));
   const view = { w: W, h: H, t: Math.max(0, bar ? bar.y + bar.h : 0) + 8 };
-  // clear of the Build card, the Places cards and the trick/rider row (Design FIX on c1b59cc)
+  // clear of the Build card, the Places cards and the trick/rider row (fix on c1b59cc); the Go paw only moves it
   const blocks = [...d.querySelectorAll('.pg-build-btn, .pg-gates, .pg-tricks:not([hidden])')].map(rel).filter(Boolean).map((q) => ({ x: q.x - 8, y: q.y - 8, w: q.w + 16, h: q.h + 16 })); // 8 px air
+  const go = [d.querySelector('.playground .pg-go:not([hidden])')].map(rel).filter(Boolean).map((q) => ({ x: q.x - 8, y: q.y - 8, w: q.w + 16, h: q.h + 16 }))[0];
   for (const [el, b] of list) {
     // the drawn art in screen px (its svg's bbox through the screen matrix), back to world px against its piece, then to the view
     const pc = el.previousElementSibling, sv = pc?.querySelector?.('svg'), m = sv?.getScreenCTM?.(); let a = { x: b.x, y: b.y, w: b.w, h: b.h };
@@ -147,6 +151,9 @@ export function placeMags(v, cam, list) {
       q = [{ ...q, w: k.x - q.x }, { ...q, x: k.x + k.w, w: q.x + q.w - k.x - k.w }, { ...q, h: k.y - q.y }, { ...q, y: k.y + k.h, h: q.y + q.h - k.y - k.h }].sort((u, v) => Math.min(v.w, v.h) - Math.min(u.w, u.h))[0];
     }
     const s = Math.max(48, el.offsetWidth), all = q.w >= a.w - 1 && q.h >= a.h - 1, off = !(all ? q.w > 0 && q.h > 0 : q.w >= 48 && q.h >= 48 && painted(pc, q, cam, b) >= 2304); // q = art no card or bar covers: >= 48 px (and 48x48 px of drawn art), or a small ride wholly clear
+    if (!off && go && !(q.x >= go.x + go.w || go.x >= q.x + q.w || q.y >= go.y + go.h || go.y >= q.y + q.h)) { const k = go; // the Go paw sits over the world: keep it shown, on the art beside the paw
+      q = [{ ...q, w: k.x - q.x }, { ...q, x: k.x + k.w, w: q.x + q.w - k.x - k.w }, { ...q, h: k.y - q.y }, { ...q, y: k.y + k.h, h: q.y + q.h - k.y - k.h }].sort((u, v) => Math.min(v.w, v.h) - Math.min(u.w, u.h))[0];
+    }
     const p = off ? { x: a.x - cam.x + a.w / 2, y: a.y - cam.y + a.h / 2 } : { x: q.x + q.w / 2, y: q.y + q.h / 2 };
     el.tabIndex = off ? -1 : 0;
     Object.assign(el.style, { visibility: off ? 'hidden' : '', width: `${s}px`, height: `${s}px`, margin: '0', left: `${Math.round(cam.x + p.x - s / 2)}px`, top: `${Math.round(cam.y + p.y - s / 2)}px` });
