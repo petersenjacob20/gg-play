@@ -26,7 +26,7 @@ import { usePetState, bindHello } from './petname.js';
 const cuer = createCuer();
 
 // the routes that are a kid's game screen (with its round end); the Playground scene is added in render()
-const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'hide', 'grow', 'care', 'pizza', 'ride']);
+const KID_PLAY = new Set(['game', 'play', 'letters', 'count', 'says', 'hide', 'grow', 'care', 'pizza', 'ride', 'david']);
 const ROUTES = { home, play, game: play, book, stories: shelf, story, pets, voices, says, pizza, playground, letters: play, count: play };
 
 let hidePack = null; // the Hide pack, loaded on first open
@@ -37,6 +37,8 @@ let carePack = null; // Pet Care, the same way
 let ridesPack = null;
 const loadRides = () => (ridesPack ||= import('./screens/rides.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.ride = m; }, (e) => { ridesPack = null; throw e; }));
 const loadCare = () => (carePack ||= import('./screens/care.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.care = m; }, (e) => { carePack = null; throw e; }));
+let davidPack = null; // David's Sheep Count, the same way
+const loadDavid = () => (davidPack ||= import('../packs/david/david.js').then((m) => m.ready(ctx)).then((m) => { ROUTES.david = m; }, (e) => { davidPack = null; throw e; }));
 
 function paramFor(name, hash) {
   if (name === 'letters' || name === 'count') return name;
@@ -124,6 +126,7 @@ function render() {
   if (name === 'grow' && !ROUTES.grow) { loadGrow().then(render, () => ctx.go('#home')); return; }
   if (name === 'home' && /^#ride\//.test(location.hash) && !ROUTES.ride) { loadRides().then(render, () => ctx.go('#home')); return; }
   if (name === 'care' && !ROUTES.care) { loadCare().then(render, () => ctx.go('#home')); return; }
+  if (name === 'home' && /^#david$/.test(location.hash) && !ROUTES.david) { loadDavid().then(render, () => ctx.go('#home')); return; }
   const mod = ROUTES[name];
   // Family voices: Ready to play leads a game's first line; Bye-bye plays on getting home (only when recorded).
   const voiceCue = cuer(ctx, current ? current.name : null, name);

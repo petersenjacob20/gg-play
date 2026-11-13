@@ -35,7 +35,7 @@ export function render(ctx) {
     v.addEventListener('pointerdown', () => setPose(v, 'happy', 900)); // the hello comes from the hello tap (petname.js)
     return v;
   }));
-  const games = builtGames(ctx.data.games, PLAYABLE);
+  const games = [...builtGames(ctx.data.games, PLAYABLE), { id: 'david', route: '#david', titleDefault: "David's Sheep Count" }];
   const pgOn = playgroundShips(ctx.data) && ctx.state.playground !== false;
   const order = [...(pgOn ? ['playground'] : []), ...games.map((g) => g.id)];
   // full width only when alone on the last row of the 2-column grid: the last tile of an odd count

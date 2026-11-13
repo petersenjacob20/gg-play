@@ -1,5 +1,5 @@
 // Offline shell. Bump CACHE on every change. Activate drops only stale OWN caches.
-const CACHE = 'gg-v1-20261024pz';
+const CACHE = 'gg-v1-20261024qi';
 const PACKS = ['gg-pack-hide-fa9a5f385f', 'gg-pack-grow-43190319dd', 'gg-pack-care-77f2fc98f7', 'gg-pack-rides-1745c980c2', 'gg-pack-rides2-714012bf6d'];
 const OWN = ['gg-v1-', 'gg-pack-hide-', 'gg-pack-grow-', 'gg-pack-care-', 'gg-pack-rides-', 'gg-pack-rides2-'];
 const stale = (k) => OWN.some((p) => k.startsWith(p)) && k !== CACHE && !PACKS.includes(k);
@@ -272,6 +272,8 @@ const ASSETS = [
   './js/ui.js',
   './js/update.js',
   './manifest.webmanifest',
+  './packs/david/david.css',
+  './packs/david/david.js',
 ];
 
 // install also fills PACKS; a failed fill never blocks it.

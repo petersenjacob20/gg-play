@@ -1,0 +1,10 @@
+[data-game=david]{background:#F5C889;gap:0}
+[data-game=david] .dv{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+[data-game=david] .dv-box{position:relative;width:min(100%,calc((100dvh - 76px)*.75));aspect-ratio:3/4}
+[data-game=david] .dv-box>.drawing{position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
+[data-game=david] .dv-s{position:absolute;border:0;background:none;padding:0;margin:0;box-shadow:none;border-radius:50%}
+[data-game=david] .dv-s[data-id=sheep1]{left:1%;top:56%;width:21%;height:20%}
+[data-game=david] .dv-s[data-id=sheep2]{left:19%;top:58%;width:21%;height:20%}
+[data-game=david] .dv-s[data-id=sheep3]{left:36%;top:56%;width:21%;height:20%}
+[data-game=david]>div:last-child{flex:1;min-height:0}
+[data-game=david]>div:last-child:has(.dv-s){background:linear-gradient(transparent 50%,#45A14F 50%)}
